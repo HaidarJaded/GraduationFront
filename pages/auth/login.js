@@ -8,17 +8,27 @@ import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "/utils";
 import {useForm} from "react-hook-form";
 import Image from 'next/image';
+import Cookies from 'js-cookie';
 // TODO remove, this demo shouldn't need to reset the theme.
 
 
 export default function LoginPage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        if (Cookies.get('auth-token')) {
+            router.push('/');
+        }
+    }, []);
+
+
     const [data, setData] = useState({
         email: "", password: ""
     });
     const formOptions = getValidationObject("email", "password");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
-    const router = useRouter();
+
     const onSubmit = async (email) => {
         const response = await authServices.login(email)
         if (response?.status === 200) {
@@ -27,10 +37,6 @@ export default function LoginPage() {
         }
     };
 
-    useEffect(() => {
-
-        console.log(router)
-    }, [])
     return (
         <Container
             sx={{
@@ -121,19 +127,19 @@ export default function LoginPage() {
     );
 }
 
-export function getServerSideProps(context) {
-    const token = context.req.cookies['auth-token'];
-
-    if (token) {
-        return {
-            redirect: {
-                destination: '/',
-                permanent: false,
-            },
-        };
-    }
-
-    return {
-        props: {}, // will be passed to the page component as props
-    };
-}
+// export function getServerSideProps(context) {
+//     const token = context.req.cookies['auth-token'];
+//
+//     if (token) {
+//         return {
+//             redirect: {
+//                 destination: '/',
+//                 permanent: false,
+//             },
+//         };
+//     }
+//
+//     return {
+//         props: {}, // will be passed to the page component as props
+//     };
+// }
