@@ -20,7 +20,7 @@ export default function LoginPage() {
         if (Cookies.get('auth-token')) {
             router.push('/');
         }
-    }, []);
+    }, [router]);
 
 
     const [data, setData] = useState({

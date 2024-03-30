@@ -17,10 +17,12 @@ export function Cards() {
         const getDevices = async () => {
             const params = {
                 'repaired_in_center': 1,
-                'with': 'client,user'
+                'with': 'client,user',
+                'deliver_to_client': 0
             }
             const data = await device.getAll(params);
-            setDevices(data)
+            // setDevices(data)
+            data?setDevices(data):setDevices([]);
         };
         getDevices();
     }, [])
@@ -32,7 +34,8 @@ export function Cards() {
                 'repaired_in_center': 1,
             }
             const data = await completedDevices.getAll(params);
-            setCompletedDevices(data)
+            // setCompletedDevices(data)
+            data?setCompletedDevices(data):setCompletedDevices([]);
         };
         getDevices();
     }, [])
@@ -59,6 +62,10 @@ export function Cards() {
                 <OutlinedCard name='عدد الذي يتم العمل عليه' number={devices.filter(device => device.status === 'قيد العمل').length}>
                     <BuildIcon />
                 </OutlinedCard>
+                <OutlinedCard name='عدد الاجهزة القابلة للتسليم' number={devices.filter(device => device.status === 'لا يصلح'
+                    || device.status === 'لم يوافق على العمل به' || device.status === 'غير جاهز' || device.status === 'جاهز').length}>
+                    <BuildIcon />
+                </OutlinedCard>
                 <OutlinedCard name=' عدد التي تم تسليمها جاهزة' number={completed_devices.filter(completed_device => completed_device.status === 'جاهز').length}>
                     <LocalShippingOutlinedIcon />
                 </OutlinedCard>
@@ -69,7 +76,7 @@ export function Cards() {
                 <OutlinedCard name='عدد الأجهزة التي تم تسليمها هذا الشهر' number={completed_devices.filter(completed_device => {
                     const deliveryDate = new Date(completed_device.date_delivery);
                     const deliveryMonth = deliveryDate.getMonth() + 1;
-                    return deliveryMonth === currentMonth && deliveryDate.getFullYear() === currentDate.getFullYear();
+                    return deliveryDate.getFullYear() === currentDate.getFullYear() && deliveryMonth === currentMonth;
                 }).length}>
                     <HourglassDisabledRoundedIcon />
                 </OutlinedCard>

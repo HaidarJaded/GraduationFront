@@ -29,11 +29,11 @@ export function UsersTable() {
         const getUsers = async () => {
             const params = {
                 'rule*name': 'فني',
-                'with':'rule'
+                'with': 'rule'
             }
             const data = await users.getAll(params);
-            console.log(data);
-            setUsers(data);
+            // setUsers(data);
+            data ? setUsers(data) : setUsers([]);
         };
         getUsers()
     }, [])

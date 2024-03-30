@@ -23,9 +23,12 @@ export function CompletedDevices() {
         const getDevices = async () => {
             const params = {
                 'repaired_in_center': 1,
+                'orderBy': 'date_delivery',
+                'dir': 'desc',
             }
             const data = await completedDevices.getAll(params);
-            setCompletedDevices(data)
+            // setCompletedDevices(data)
+            data ? setCompletedDevices(data) : setCompletedDevices([]);
         };
         getDevices();
     }, [])
@@ -42,7 +45,7 @@ export function CompletedDevices() {
         date_receipt: row.date_receipt,
         date_delivery: row.date_delivery,
     }));
-    const rows =  rowsWithNumbers ;
+    const rows = rowsWithNumbers;
 
     return (
         <div style={{ height: 400, width: '100%' }}>

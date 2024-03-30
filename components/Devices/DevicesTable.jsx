@@ -22,7 +22,7 @@ const columns = [
 
 
 
-export function Devices() { 
+export function Devices() {
 
     //get devices from Api
     const [devices, setDevices] = useState([]);
@@ -31,12 +31,13 @@ export function Devices() {
             const params = {
                 'repaired_in_center': 1,
                 'with': 'client,user',
-                'orderBy':'date_receipt',
-                'dir':'desc',
-                'deliver_to_client':0
+                'orderBy': 'date_receipt',
+                'dir': 'desc',
+                'deliver_to_client': 0
             }
             const data = await device.getAll(params);
-            setDevices(data)
+            // setDevices(data);
+            data ? setDevices(data) : setDevices([]);
         };
         getDevices();
 
@@ -47,8 +48,8 @@ export function Devices() {
         model: device.model,
         imei: device.imei,
         code: device.code,
-        clientName: device.client.name,
-        userName: device.user.name,
+        clientName: device.client?.name,
+        userName: device.user?.name,
         status: device.status,
         date_receipt: device.date_receipt
     }));
