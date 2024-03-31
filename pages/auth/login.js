@@ -10,6 +10,9 @@ import {getValidationObject, Notify} from "/utils";
 import {useForm} from "react-hook-form";
 import Image from 'next/image';
 import Cookies from 'js-cookie';
+import  axiosInstance  from '../../utils/auth/axiosInstance';
+import getConfig from "next/config";
+
 // TODO remove, this demo shouldn't need to reset the theme.
 
 
@@ -17,8 +20,31 @@ export default function LoginPage() {
     const router = useRouter();
 //what can this code do
     useEffect(() => {
+        const refreshAuthToken = async () => {
+            try {
+                if (Cookies.get('auth-token')) {
+                    const { publicRuntimeConfig } = getConfig();
+                    const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
+                    const REFRESH_TOKEN_URL = `api/refresh_token`;
+                    
+                    const response = await axiosInstance.post(`${BASE_URL}${REFRESH_TOKEN_URL}`);
+                    
+                    if (response.status === 200) {
+                        const token = response.data.body.token;
+                        
+                        Cookies.remove('auth-token');
+                        Cookies.set('auth-token', token);
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing token', error);
+            }
+        };
+    
         if (Cookies.get('auth-token')) {
-            router.push('/');
+            refreshAuthToken().then(() => {
+                router.push('/Dashboard');
+            });
         }
     }, [router]);
 
@@ -34,7 +60,7 @@ export default function LoginPage() {
         const response = await authServices.login(email)
         if (response?.status === 200) {
             Notify("colored", `${response?.message || 'Logged in success'}`, "success")
-            await router.push('/Dashbord');
+            await router.push('/Dashboard');
         }
     };
 
