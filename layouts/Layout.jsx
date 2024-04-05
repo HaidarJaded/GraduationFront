@@ -177,7 +177,7 @@ export function Layout({ children }) {
                         { text: 'الصفحة الرئيسية', link: '/Dashbord', icon: <HomeIcon color="#442d5d" /> }, // Example icon for the homepage
                         { text: 'الأجهزة', link: '/devices', icon: <DevicesIcon sx={{ color: "#442d5d" }} /> },
                         { text: 'الأجهزة التي تم تسليمها', link: '/completedDevices', icon: <MdOutlineSendToMobile style={{ color: "#442d5d" }} size={30} /> },
-                        { text: 'المستخدمين', link: '/allUsers', icon: <GroupsIcon sx={{ color: "#442d5d" }} /> }, // Example icon for devices
+                        { text: 'عمّال التوصيل', link: '/deliveries', icon: <GroupsIcon sx={{ color: "#442d5d" }} /> }, // Example icon for devices
                         { text: 'الفنيين', link: '/technicians', icon: <EngineeringRoundedIcon sx={{ color: "#442d5d" }} /> }, // Example icon for technicians
                         { text: 'العملاء', link: '/clients', icon: <Handshake color="#442d5d" /> }, // Example icon for customers
                         { text: 'البريد', link: '/mail', icon: <MailIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail

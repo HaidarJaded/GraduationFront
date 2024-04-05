@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Cookies from "js-cookie";
-import { UsersTable } from "/components";
-export default function UsersPage() {
+import { TechniciansTable } from "../../components/Technicians/techniciansTable";
+
+export default function TechniciansPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -12,7 +13,7 @@ export default function UsersPage() {
   }, [router]);
   return (
     <>
-      <UsersTable />
+      <TechniciansTable />
     </>
   );
 }

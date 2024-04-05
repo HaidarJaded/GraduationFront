@@ -2,9 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { users } from "../../Routes";
-import { Notify } from "../../utils";
-import TableCell from '@mui/material/TableCell';
-import { Button } from '@mui/material';
 
 
 const columns = [
@@ -16,29 +13,26 @@ const columns = [
     { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
     { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
     { field: 'address', headerName: 'العنوان', width: 170 },
-    { field: 'rule', headerName: 'الدور', width: 170 },
 ];
 
 
-export function UsersTable() {
+export function DeliveriesTable() {
 
     //get users from Api
 
-    const [allUsers, setUsers] = useState([]);
+    const [allDeliveries, setDeliveries] = useState([]);
     useEffect(() => {
         const getUsers = async () => {
             const params = {
-                'rule*name': 'فني',
-                'with': 'rule'
+                'rule*name': 'عامل توصيل',
             }
             const data = await users.getAll(params);
-            // setUsers(data);
-            data ? setUsers(data) : setUsers([]);
+            data ? setDeliveries(data) : setDeliveries([]);
         };
         getUsers()
     }, [])
 
-    const usersWithNumbers = allUsers.map((user, index) => ({
+    const techniciansWithNumbers = allDeliveries.map((user, index) => ({
         id: user.id,
         rowNumber: index + 1,
         name: user.name,
@@ -47,10 +41,9 @@ export function UsersTable() {
         phone: user.phone,
         created_at: user.created_at,
         address: user.address,
-        rule: user.rule?.name
     }));
 
-    const rows = usersWithNumbers
+    const rows = techniciansWithNumbers;
 
 
     return (
