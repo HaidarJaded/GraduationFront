@@ -1,46 +1,57 @@
-import {Notify, checkExpires} from "/utils"
+import { Notify } from "/utils";
 
-import {authServices} from "/Routes";
 import Cookies from "js-cookie";
 
-    export function responseErrorHandlers(response) {
+export function responseErrorHandlers(response) {
+    const { status, data } = response || {};
 
-    console.log(response?.data?.data)
-    switch (response?.status) {
+    const handleClientError = (message) => {
+        Notify("colored", message, "error");
+    };
+
+    const handleServerError = (message, logResponse = false) => {
+        Notify("colored", message, "error");
+        if (logResponse) {
+            console.error("Server Error:", response);
+        }
+    };
+    switch (status) {
         case 400:
-            Notify("colored", `${response?.data?.message}`, "error")
+            handleClientError(data?.message || "Bad Request");
 
             break;
         case 401:
+            handleClientError(data?.message + 'Please log in again' || "Unauthenticated");
+
+            setTimeout(() => {
+                // history.back();
+                window.location.href = "/auth/login";
+                Cookies.remove("auth-token");
+                localStorage.removeItem("profile");
+            }, 1000);
         case 403:
-            Notify("colored", `${response?.data?.message}`, "error")
-            setTimeout(function () {
-                  history.back()
-                  window.location.href = ''
-                Cookies.remove('auth-token');
-            })
+            handleClientError(data?.message + 'Please log in again' || "Unauthorized");
+            setTimeout(() => {
+                //   history.back();
+                window.location.href = "/auth/login";
+                Cookies.remove("auth-token");
+                localStorage.removeItem("profile");
+            }, 1000);
             break;
         case 404:
-            Notify("colored", `Not Found`, "error")
-
-
+            handleClientError("Not Found");
             break;
-        case 422 :
-
+        case 422:
             Object.keys(response?.data?.errors).forEach((key) => {
-                Notify("colored", `${response?.data?.errors[key][0]}`, "error")
-            })
+                Notify("colored", `${response?.data?.errors[key][0]}`, "error");
+            });
             break;
         case 500:
         case 501:
         case 503:
-            Notify("colored", `Server Error`, "error")
-            console.log(response)
+            handleServerError("Server Error", true);
             break;
-        default :
-            return response
+        default:
+            return response;
     }
 }
-
-
-
