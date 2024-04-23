@@ -174,7 +174,7 @@ export function Layout({ children }) {
                 <Divider />
                 <List sx={{ direction: 'rlt' }}>
                     {[
-                        { text: 'الصفحة الرئيسية', link: '/Dashbord', icon: <HomeIcon color="#442d5d" /> }, // Example icon for the homepage
+                        { text: 'الصفحة الرئيسية', link: '/Dashboard', icon: <HomeIcon color="#442d5d" /> }, // Example icon for the homepage
                         { text: 'الأجهزة', link: '/devices', icon: <DevicesIcon sx={{ color: "#442d5d" }} /> },
                         { text: 'الأجهزة التي تم تسليمها', link: '/completedDevices', icon: <MdOutlineSendToMobile style={{ color: "#442d5d" }} size={30} /> },
                         { text: 'عمّال التوصيل', link: '/deliveries', icon: <GroupsIcon sx={{ color: "#442d5d" }} /> }, // Example icon for devices
