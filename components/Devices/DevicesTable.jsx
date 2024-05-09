@@ -59,7 +59,6 @@ export function Devices() {
         setOpen(false);
     };
 
-
     const handleEditClick = (id) => () => {
         setOpen(true)
         setRowId(id)
@@ -176,7 +175,6 @@ export function Devices() {
             const data = await device.getAll(params);
             setDevices(data); // This will trigger a re-render
         }
-
         // Call the async function
         fetchAndSetDevices();
     }, []); // Empty dependency array means this effect runs once on mount
@@ -194,11 +192,9 @@ export function Devices() {
             status: device?.status,
             date_receipt: device?.date_receipt,
         }));
-
         setFlattenedDevices(rowsDevices);
         setRows(rowsDevices); // Now `rowsDevices` is derived directly from the updated `devices`
     }, [devices]); // This effect depends on `devices` and runs whenever `devices` changes
-
 
     return (
         <div style={{height: 400, width: '100%'}}>
@@ -231,4 +227,4 @@ export function Devices() {
             />
         </div>
     );
-}
+ }

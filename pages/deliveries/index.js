@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Cookies from "js-cookie";
-import { CompletedDevices } from "../../components/CompletedDevices";
+import { DeliveriesTable } from "../../components/Deliveries/DeliveriesTable";
 
-export default function CompletedDevicesPage() {
+export default function DeliveriesPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function CompletedDevicesPage() {
   }, [router]);
   return (
     <>
-      <CompletedDevices />
+      <DeliveriesTable />
     </>
   );
 }

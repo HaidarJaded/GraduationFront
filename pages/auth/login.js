@@ -1,40 +1,45 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
-import {Box, Button, Container, CssBaseline, TextField, Typography} from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
 
-import {authServices} from "/Routes";
+import { useRouter } from "next/router";
 
-import {useRouter} from "next/router";
-
-import {getValidationObject, Notify} from "/utils";
-import {useForm} from "react-hook-form";
+import { getValidationObject, Notify } from "/utils";
+import { useForm } from "react-hook-form";
 import Image from 'next/image';
 import Cookies from 'js-cookie';
+import axiosInstance from '../../utils/auth/axiosInstance';
+import getConfig from "next/config";
+import { authServices } from '../../Routes';
+
 // TODO remove, this demo shouldn't need to reset the theme.
 
 
 export default function LoginPage() {
     const router = useRouter();
-//what can this code do
+    //what can this code do
     useEffect(() => {
-        if (Cookies.get('auth-token')) {
-            router.push('/');
-        }
-    }, []);
+          const initiateAuthRefresh = async () => {
+            if (await authServices.refreshAuthToken()) {
+              router.push('/Dashboard');
+            }
+          };
+          initiateAuthRefresh();
+    }, [router]);
 
 
     const [data, setData] = useState({
         email: "", password: ""
     });
     const formOptions = getValidationObject("email", "password");
-    const {register, handleSubmit, formState} = useForm(formOptions);
-    const {errors} = formState;
+    const { register, handleSubmit, formState } = useForm(formOptions);
+    const { errors } = formState;
 
     const onSubmit = async (email) => {
         const response = await authServices.login(email)
         if (response?.status === 200) {
             Notify("colored", `${response?.message || 'Logged in success'}`, "success")
-            await router.push('/Dashbord');
+            await router.push('/Dashboard');
         }
     };
 
@@ -47,7 +52,7 @@ export default function LoginPage() {
                 minHeight: "100vh"
             }}
             component="main" maxWidth="xs">
-            <CssBaseline/>
+            <CssBaseline />
             <Box sx={{
                 marginTop: 8,
                 display: 'flex',
@@ -60,7 +65,7 @@ export default function LoginPage() {
                     src="/assets/images/svg/logo-black.svg"
                     alt="Description of the image"
                     fill={1}
-                     loading='lazy'
+                    loading='lazy'
                     style={{
                         position: 'absolute',
                         top: '50%',
@@ -85,7 +90,7 @@ export default function LoginPage() {
                     Welcome back! Please enter your details.
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit(onSubmit)}
-                     noValidate sx={{mt: 1}}>
+                    noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -116,7 +121,7 @@ export default function LoginPage() {
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{mt: 3, mb: 2, bgcolor: "primary.mainDark"}}
+                        sx={{ mt: 3, mb: 2, bgcolor: "primary.mainDark" }}
                     >
                         Sign In
                     </Button>

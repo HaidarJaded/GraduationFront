@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import  {clients} from '../../Routes/api/clients';
+import { clients } from '../../Routes/api/clients';
 
 const columns = [
 
@@ -28,8 +28,8 @@ export function ClientsTable() {
             const params = {
             }
             const data = await clients.getAll(params);
-            console.log(data);
-            setClients(data);
+            // setClients(data);
+            data ? setClients(data) : setClients([]);
         };
         getClients()
     }, [])

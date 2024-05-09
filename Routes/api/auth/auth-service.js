@@ -55,7 +55,31 @@ const logout = async () => {
     }
   };
 
+  const refreshAuthToken = async () => {
+    try {
+      const authToken = Cookies.get('auth-token');
+      if (authToken) {
+        const REFRESH_TOKEN_URL = `${BASE_URL}api/refresh_token`;
+  
+        const response = await axiosInstance.post(REFRESH_TOKEN_URL);
+  
+        if (response.status === 200) {
+          const token = response.data.body.token;
+  
+          Cookies.remove('auth-token');
+          Cookies.set('auth-token', token);
+          return true;
+        }
+        Cookies.remove('auth-token');
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  };
+
 export const authServices = {
   login,
   logout,
+  refreshAuthToken
 };
