@@ -7,8 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {TextField} from "@mui/material";
-import {FormEditDevice} from "./FormEditDevice";
-import {useState} from "react";
+ import {useState} from "react";
 import {useForm} from "react-hook-form";
 import {authServices} from "../../Routes";
 import {device} from "../../Routes";
@@ -37,12 +36,14 @@ export function EditDevice({...props}) {
     const submit = async (params) => {
          const response=await device.updateDevice(params);
          console.log(response);
+
         // if (response?.status === 200) {
 
         //
         // props?.onCloseDialog;
         // }
     };
+
 
     return (
         <>
