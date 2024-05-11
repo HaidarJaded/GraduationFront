@@ -12,7 +12,7 @@ const nextConfig = {
         // get the latest git commit hash here
         return '0.0.0.7'
     },
-    output: 'export',
+    output: 'standalone',
     images: {
         unoptimized: true
     },
