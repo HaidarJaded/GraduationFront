@@ -200,8 +200,6 @@ export function Devices() {
         <div style={{height: 400, width: '100%'}}>
             <DataGrid
                 rows={rows}
-
-
                 columns={columns}
                 initialState={{
                     pagination: {
