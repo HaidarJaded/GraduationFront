@@ -1,53 +1,101 @@
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {TextField} from "@mui/material";
- import {useState} from "react";
+import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {authServices} from "../../Routes";
-import {device} from "../../Routes";
+import {deviceServices} from "../../Routes";
+import {useRouter} from "next/router";
+import {Notify} from "../../utils";
+import {ModelsEnum} from "../../enums";
+import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export function EditDevice({...props}) {
-
     const {open} = props;
-    const {id} = props;
+    const [id, setId] = useState(props.id)
+    const route = useRouter()
+    const [data, setData] = useState();
+    const {update} = props;
 
-    const [userName, setUserName] = useState();
+    async function fetchAndSetDevice() {
+        const params = {
+            'repaired_in_center': 1,
+            'with': 'client,user',
+            'orderBy': 'date_receipt',
+            'dir': 'desc',
+            'deliver_to_client': 0,
+        };
+        const response = await deviceServices.getDevice(id, params);
+        await setData(response);
+    }
 
-    const handleUserNameChange = (event) => {
-        setUserName(event.target.value);
-    };
-    const params={
-        id:{id},
-        userName:userName
-    };
+    useEffect(() => {
+        fetchAndSetDevice()
+    }, [id])
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
-    const submit = async (params) => {
-         const response=await device.updateDevice(params);
-         console.log(response);
 
-        // if (response?.status === 200) {
+    const onSubmit = async () => {
+        let dataDevice = {}
+        if (selectedInfo && selectedInfo !== data?.info)
+            Object.assign(dataDevice, {"info": selectedInfo})
+        if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
+            Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
+        console.log(selectedModel)
+        console.log(data?.model)
+        if (selectedModel && selectedModel !== data?.model)
+            Object.assign(dataDevice, {"model": selectedModel})
+        if (Object.keys(dataDevice).length > 0) {
+            try {
+                const response = await deviceServices.updateDevice(id, dataDevice);
+                Notify("light", response.message, "success")
+                props.onCloseDialog()
+                update('update');
+            } catch (error) {
+                console.log(error)
+            }
 
-        //
-        // props?.onCloseDialog;
-        // }
-    };
+        }
+    }
 
+    const [selectedInfo, setSelectedInfo] = useState(data?.info);
+    const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
+    const [selectedModel, setSelectedModel] = useState(data?.model);
+    const [modelOptions, setModelOptions] = useState([]);
+
+    useEffect(() => {
+        const _ModelOptions = getEnum(ModelsEnum)
+        setModelOptions(_ModelOptions)
+    }, [])
+
+
+    function handleKeyUp(event) {
+        let keyName = event.target.name;
+        switch (keyName) {
+            case 'info' :
+                setSelectedInfo(event.target.value)
+                break;
+            case 'fix_steps' :
+                setSelectedFixSteps(event.target.value)
+                break;
+            default:
+                break;
+        }
+    }
 
     return (
         <>
             <Dialog
+                component="form" onSubmit={handleSubmit(onSubmit)}
                 open={open}
                 TransitionComponent={Transition}
                 keepMounted
@@ -56,25 +104,83 @@ export function EditDevice({...props}) {
             >
                 <DialogTitle>{"Use Google's location service?"}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-slide-description">
 
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="userName"
-                                label="اسم الفني"
-                                name="userName"
-                                value={userName}
-                                onChange={handleUserNameChange}
-                                autoComplete="userName"
-                                autoFocus
-                            />
-                    </DialogContentText>
+                    {data ? (
+                        <Grid container maxWidth="lg" spacing={1}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="info"
+                                    defaultValue={`${data?.info || ''}`}
+                                    fullWidth
+                                    id="info"
+                                    label="Info"
+                                    autoFocus
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="fix_steps"
+                                    defaultValue={`${data?.fix_steps || ''}`}
+                                    fullWidth
+                                    id="fix_steps"
+                                    label="Fix Steps"
+
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <InputLabel
+                                        id="model">
+                                        Model
+                                    </InputLabel>
+                                    <Select
+                                        name={"model"}
+                                        labelId="model"
+                                        id="model"
+                                        value={selectedModel}
+                                        onChange={(event) => setSelectedModel(event.target.value)}
+                                        label="Model"
+                                        MenuProps={{
+                                            sx: {
+                                                "&& .Mui-selected": {
+                                                    color: "var(--system-light-theme-color)",
+                                                    backgroundColor: "primary.main",
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        {modelOptions?.map((model) => (
+                                            <MenuItem
+                                                key={model.value}
+                                                value={model.value}
+                                            >
+                                                {model.title}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    ) : (
+                        <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
+                            <Grid item xs={12} sm={6}>
+                                <CircularProgress/>
+                            </Grid>
+                        </Grid>
+
+                    )}
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onCloseDialog}>Disagree</Button>
-                    <Button type='submit'>Agree</Button>
+                    <Button type={'submit'}>Agree</Button>
                 </DialogActions>
             </Dialog>
         </>
