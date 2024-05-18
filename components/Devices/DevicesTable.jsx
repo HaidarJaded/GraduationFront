@@ -66,7 +66,7 @@ function EditToolbar(props) {
 }
 
 export function Devices() {
-    const [rowModesModel, setRowModesModel] = React.useState({});
+   // const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
 
 //=============================================================
@@ -81,10 +81,10 @@ export function Devices() {
     const [rowId, setRowId] = React.useState(null);
 
 
-    // const handleClose = () => {
-    //     setOpen(false);
-    //     setRowId(null)
-    // };
+    const handleClose = () => {
+        setOpen(false);
+        setRowId(null)
+    };
     const handleEditClick = (id) => () => {
         setOpen(true)
         setRowId(id)

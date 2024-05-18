@@ -16,7 +16,7 @@ const getAll = async (params) => {
     return await axiosInstance
       .get(`${BASE_URL}${USERS_URL}`, { params })
       .then(async (response) => {
-        return await response?.data?.body;
+        return await response?.data;
       });
   } catch (error) {
     responseErrorHandlers(error?.response);
