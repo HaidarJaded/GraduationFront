@@ -13,12 +13,13 @@ import {useRouter} from "next/router";
 import {Notify} from "../../utils";
 import {ModelsEnum} from "../../enums";
 import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+import {completedDevices} from "../../Routes/api/completedDevices";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function EditDevice({...props}) {
+export function EditCompletedDevice({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id)
     const route = useRouter()
@@ -28,17 +29,16 @@ export function EditDevice({...props}) {
     async function fetchAndSetDevice() {
         const params = {
             'repaired_in_center': 1,
-            'with': 'client,user',
-            'orderBy': 'date_receipt',
+            'orderBy': 'date_delivery',
             'dir': 'desc',
-            'deliver_to_client': 0,
         };
-        const response = await deviceServices.getDevice(id, params);
+        console.log(id);
+        const response = await completedDevices.getCompletedDevice(id, params);
         await setData(response);
     }
 
     useEffect(() => {
-        fetchAndSetDevice()
+        fetchAndSetDevice();
     }, [id])
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
@@ -50,13 +50,11 @@ export function EditDevice({...props}) {
             Object.assign(dataDevice, {"info": selectedInfo})
         // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
         //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
-        console.log(selectedModel)
-        console.log(data?.model)
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
         if (Object.keys(dataDevice).length > 0) {
             try {
-                const response = await deviceServices.updateDevice(id, dataDevice);
+                const response = await completedDevices.updateCompletedDevice(id, dataDevice);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -68,9 +66,11 @@ export function EditDevice({...props}) {
     }
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
+    // const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
     const [selectedModel, setSelectedModel] = useState(data?.model);
-    const [modelOptions, setModelOptions] = useState([]);
+    const [selectedUserName, setSelectedUserName] = useState(data?.user_name);
+
+  //  const [modelOptions, setModelOptions] = useState([]);
 
     // useEffect(() => {
     //     const _ModelOptions = getEnum(ModelsEnum)
@@ -84,11 +84,11 @@ export function EditDevice({...props}) {
             case 'info' :
                 setSelectedInfo(event.target.value)
                 break;
-            // case 'fix_steps' :
-            //     setSelectedFixSteps(event.target.value)
-            //     break;
-            case 'model':
+            case 'model' :
                 setSelectedModel(event.target.value)
+                break;
+            case 'user_name' :
+                setSelectedUserName(event.target.value)
                 break;
             default:
                 break;
@@ -105,13 +105,7 @@ export function EditDevice({...props}) {
                 onClose={props?.onCloseDialog}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle sx={
-                  {
-                      fontWeight: "bold",
-                      direction: "rtl",
-                      color: '#4212d5'
-                  }
-                }>{"تعديل جهاز"}</DialogTitle>
+                <DialogTitle>{"Use Google's location service?"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
@@ -141,53 +135,52 @@ export function EditDevice({...props}) {
 
                                 />
                             </Grid>
-                            {/*<Grid item xs={12} sm={6}>*/}
-                            {/*    <TextField*/}
-                            {/*        margin="normal"*/}
-                            {/*        onKeyUp={handleKeyUp}*/}
-                            {/*        name="fix_steps"*/}
-                            {/*        defaultValue={`${data?.fix_steps || ''}`}*/}
-                            {/*        fullWidth*/}
-                            {/*        id="fix_steps"*/}
-                            {/*        label="Fix Steps"*/}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="user_name"
+                                    defaultValue={`${data?.user_name || ''}`}
+                                    fullWidth
+                                    id="user_name"
+                                    label="user name"
 
-                            {/*    />*/}
-                            {/*</Grid>*/}
+                                />
+                            </Grid>
+                        {/*    <Grid item xs={12}>*/}
+                        {/*        <FormControl fullWidth>*/}
+                        {/*            <InputLabel*/}
+                        {/*                id="model">*/}
+                        {/*                Model*/}
+                        {/*            </InputLabel>*/}
+                        {/*            <Select*/}
+                        {/*                name={"model"}*/}
+                        {/*                labelId="model"*/}
+                        {/*                id="model"*/}
+                        {/*                value={selectedModel}*/}
+                        {/*                onChange={(event) => setSelectedModel(event.target.value)}*/}
+                        {/*                label="Model"*/}
+                        {/*                MenuProps={{*/}
+                        {/*                    sx: {*/}
+                        {/*                        "&& .Mui-selected": {*/}
+                        {/*                            color: "var(--system-light-theme-color)",*/}
+                        {/*                            backgroundColor: "primary.main",*/}
+                        {/*                        },*/}
+                        {/*                    },*/}
+                        {/*                }}*/}
+                        {/*            >*/}
+                        {/*                {modelOptions?.map((model) => (*/}
+                        {/*                    <MenuItem*/}
+                        {/*                        key={model.value}*/}
+                        {/*                        value={model.value}*/}
+                        {/*                    >*/}
+                        {/*                        {model.title}*/}
+                        {/*                    </MenuItem>*/}
+                        {/*                ))}*/}
+                        {/*            </Select>*/}
 
-                            {/*<Grid item xs={12}>*/}
-                            {/*    <FormControl fullWidth>*/}
-                            {/*        <InputLabel*/}
-                            {/*            id="model">*/}
-                            {/*            Model*/}
-                            {/*        </InputLabel>*/}
-                            {/*        <Select*/}
-                            {/*            name={"model"}*/}
-                            {/*            labelId="model"*/}
-                            {/*            id="model"*/}
-                            {/*            value={selectedModel}*/}
-                            {/*            onChange={(event) => setSelectedModel(event.target.value)}*/}
-                            {/*            label="Model"*/}
-                            {/*            MenuProps={{*/}
-                            {/*                sx: {*/}
-                            {/*                    "&& .Mui-selected": {*/}
-                            {/*                        color: "var(--system-light-theme-color)",*/}
-                            {/*                        backgroundColor: "primary.main",*/}
-                            {/*                    },*/}
-                            {/*                },*/}
-                            {/*            }}*/}
-                            {/*        >*/}
-                            {/*            {modelOptions?.map((model) => (*/}
-                            {/*                <MenuItem*/}
-                            {/*                    key={model.value}*/}
-                            {/*                    value={model.value}*/}
-                            {/*                >*/}
-                            {/*                    {model.title}*/}
-                            {/*                </MenuItem>*/}
-                            {/*            ))}*/}
-                            {/*        </Select>*/}
-
-                            {/*    </FormControl>*/}
-                            {/*</Grid>*/}
+                        {/*        </FormControl>*/}
+                        {/*    </Grid>*/}
                         </Grid>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>

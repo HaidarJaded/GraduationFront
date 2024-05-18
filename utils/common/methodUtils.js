@@ -12,8 +12,6 @@ export function getEnum(enumData, filter = null) {
             value: value,
         });
     }
-
-
     if (filter) {
         myEnum = myEnum.filter((item) => item.title.toLowerCase().includes(filter.slice(0, 5).toLowerCase()));
     }

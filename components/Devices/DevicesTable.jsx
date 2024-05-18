@@ -17,7 +17,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
-import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
@@ -193,6 +193,7 @@ export function Devices() {
             'deliver_to_client': 0,
             'page': currentPage,
             'per_page': pageSize,
+
         };
         const data = await deviceServices.getAll(params);
         setPagination(data?.pagination);
@@ -372,46 +373,55 @@ export function Devices() {
     }
 
     return (
-        <Box sx={{flexGrow: 1, width: 1}}>
-            <DataGrid
-                sx={{
-                    '&.MuiDataGrid-root': {
-                        minHeight: 'calc(100vh - 130px)',
-                        height: '100%',
-                        maxWidth: "calc(100vw - 100px)",
-                    },
-                    '& .MuiDataGrid-main': {
-                        maxHeight: 'calc(100vh - 180px)'
-                    }
-                }}
-                rows={rows}
-                columns={columns}
-                loading={rows.length === 0}
-                // checkboxSelection
-                // rowModesModel={rowModesModel}
-                // onRowModesModelChange={handleRowModesModelChange}
-                // onRowEditStop={handleRowEditStop}
-                // processRowUpdate={processRowUpdate}
-                // slots={{
-                //     toolbar: EditToolbar,
-                // }}
-                // slotProps={{
-                //     toolbar: {setRows, setRowModesModel},    
-                // }}
-                components={{
-                    noRowsOverlay: CustomNoRowsOverlay,
-                    Pagination: CustomPagination,
-                }}
+        <>
+            {devices ? (<Box sx={{flexGrow: 1, width: 1}}>
 
-            />
-            {rowId && (
-                <EditDevice
-                    open={open}
-                    onCloseDialog={handleClose}
-                    id={rowId}
-                    update={reloadTable}
+                <DataGrid
+                    sx={{
+                        '&.MuiDataGrid-root': {
+                            minHeight: 'calc(100vh - 130px)',
+                            height: '100%',
+                            maxWidth: "calc(100vw - 100px)",
+                        },
+                        '& .MuiDataGrid-main': {
+                            maxHeight: 'calc(100vh - 180px)'
+                        }
+                    }}
+                    rows={rows}
+                    columns={columns}
+                    loading={rows.length === 0}
+                    // checkboxSelection
+                    // rowModesModel={rowModesModel}
+                    // onRowModesModelChange={handleRowModesModelChange}
+                    // onRowEditStop={handleRowEditStop}
+                    // processRowUpdate={processRowUpdate}
+                    // slots={{
+                    //     toolbar: EditToolbar,
+                    // }}
+                    // slotProps={{
+                    //     toolbar: {setRows, setRowModesModel},
+                    // }}
+                    components={{
+                        noRowsOverlay: CustomNoRowsOverlay,
+                        Pagination: CustomPagination,
+                    }}
+
                 />
-            )}
-        </Box>
+                {rowId && (
+                    <EditDevice
+                        open={open}
+                        onCloseDialog={handleClose}
+                        id={rowId}
+                        update={reloadTable}
+                    />
+                )}
+            </Box>)
+                :( <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
+                <Grid item xs={12} sm={6}>
+                    <CircularProgress/>
+                </Grid>
+            </Grid>)}
+        </>
+
     );
 }

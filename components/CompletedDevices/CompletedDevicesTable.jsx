@@ -13,10 +13,12 @@ import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
+import {EditDevice} from "../Devices";
+import {EditCompletedDevice} from "./EditCompletedDevice";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -80,7 +82,7 @@ export function CompletedDevices() {
     const handleEditClick = (id) => () => {
         setOpen(true)
         setRowId(id)
-        setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.Edit}});
+        console.log(id);
     };
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
@@ -124,28 +126,6 @@ export function CompletedDevices() {
             width: 100,
             cellClassName: 'actions',
             getActions: ({id}) => {
-                const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-                if (isInEditMode) {
-                    return [
-                        <GridActionsCellItem
-                            icon={<SaveIcon/>}
-                            label="Save"
-                            sx={{
-                                color: 'primary.main',
-                            }}
-                            onClick={handleSaveClick(id)}
-                        />,
-                        <GridActionsCellItem
-                            icon={<CancelIcon/>}
-                            label="Cancel"
-                            className="textPrimary"
-                            onClick={handleCancelClick(id)}
-                            color="inherit"
-                        />,
-                    ];
-                }
-
                 return [
                     <GridActionsCellItem
                         icon={<EditIcon/>}
@@ -175,7 +155,7 @@ export function CompletedDevices() {
 
     const route = useRouter();
 
-    async function fetchAndSetDevices(){
+    async function fetchAndSetCompletedDevices(){
         const params = {
             'repaired_in_center': 1,
             'orderBy': 'date_delivery',
@@ -188,9 +168,13 @@ export function CompletedDevices() {
         setPagination(data?.pagination);
         data ? setCompletedDevices(data) : setCompletedDevices([]);
     }
+    const reloadTable = async update => {
+        fetchAndSetCompletedDevices();
+        console.log("sssssssssssssssssssssssss");
+    };
 
     useEffect(()=>{
-        fetchAndSetDevices();
+        fetchAndSetCompletedDevices();
     },[route, pageSize, currentPage]);
 
     useEffect(()=>{
@@ -218,7 +202,7 @@ export function CompletedDevices() {
             date_delivery_client: row.date_delivery_client,
         }));
         setRows(rowsWithNumbers);
-        console.log(rows);
+        //console.log(rows);
     },[completed_devices])
 
     function CustomNoRowsOverlay() {
@@ -362,8 +346,9 @@ export function CompletedDevices() {
     }
 
     return (
+
         <Box sx={{flexGrow: 1, width: 1}}>
-            <DataGrid
+            {completed_devices? (<DataGrid
                 sx={{
                     '&.MuiDataGrid-root': {
                         minHeight: 'calc(100vh - 130px)',
@@ -381,7 +366,22 @@ export function CompletedDevices() {
                     noRowsOverlay: CustomNoRowsOverlay,
                     Pagination: CustomPagination,
                 }}
-            />
+            />):
+                (<Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
+                <Grid item xs={12} sm={6}>
+                    <CircularProgress/>
+                </Grid>
+            </Grid>)}
+
+
+            {rowId && (
+                <EditCompletedDevice
+                    open={open}
+                    onCloseDialog={handleClose}
+                    id={rowId}
+                    update={reloadTable}
+                />
+            )}
         </Box>
     );
 
