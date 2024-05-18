@@ -20,10 +20,10 @@ const getAll = async (params) => {
         responseErrorHandlers(error?.response);
     }
 };
-const getDevice = async (id) => {
+const getDevice = async (id,params) => {
     try {
         return await axiosInstance
-            .get(`${BASE_URL}${DEVICES_URL}/${id}`)
+            .get(`${BASE_URL}${DEVICES_URL}/${id}`,{params})
             .then(async (response) => {
                 return await response?.data?.body;
             });
@@ -31,12 +31,11 @@ const getDevice = async (id) => {
         responseErrorHandlers(error?.response);
     }
 };
-const updateDevice = async (params) => {
-    const {id, ...userName} = params
+
+const updateDevice = async (id,params) => {
     try {
-        return await axiosInstance.put(`${BASE_URL}${DEVICES_URL}/${id}`, {userName}).then(
+        return await axiosInstance.put(`${BASE_URL}${DEVICES_URL}/${id}`, params).then(
             async response => {
-                console.log(userName);
                 return response?.data
 
             }
@@ -46,7 +45,7 @@ const updateDevice = async (params) => {
     }
 };
 
-export const device = {
+export const deviceServices = {
     getAll, updateDevice,
     getDevice
     // CRUD

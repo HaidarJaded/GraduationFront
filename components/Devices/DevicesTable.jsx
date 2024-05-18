@@ -14,10 +14,10 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 
-import {device} from "../../Routes";
+import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
-import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
@@ -69,6 +69,7 @@ export function Devices() {
     const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
 
+//=============================================================
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
             event.defaultMuiPrevented = true;
@@ -77,17 +78,16 @@ export function Devices() {
 
     // for edit
     const [open, setOpen] = React.useState(false);
-    const [rowId, setRowId] = React.useState();
+    const [rowId, setRowId] = React.useState(null);
 
 
     const handleClose = () => {
         setOpen(false);
+        setRowId(null)
     };
-
     const handleEditClick = (id) => () => {
         setOpen(true)
         setRowId(id)
-        setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.Edit}});
     };
 
     const handleSaveClick = (id) => () => {
@@ -110,26 +110,16 @@ export function Devices() {
         }
     };
 
-    const processRowUpdate = (newRow) => {
-        const updatedRow = {...newRow, isNew: false};
-        setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-        return updatedRow;
-    };
-
-    const handleRowModesModelChange = (newRowModesModel) => {
-        setRowModesModel(newRowModesModel);
-    };
-
-
+//=============================================================
     const columns = [
 
         // {field: 'rowNumber', headerName: '#', width: 70},
         {field: 'id', headerName: 'ID', width: 70},
         {field: 'model', headerName: 'Model', width: 130},
-        {field: 'imei', headerName: 'Imei', width: 130},
+        {field: 'imei', headerName: 'Imei', width: 170},
         {field: 'code', headerName: 'Code', width: 170},
         {field: 'clientName', headerName: 'اسم العميل', width: 170},
-        {field: 'userName', headerName: 'اسم فني الصيانة', width: 160},
+        {field: 'userName', headerName: 'اسم فني الصيانة', width: 200},
         {field: 'status', headerName: 'حالة الجهاز', width: 160},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
 
@@ -137,7 +127,7 @@ export function Devices() {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
-            width: 100,
+            width: 150,
             cellClassName: 'actions',
             getActions: ({id}) => {
                 const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
@@ -181,6 +171,7 @@ export function Devices() {
         },
 
     ];
+
     //get devices from Api
     const [devices, setDevices] = useState([]);
     const [flattenedDevices, setFlattenedDevices] = useState([]);
@@ -192,6 +183,7 @@ export function Devices() {
 
     const route = useRouter()
 
+//fetch data and pagination process
     async function fetchAndSetDevices() {
         const params = {
             'repaired_in_center': 1,
@@ -201,8 +193,9 @@ export function Devices() {
             'deliver_to_client': 0,
             'page': currentPage,
             'per_page': pageSize,
+
         };
-        const data = await device.getAll(params);
+        const data = await deviceServices.getAll(params);
         setPagination(data?.pagination);
         setDevices(data?.body);
     }
@@ -210,6 +203,11 @@ export function Devices() {
     useEffect(() => {
         fetchAndSetDevices();
     }, [route, pageSize, currentPage]);
+
+
+    const reloadTable = async update => {
+        fetchAndSetDevices()
+    };
     useEffect(() => {
         setRowCount(pagination?.total)
         setPageSize(pagination?.per_page)
@@ -375,44 +373,55 @@ export function Devices() {
     }
 
     return (
-        <Box sx={{flexGrow: 1, width: 1}}>
-            <DataGrid
-                sx={{
-                    '&.MuiDataGrid-root': {
-                        minHeight: 'calc(100vh - 130px)',
-                        height: '100%',
-                        maxWidth: "calc(100vw - 100px)",
-                    },
-                    '& .MuiDataGrid-main': {
-                        maxHeight: 'calc(100vh - 180px)'
-                    }
-                }}
-                rows={rows}
-                columns={columns}
-                loading={rows.length === 0}
-                // checkboxSelection
-                // rowModesModel={rowModesModel}
-                // onRowModesModelChange={handleRowModesModelChange}
-                // onRowEditStop={handleRowEditStop}
-                // processRowUpdate={processRowUpdate}
-                // slots={{
-                //     toolbar: EditToolbar,
-                // }}
-                // slotProps={{
-                //     toolbar: {setRows, setRowModesModel},
-                // }}
-                components={{
-                    noRowsOverlay: CustomNoRowsOverlay,
-                    Pagination: CustomPagination,
-                }}
+        <>
+            {devices ? (<Box sx={{flexGrow: 1, width: 1}}>
 
-            />
+                <DataGrid
+                    sx={{
+                        '&.MuiDataGrid-root': {
+                            minHeight: 'calc(100vh - 130px)',
+                            height: '100%',
+                            maxWidth: "calc(100vw - 100px)",
+                        },
+                        '& .MuiDataGrid-main': {
+                            maxHeight: 'calc(100vh - 180px)'
+                        }
+                    }}
+                    rows={rows}
+                    columns={columns}
+                    loading={rows.length === 0}
+                    // checkboxSelection
+                    // rowModesModel={rowModesModel}
+                    // onRowModesModelChange={handleRowModesModelChange}
+                    // onRowEditStop={handleRowEditStop}
+                    // processRowUpdate={processRowUpdate}
+                    // slots={{
+                    //     toolbar: EditToolbar,
+                    // }}
+                    // slotProps={{
+                    //     toolbar: {setRows, setRowModesModel},
+                    // }}
+                    components={{
+                        noRowsOverlay: CustomNoRowsOverlay,
+                        Pagination: CustomPagination,
+                    }}
 
-            <EditDevice
-                open={open}
-                onCloseDialog={handleClose}
-                id={rowId}
-            />
-        </Box>
+                />
+                {rowId && (
+                    <EditDevice
+                        open={open}
+                        onCloseDialog={handleClose}
+                        id={rowId}
+                        update={reloadTable}
+                    />
+                )}
+            </Box>)
+                :( <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
+                <Grid item xs={12} sm={6}>
+                    <CircularProgress/>
+                </Grid>
+            </Grid>)}
+        </>
+
     );
 }

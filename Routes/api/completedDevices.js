@@ -17,8 +17,31 @@ const getAll = async (params) => {
         responseErrorHandlers(error?.response)
     }
 };
+const updateCompletedDevice = async (id,params) => {
+    try {
+        return await axiosInstance.put(`${BASE_URL}${COMPLETED_DEVICES_URL}/${id}`, params).then(
+            async response => {
+                return response?.data
+            }
+        );
+    } catch (error) {
 
+    }
+};
+const getCompletedDevice = async (id,params) => {
+    try {
+        return await axiosInstance
+            .get(`${BASE_URL}${COMPLETED_DEVICES_URL}/${id}`,{params})
+            .then(async (response) => {
+                return await response?.data?.body;
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
 export const completedDevices = {
-    getAll
+    getAll,
+    updateCompletedDevice,
+    getCompletedDevice
 };

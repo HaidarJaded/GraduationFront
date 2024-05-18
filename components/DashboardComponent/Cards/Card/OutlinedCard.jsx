@@ -19,6 +19,7 @@ const bull = (
 );
 
 const CardComponent = ({ name,number,children }) => {
+    console.log(number)
     return (
         <React.Fragment>
             <CardContent sx={{direction:"rtl", backgroundColor:"white",px:0,pt:2.5,pb:0,minWidth: 260,maxWidth:260}}>

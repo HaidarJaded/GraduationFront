@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 
 export function BasicBars({ data }) {
 
-    const clientsWithDevicesCount = data.clients_with_devices_count;
+    const clientsWithDevicesCount = data?.clients_with_devices_count;
 
     // Create a default entry for missing data
     const defaultEntry = { name: '', devices_count: 0 };
