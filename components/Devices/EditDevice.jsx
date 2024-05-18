@@ -6,13 +6,13 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
-import {ModelsEnum} from "../../enums";
-import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+//import {ModelsEnum} from "../../enums";
+//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;

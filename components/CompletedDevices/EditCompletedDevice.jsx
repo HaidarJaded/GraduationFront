@@ -8,11 +8,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
-import {ModelsEnum} from "../../enums";
-import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+// import {ModelsEnum} from "../../enums";
+// import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 import {completedDevices} from "../../Routes/api/completedDevices";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -52,6 +51,8 @@ export function EditCompletedDevice({...props}) {
         //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
+        if (selectedUserName && selectedUserName !== data?.user_name)
+            Object.assign(dataDevice, {"user_name": selectedUserName})
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await completedDevices.updateCompletedDevice(id, dataDevice);

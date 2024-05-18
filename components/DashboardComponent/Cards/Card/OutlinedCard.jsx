@@ -22,7 +22,7 @@ const CardComponent = ({ name,number,children }) => {
     console.log(number)
     return (
         <React.Fragment>
-            <CardContent sx={{direction:"rtl", backgroundColor:"white",px:0,pt:2.5,pb:0,minWidth: 260,maxWidth:260}}>
+            <CardContent sx={{direction:"rtl", backgroundColor:"white",px:0,pt:2.5,pb:0,minWidth: 260,maxWidth:260,minHeight:100,maxHeight:100}}>
                 <Typography sx={{mx:2, mb:0.4,fontSize: 14 }} color="text.primary">
                     {name}
                 </Typography>

@@ -27,11 +27,11 @@ export function DashboardComponent(){
             </div>
             <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={2}>
-                    <GridChart title="الموارد البشرية">
+                    <GridChart title="أكثر أربعة عملاء تعاملا على مدار الشهر">
                         <BasicBars data={dashboardInfo}/>
                     </GridChart>
 
-                    <GridChart title="الموارد">
+                    <GridChart title="أفضل 5 فنيين ">
                         <BasicPie data={dashboardInfo} />
                     </GridChart>
                 </Grid>

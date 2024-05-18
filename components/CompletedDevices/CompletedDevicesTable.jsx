@@ -108,10 +108,10 @@ export function CompletedDevices() {
 
     const columns = [
 
-        { field: 'rowNumber', headerName: '#', width: 70 },
+        { field: 'rowNumber', headerName: '#', width: 60 },
         { field: 'model', headerName: 'Model', width: 130 },
-        { field: 'imei', headerName: 'Imei', width: 130 },
-        { field: 'code', headerName: 'Code', width: 170 },
+        { field: 'imei', headerName: 'Imei', width: 150 },
+        { field: 'code', headerName: 'Code', width: 130 },
         { field: 'client_name', headerName: 'اسم العميل', width: 170 },
         { field: 'user_name', headerName: 'اسم فني الصيانة', width: 160 },
         { field: 'cost_to_client', headerName: 'الكلفة', width: 160 },
@@ -166,11 +166,10 @@ export function CompletedDevices() {
         const data = await completedDevices.getAll(params);
         // setCompletedDevices(data)
         setPagination(data?.pagination);
-        data ? setCompletedDevices(data) : setCompletedDevices([]);
+        data ? setCompletedDevices(data?.body) : setCompletedDevices([]);
     }
     const reloadTable = async update => {
-        fetchAndSetCompletedDevices();
-        console.log("sssssssssssssssssssssssss");
+        fetchAndSetCompletedDevices()
     };
 
     useEffect(()=>{
@@ -189,17 +188,17 @@ export function CompletedDevices() {
     useEffect(()=>
     {
         const rowsWithNumbers = completed_devices.map((row, index) => ({
-            id: row.id,
+            id: row?.id,
             rowNumber: index + 1,
-            model: row.model,
-            imei: row.imei,
-            code: row.code,
-            client_name: row.client_name,
-            user_name: row.user_name,
-            cost_to_client: row.cost_to_client,
-            status: row.status,
-            date_receipt: row.date_receipt,
-            date_delivery_client: row.date_delivery_client,
+            model: row?.model,
+            imei: row?.imei,
+            code: row?.code,
+            client_name: row?.client_name,
+            user_name: row?.user_name,
+            cost_to_client: row?.cost_to_client,
+            status: row?.status,
+            date_receipt: row?.date_receipt,
+            date_delivery_client: row?.date_delivery_client,
         }));
         setRows(rowsWithNumbers);
         //console.log(rows);
@@ -347,18 +346,18 @@ export function CompletedDevices() {
 
     return (
 
-        <Box sx={{flexGrow: 1, width: 1}}>
+        <Box sx={{flexGrow: 1, width: 1,p:0}}>
             {completed_devices? (<DataGrid
-                sx={{
-                    '&.MuiDataGrid-root': {
-                        minHeight: 'calc(100vh - 130px)',
-                        height: '100%',
-                        maxWidth: "calc(100vw - 100px)",
-                    },
-                    '& .MuiDataGrid-main': {
-                        maxHeight: 'calc(100vh - 180px)'
-                    }
-                }}
+                    sx={{
+                        '&.MuiDataGrid-root': {
+                            minHeight: 'calc(100vh - 130px)',
+                            height: '100%',
+                            maxWidth: "calc(100vw - 100px)",
+                        },
+                        '& .MuiDataGrid-main': {
+                            maxHeight: 'calc(100vh - 180px)'
+                        }
+                    }}
                 rows={rows}
                 columns={columns}
                 loading={rows.length === 0}

@@ -18,9 +18,11 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MailIcon from '@mui/icons-material/Mail';
+import RoomServiceIcon from '@mui/icons-material/RoomService';
 import { BarChart, Devices } from "@mui/icons-material";
 import DevicesIcon from "@mui/icons-material/Devices";
 import EngineeringRoundedIcon from '@mui/icons-material/EngineeringRounded';
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import { Handshake } from "lucide-react";
 import { Logout } from "@mui/icons-material";
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -179,7 +181,9 @@ export function Layout({ children }) {
                         { text: 'الأجهزة التي تم تسليمها', link: '/completedDevices', icon: <MdOutlineSendToMobile style={{ color: "#442d5d" }} size={30} /> },
                         { text: 'عمّال التوصيل', link: '/deliveries', icon: <GroupsIcon sx={{ color: "#442d5d" }} /> }, // Example icon for devices
                         { text: 'الفنيين', link: '/technicians', icon: <EngineeringRoundedIcon sx={{ color: "#442d5d" }} /> }, // Example icon for technicians
-                        { text: 'العملاء', link: '/clients', icon: <Handshake color="#442d5d" /> }, // Example icon for customers
+                        { text: 'العملاء', link: '/clients', icon: <Handshake color="#442d5d" /> },
+                        { text: 'الخدمات', link: '/services', icon: <MiscellaneousServicesIcon sx={{ color: "#442d5d" }} /> },
+                        { text: 'الطلبات', link: '/orders', icon: <RoomServiceIcon sx={{ color: "#442d5d" }}/> },// Example icon for customers
                         { text: 'البريد', link: '/mail', icon: <MailIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail
                     ].map((item, index) => (
                         <ListItem key={index} disablePadding sx={{ display: 'block' }}>
@@ -236,7 +240,7 @@ export function Layout({ children }) {
                     </ListItem>
                 </List>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
                 <DrawerHeader />
                 {children}
             </Box>

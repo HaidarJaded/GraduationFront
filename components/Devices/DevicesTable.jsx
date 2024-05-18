@@ -81,34 +81,34 @@ export function Devices() {
     const [rowId, setRowId] = React.useState(null);
 
 
-    const handleClose = () => {
-        setOpen(false);
-        setRowId(null)
-    };
+    // const handleClose = () => {
+    //     setOpen(false);
+    //     setRowId(null)
+    // };
     const handleEditClick = (id) => () => {
         setOpen(true)
         setRowId(id)
     };
 
-    const handleSaveClick = (id) => () => {
-        setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
-    };
+    // const handleSaveClick = (id) => () => {
+    //     setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
+    // };
 
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
     };
 
-    const handleCancelClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: {mode: GridRowModes.View, ignoreModifications: true},
-        });
-
-        const editedRow = rows.find((row) => row.id === id);
-        if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-        }
-    };
+    // const handleCancelClick = (id) => () => {
+    //     setRowModesModel({
+    //         ...rowModesModel,
+    //         [id]: {mode: GridRowModes.View, ignoreModifications: true},
+    //     });
+    //
+    //     const editedRow = rows.find((row) => row.id === id);
+    //     if (editedRow.isNew) {
+    //         setRows(rows.filter((row) => row.id !== id));
+    //     }
+    // };
 
 //=============================================================
     const columns = [
@@ -130,27 +130,27 @@ export function Devices() {
             width: 150,
             cellClassName: 'actions',
             getActions: ({id}) => {
-                const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+                // const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-                if (isInEditMode) {
-                    return [
-                        <GridActionsCellItem
-                            icon={<SaveIcon/>}
-                            label="Save"
-                            sx={{
-                                color: 'primary.main',
-                            }}
-                            onClick={handleSaveClick(id)}
-                        />,
-                        <GridActionsCellItem
-                            icon={<CancelIcon/>}
-                            label="Cancel"
-                            className="textPrimary"
-                            onClick={handleCancelClick(id)}
-                            color="inherit"
-                        />,
-                    ];
-                }
+                // if (isInEditMode) {
+                //     return [
+                //         <GridActionsCellItem
+                //             icon={<SaveIcon/>}
+                //             label="Save"
+                //             sx={{
+                //                 color: 'primary.main',
+                //             }}
+                //             onClick={handleSaveClick(id)}
+                //         />,
+                //         <GridActionsCellItem
+                //             icon={<CancelIcon/>}
+                //             label="Cancel"
+                //             className="textPrimary"
+                //             onClick={handleCancelClick(id)}
+                //             color="inherit"
+                //         />,
+                //     ];
+                // }
 
                 return [
                     <GridActionsCellItem
@@ -174,13 +174,10 @@ export function Devices() {
 
     //get devices from Api
     const [devices, setDevices] = useState([]);
-    const [flattenedDevices, setFlattenedDevices] = useState([]);
-
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
-
     const route = useRouter()
 
 //fetch data and pagination process
@@ -275,7 +272,7 @@ export function Devices() {
             status: device?.status,
             date_receipt: device?.date_receipt,
         }));
-        setFlattenedDevices(rowsDevices);
+
         setRows(rowsDevices); // Now `rowsDevices` is derived directly from the updated `devices`
     }, [devices]); // This effect depends on `devices` and runs whenever `devices` changes
     function CustomPagination() {
