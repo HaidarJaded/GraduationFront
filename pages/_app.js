@@ -8,6 +8,7 @@ import getConfig from 'next/config';
 import {Layout} from "../layouts";
 import LoginPage from "./auth/login";
 import {responseErrorHandlers} from "../wrappers";
+import Home from "./index";
 const {publicRuntimeConfig} = getConfig();
 
 function MyApp({Component, pageProps}) {
@@ -29,7 +30,7 @@ function MyApp({Component, pageProps}) {
     console.log(`%cprojecy name \nVersion ${publicRuntimeConfig.version}+${publicRuntimeConfig.build}\nUpdated ${publicRuntimeConfig.updated_at} `,
         style
     );
-    if (Component!=LoginPage){
+    if (Component!==LoginPage && Component!== Home){
     return (
         <>
 

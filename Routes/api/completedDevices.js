@@ -11,7 +11,7 @@ const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 const getAll = async (params) => {
     try {
         return await axiosInstance.get(`${BASE_URL}${COMPLETED_DEVICES_URL}`,{params}).then(async response => {
-            return await response?.data?.body
+            return await response?.data
         });
     } catch (error) {
         responseErrorHandlers(error?.response)

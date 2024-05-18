@@ -1,6 +1,11 @@
 import {useRouter} from "next/router";
 import {useEffect} from "react";
 import Cookies from "js-cookie";
+import {LoginPage} from "./auth/login";
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
+import * as React from "react";
+import {Typography} from "@mui/material";
 
 
 export default function Home() {
@@ -13,7 +18,23 @@ export default function Home() {
     }, [router]);
 
     return (<>
-
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',  // Full viewport height
+                width: '100%',  // Full width
+            }}
+        >
+            <Typography variant="h5" sx={{ marginBottom: 2, color:"#1b0986eb",fontWeight: "bold" }}>
+                Loading...
+            </Typography>
+            <Box sx={{ width: '50%' }}>
+                <LinearProgress />
+            </Box>
+        </Box>
 
     </>)
 }
