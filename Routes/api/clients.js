@@ -22,7 +22,19 @@ const getAll = async (params) => {
     responseErrorHandlers(error?.response);
   }
 };
+const updateclients = async (id,params) => {
+  try {
+    return await axiosInstance.put(`${BASE_URL}${CLIENTS_URL}/${id}`, params).then(
+        async response => {
+          return response?.data
 
-export const clients = {
-  getAll,
+        }
+    );
+  } catch (error) {
+
+  }
+};
+
+export const clientsServices = {
+  getAll,updateclients
 };

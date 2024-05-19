@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import { clients } from '../../Routes/api/clients';
+import {clients, clientsServices} from '../../Routes/api/clients';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import {EditDevice} from "../Devices";
 import {EditClient} from "./EditClient";
 import Switch from '@mui/material/Switch';
+import {Notify} from "../../utils";
 
 
 export function ClientsTable() {
@@ -24,6 +25,7 @@ export function ClientsTable() {
         setRowId(null)
     };
     const handleEditClick = (id) => () => {
+        console.log(id);
         setOpen(true)
         setRowId(id)
     };
@@ -36,8 +38,8 @@ export function ClientsTable() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page);
-    const [accountActive, setAccountActive] = React.useState(allClients?.account_active);
-    const [checked, setChecked] = React.useState(accountActive === 1);
+    const [accountActive, setAccountActive] = useState(allClients.account_active);
+
 
     async function fetchAndSetClients() {
         const params = {
@@ -45,7 +47,7 @@ export function ClientsTable() {
             'per_page': pageSize,
 
         };
-        const data = await clients.getAll(params);
+        const data = await clientsServices?.getAll(params);
         // setClients(data);
         setPagination(data?.pagination);
         data ? setClients(data?.body) : setClients([]);
@@ -64,7 +66,63 @@ export function ClientsTable() {
         setPageSize(pagination?.per_page)
         setCurrentPage(pagination?.current_page)
 
-    }, [pagination])
+    }, [pagination]);
+
+
+    // const SwitchComponent = ({ params }) => {
+    //     const [checked, setChecked] = React.useState(accountActive === 1);
+    //     const handleChange = (event) => {
+    //         console.log(accountAct);
+    //         setChecked(event.target.checked);
+    //
+    //         setAccountActive(checked ? 1 : 0);
+    //         const updateData = async () => {
+    //             await clientsServices.updateclients(params, { account_active: accountActive });
+    //         };
+    //         console.log("ssssssssss")
+    //         updateData();
+    //     };
+    //     return (
+    //         <Switch
+    //             checked={checked}
+    //             onChange={handleChange}
+    //             inputProps={{ 'aria-label': 'controlled' }}
+    //         />
+    //     );
+    // };
+    const SwitchComponent = ({ params }) => {
+        const [checked, setChecked] = React.useState(params.account_active === 1);
+        const [accountActive, setAccountActive] = useState(params.account_active);
+
+        // Update accountActive whenever params.value changes
+        useEffect(() => {
+            setAccountActive(params.account_active);
+        }, [params.account_active]);
+
+        const handleChange = (event) => {
+            const newActiveState = event.target.checked ? 1 : 0;
+            setAccountActive(newActiveState);
+        };
+
+        // Update the backend whenever accountActive changes
+        useEffect(async () => {
+            if (params.id !== undefined) {
+                const updateData = async () => {
+                   await clientsServices.updateclients(params.id, {account_active: accountActive});
+                };
+
+                updateData();
+            }
+        }, [accountActive, params.id]);
+
+        return (
+            <Switch
+                checked={checked}
+                onChange={handleChange}
+                inputProps={{ 'aria-label': 'controlled' }}
+            />
+        );
+    };
 
     const columns = [
 
@@ -79,26 +137,10 @@ export function ClientsTable() {
         { field: 'center_name', headerName: 'اسم المركز', width: 150 },
         { field: 'devices_count', headerName: 'عدد الاجهزة', width: 130 },
         {
-            field: 'customSwitch',
-            headerName: 'Custom Switch',
+            field: 'account_active',
+            headerName: 'تفعيل الحساب',
             width: 150,
-            renderCell: ({ row }) => {
-                const handleChange = (event) => {
-                    setChecked(event.target.checked);
-                };
-
-                React.useEffect(() => {
-                    setChecked(); // تحديث الحالة عند تغيير السجل
-                }, [checked]);
-
-                return (
-                    <Switch
-                        checked={checked}
-                        onChange={handleChange}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                    />
-                );
-        }
+            renderCell: (params) => <SwitchComponent params={params}/>
         },
         {
             field: 'actions',

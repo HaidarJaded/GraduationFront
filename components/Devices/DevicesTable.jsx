@@ -261,7 +261,7 @@ export function Devices() {
 
     const isAllSelected = pageSize >= rowCount;
     useEffect(() => {
-        const rowsDevices = devices.map((device, index) => ({
+        const rowsDevices = devices?.map((device, index) => ({
             id: device?.id,
             rowNumber: index + 1,
             model: device?.model,
