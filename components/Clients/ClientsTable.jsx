@@ -10,6 +10,8 @@ import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "
 import Button from "@mui/material/Button";
 import {EditDevice} from "../Devices";
 import {EditClient} from "./EditClient";
+import Switch from '@mui/material/Switch';
+
 
 export function ClientsTable() {
 
@@ -17,7 +19,6 @@ export function ClientsTable() {
     const [rows, setRows] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
-
     const handleClose = () => {
         setOpen(false);
         setRowId(null)
@@ -29,52 +30,15 @@ export function ClientsTable() {
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
     };
-
-
-    const columns = [
-
-        { field: 'rowNumber', headerName: '#', width: 0.1, },
-        { field: 'name', headerName: 'الاسم', width: 130 },
-        { field: 'last_name', headerName: 'الكنية', width: 130 },
-        { field: 'email', headerName: 'البريد الالكتروني', width: 130 },
-        { field: 'national_id', headerName: 'الرقم الوطني', width: 170 },
-        { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
-        { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
-        { field: 'address', headerName: 'العنوان', width: 200 },
-        { field: 'center_name', headerName: 'اسم المركز', width: 150 },
-        { field: 'devices_count', headerName: 'عدد الاجهزة', width: 130 },
-        {
-            field: 'actions',
-            type: 'actions',
-            headerName: 'Actions',
-            width: 150,
-            cellClassName: 'actions',
-            getActions: ({id}) => {
-                return [
-                    <GridActionsCellItem
-                        icon={<EditIcon/>}
-                        label="Edit"
-                        className="textPrimary"
-                        onClick={handleEditClick(id)}
-                        color="inherit"
-                    />,
-                    <GridActionsCellItem
-                        icon={<DeleteIcon/>}
-                        label="Delete"
-                        onClick={handleDeleteClick(id)}
-                        color="inherit"
-                    />,
-                ];
-            },
-        },
-
-    ];
-
+   //لتعيين قيمة
     const [allClients, setClients] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page);
+    const [accountActive, setAccountActive] = React.useState(allClients?.account_active);
+    const [checked, setChecked] = React.useState(accountActive === 1);
+
     async function fetchAndSetClients() {
         const params = {
             'page': currentPage,
@@ -101,6 +65,67 @@ export function ClientsTable() {
         setCurrentPage(pagination?.current_page)
 
     }, [pagination])
+
+    const columns = [
+
+        { field: 'rowNumber', headerName: '#', width: 0.1, },
+        { field: 'name', headerName: 'الاسم', width: 130 },
+        { field: 'last_name', headerName: 'الكنية', width: 130 },
+        { field: 'email', headerName: 'البريد الالكتروني', width: 130 },
+        { field: 'national_id', headerName: 'الرقم الوطني', width: 170 },
+        { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
+        { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
+        { field: 'address', headerName: 'العنوان', width: 200 },
+        { field: 'center_name', headerName: 'اسم المركز', width: 150 },
+        { field: 'devices_count', headerName: 'عدد الاجهزة', width: 130 },
+        {
+            field: 'customSwitch',
+            headerName: 'Custom Switch',
+            width: 150,
+            renderCell: ({ row }) => {
+                const handleChange = (event) => {
+                    setChecked(event.target.checked);
+                };
+
+                React.useEffect(() => {
+                    setChecked(); // تحديث الحالة عند تغيير السجل
+                }, [checked]);
+
+                return (
+                    <Switch
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                );
+        }
+        },
+        {
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 150,
+            cellClassName: 'actions',
+            getActions: ({id}) => {
+                return [
+                    <GridActionsCellItem
+                        icon={<EditIcon/>}
+                        label="Edit"
+                        className="textPrimary"
+                        onClick={handleEditClick(id)}
+                        color="inherit"
+                    />,
+                    <GridActionsCellItem
+                        icon={<DeleteIcon/>}
+                        label="Delete"
+                        onClick={handleDeleteClick(id)}
+                        color="inherit"
+                    />,
+                ];
+            },
+        },
+
+    ];
 
     function CustomNoRowsOverlay() {
         return (

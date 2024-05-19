@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {Box} from "@mui/material";
 
 export function BasicBars({ data }) {
 
@@ -24,26 +25,26 @@ export function BasicBars({ data }) {
     }));
 
     return (
-        <div style={{
+        <Box sx={{
             backgroundColor: 'White',
             borderRadius: "10px",
             boxShadow: "0 45px 50% black",
             display: "flex",
             alignItems: "center",
             height: "300px",
-            padding: "20px"
+
         }}>
-            <BarChart width={600} height={300} data={combinedData}>
+            <BarChart sx={{ backgroundColor: 'red'}} width={600} height={300} data={combinedData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="firstWeek" fill="#8884d8" name="الاسبوع الأول" />
-                <Bar dataKey="secondWeek" fill="#483D8B" name="الاسبوع الثاني" />
-                <Bar dataKey="thirdWeek" fill="#ffc658" name="الاسبوع الثالث" />
-                <Bar dataKey="fourthWeek" fill="#8B008B" name="الاسبوع الرابع" />
+                <Bar width={500} dataKey="firstWeek" fill="#8884d8" name="الاسبوع الأول" />
+                <Bar width={500} dataKey="secondWeek" fill="#483D8B" name="الاسبوع الثاني" />
+                <Bar width={500} dataKey="thirdWeek" fill="#ffc658" name="الاسبوع الثالث" />
+                <Bar width={500} dataKey="fourthWeek" fill="#8B008B" name="الاسبوع الرابع" />
             </BarChart>
-        </div>
+        </Box>
     );
 }
