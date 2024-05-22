@@ -187,7 +187,7 @@ export function CompletedDevices() {
     const isAllSelected = pageSize >= rowCount;
     useEffect(()=>
     {
-        const rowsWithNumbers = completed_devices.map((row, index) => ({
+        const rowsWithNumbers = completed_devices?.map((row, index) => ({
             id: row?.id,
             rowNumber: index + 1,
             model: row?.model,

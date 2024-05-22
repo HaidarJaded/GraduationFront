@@ -153,7 +153,7 @@ export function TechniciansTable() {
     const isAllSelected = pageSize >= rowCount;
 
     useEffect(() => {
-        const rowsTechnicians = allTechnicians.map((user, index)=> ({
+        const rowsTechnicians = allTechnicians?.map((user, index)=> ({
             id: user.id,
             rowNumber: index + 1,
             name: user.name,

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import { clients } from '../../Routes/api/clients';
+import {clients, clientsServices} from '../../Routes/api/clients';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
@@ -10,6 +10,9 @@ import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "
 import Button from "@mui/material/Button";
 import {EditDevice} from "../Devices";
 import {EditClient} from "./EditClient";
+import Switch from '@mui/material/Switch';
+import {Notify} from "../../utils";
+
 
 export function ClientsTable() {
 
@@ -17,20 +20,92 @@ export function ClientsTable() {
     const [rows, setRows] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
-
     const handleClose = () => {
         setOpen(false);
         setRowId(null)
     };
     const handleEditClick = (id) => () => {
+        console.log(id);
         setOpen(true)
         setRowId(id)
     };
     const handleDeleteClick = (id) => () => {
         setRows(rows.filter((row) => row.id !== id));
     };
+   //لتعيين قيمة
+    const [allClients, setClients] = useState([]);
+    const [pagination, setPagination] = useState({});
+    const [rowCount, setRowCount] = useState(pagination?.total)
+    const [pageSize, setPageSize] = useState(pagination?.per_page)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page);
+    const [accountActive, setAccountActive] = useState(allClients.account_active);
 
 
+    async function fetchAndSetClients() {
+        const params = {
+            'page': currentPage,
+            'per_page': pageSize,
+
+        };
+        const data = await clientsServices?.getAll(params);
+        // setClients(data);
+        setPagination(data?.pagination);
+        data ? setClients(data?.body) : setClients([]);
+    }
+    const route = useRouter()
+
+    useEffect(() => {
+        fetchAndSetClients();
+    }, [route, pageSize, currentPage]);
+
+    const reloadTable = async update => {
+        fetchAndSetDevices()
+    };
+    useEffect(() => {
+        setRowCount(pagination?.total)
+        setPageSize(pagination?.per_page)
+        setCurrentPage(pagination?.current_page)
+
+    }, [pagination]);
+
+
+    const SwitchComponent = (params)=>{
+
+         const userId =  params.params.id;
+
+        const [checked, setChecked] = React.useState(params.params.row.account_active === 1);
+
+        const handleChange = (event) => {
+//عم ياخدها بعد التغيير
+
+            const newActiveState = event.target.checked ? 1 : 0;
+            setAccountActive(newActiveState);
+            setChecked(event.target.checked)
+
+            const updateData = async () =>
+            {
+                try
+                {
+                    const response =  await clientsServices.updateclients(userId, { account_active: accountActive });
+                    Notify("light", response.message, "success");
+                }
+                catch (error)
+                {
+                     console.log(error)
+                }
+
+             };
+            updateData();
+        };
+        return (
+                    <Switch
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                );
+
+    }
     const columns = [
 
         { field: 'rowNumber', headerName: '#', width: 0.1, },
@@ -43,6 +118,12 @@ export function ClientsTable() {
         { field: 'address', headerName: 'العنوان', width: 200 },
         { field: 'center_name', headerName: 'اسم المركز', width: 150 },
         { field: 'devices_count', headerName: 'عدد الاجهزة', width: 130 },
+        {
+            field: 'account_active',
+            headerName: 'تفعيل الحساب',
+            width: 150,
+            renderCell: (id) => <SwitchComponent params={id}/>
+        },
         {
             field: 'actions',
             type: 'actions',
@@ -69,38 +150,6 @@ export function ClientsTable() {
         },
 
     ];
-
-    const [allClients, setClients] = useState([]);
-    const [pagination, setPagination] = useState({});
-    const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
-    async function fetchAndSetClients() {
-        const params = {
-            'page': currentPage,
-            'per_page': pageSize,
-
-        };
-        const data = await clients.getAll(params);
-        // setClients(data);
-        setPagination(data?.pagination);
-        data ? setClients(data?.body) : setClients([]);
-    }
-    const route = useRouter()
-
-    useEffect(() => {
-        fetchAndSetClients();
-    }, [route, pageSize, currentPage]);
-
-    const reloadTable = async update => {
-        fetchAndSetDevices()
-    };
-    useEffect(() => {
-        setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
-    }, [pagination])
 
     function CustomNoRowsOverlay() {
         return (
@@ -162,6 +211,7 @@ export function ClientsTable() {
             address: client.address,
             center_name: client.center_name,
             devices_count: client.devices_count,
+            account_active:client.account_active
         }));
 
         setRows(clientsWithNumbers); // Now `rowsDevices` is derived directly from the updated `devices`

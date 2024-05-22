@@ -150,7 +150,7 @@ export function DeliveriesTable() {
     const isAllSelected = pageSize >= rowCount;
 
     useEffect(() => {
-        const rowsDeliveries =  allDeliveries.map((user, index) => ({
+        const rowsDeliveries =  allDeliveries?.map((user, index) => ({
             id: user.id,
             rowNumber: index + 1,
             name: user.name,
