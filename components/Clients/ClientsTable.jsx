@@ -69,61 +69,43 @@ export function ClientsTable() {
     }, [pagination]);
 
 
-    // const SwitchComponent = ({ params }) => {
-    //     const [checked, setChecked] = React.useState(accountActive === 1);
-    //     const handleChange = (event) => {
-    //         console.log(accountAct);
-    //         setChecked(event.target.checked);
-    //
-    //         setAccountActive(checked ? 1 : 0);
-    //         const updateData = async () => {
-    //             await clientsServices.updateclients(params, { account_active: accountActive });
-    //         };
-    //         console.log("ssssssssss")
-    //         updateData();
-    //     };
-    //     return (
-    //         <Switch
-    //             checked={checked}
-    //             onChange={handleChange}
-    //             inputProps={{ 'aria-label': 'controlled' }}
-    //         />
-    //     );
-    // };
-    const SwitchComponent = ({ params }) => {
-        const [checked, setChecked] = React.useState(params.account_active === 1);
-        const [accountActive, setAccountActive] = useState(params.account_active);
+    const SwitchComponent = (params)=>{
 
-        // Update accountActive whenever params.value changes
-        useEffect(() => {
-            setAccountActive(params.account_active);
-        }, [params.account_active]);
+         const userId =  params.params.id;
+
+        const [checked, setChecked] = React.useState(params.params.row.account_active === 1);
 
         const handleChange = (event) => {
+//عم ياخدها بعد التغيير
+
             const newActiveState = event.target.checked ? 1 : 0;
             setAccountActive(newActiveState);
+            setChecked(event.target.checked)
+
+            const updateData = async () =>
+            {
+                try
+                {
+                    const response =  await clientsServices.updateclients(userId, { account_active: accountActive });
+                    Notify("light", response.message, "success");
+                }
+                catch (error)
+                {
+                     console.log(error)
+                }
+
+             };
+            updateData();
         };
-
-        // Update the backend whenever accountActive changes
-        useEffect(async () => {
-            if (params.id !== undefined) {
-                const updateData = async () => {
-                   await clientsServices.updateclients(params.id, {account_active: accountActive});
-                };
-
-                updateData();
-            }
-        }, [accountActive, params.id]);
-
         return (
-            <Switch
-                checked={checked}
-                onChange={handleChange}
-                inputProps={{ 'aria-label': 'controlled' }}
-            />
-        );
-    };
+                    <Switch
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                );
 
+    }
     const columns = [
 
         { field: 'rowNumber', headerName: '#', width: 0.1, },
@@ -140,7 +122,7 @@ export function ClientsTable() {
             field: 'account_active',
             headerName: 'تفعيل الحساب',
             width: 150,
-            renderCell: (params) => <SwitchComponent params={params}/>
+            renderCell: (id) => <SwitchComponent params={id}/>
         },
         {
             field: 'actions',
@@ -229,6 +211,7 @@ export function ClientsTable() {
             address: client.address,
             center_name: client.center_name,
             devices_count: client.devices_count,
+            account_active:client.account_active
         }));
 
         setRows(clientsWithNumbers); // Now `rowsDevices` is derived directly from the updated `devices`

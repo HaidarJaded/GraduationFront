@@ -19,6 +19,7 @@ import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
 import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
+import Switch from "@mui/material/Switch";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -122,7 +123,6 @@ export function Devices() {
         {field: 'userName', headerName: 'اسم فني الصيانة', width: 200},
         {field: 'status', headerName: 'حالة الجهاز', width: 160},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
-
         {
             field: 'actions',
             type: 'actions',
