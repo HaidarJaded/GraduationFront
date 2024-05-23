@@ -38,7 +38,6 @@ export function ClientsTable() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page);
-    const [accountActive, setAccountActive] = useState(allClients.account_active);
 
 
     async function fetchAndSetClients() {
@@ -75,27 +74,26 @@ export function ClientsTable() {
 
         const [checked, setChecked] = React.useState(params.params.row.account_active === 1);
 
-        const handleChange = (event) => {
-//عم ياخدها بعد التغيير
+        const handleChange =async (event) => {
 
-            const newActiveState = event.target.checked ? 1 : 0;
-            setAccountActive(newActiveState);
-            setChecked(event.target.checked)
+            const newActiveState = checked ? 0 : 1 ;
+            console.log(newActiveState);
+            setChecked(!checked)
 
             const updateData = async () =>
             {
                 try
                 {
-                    const response =  await clientsServices.updateclients(userId, { account_active: accountActive });
+                    const response =  await clientsServices.updateclients(userId, { account_active: newActiveState });
                     Notify("light", response.message, "success");
-                }
+                } 
                 catch (error)
                 {
                      console.log(error)
                 }
 
              };
-            updateData();
+           await updateData();
         };
         return (
                     <Switch
