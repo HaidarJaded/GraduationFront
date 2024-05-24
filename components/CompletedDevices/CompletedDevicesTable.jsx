@@ -8,8 +8,6 @@ import {
     GridToolbarContainer
 } from '@mui/x-data-grid';
 import { completedDevices } from "../../Routes/api/completedDevices";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
@@ -19,7 +17,6 @@ import {styled} from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import {EditDevice} from "../Devices";
 import {EditCompletedDevice} from "./EditCompletedDevice";
-import {clientsServices} from "../../Routes/api/clients";
 import { Notify } from '../../utils';
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
