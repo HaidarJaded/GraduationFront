@@ -32,7 +32,7 @@ const getDevice = async (id,params) => {
     }
 };
 
-const updateDevice = async (id,params) => {
+const updateDevice = async (id, params) => {
     try {
         return await axiosInstance.put(`${BASE_URL}${DEVICES_URL}/${id}`, params).then(
             async response => {
@@ -41,13 +41,27 @@ const updateDevice = async (id,params) => {
             }
         );
     } catch (error) {
-
+        responseErrorHandlers(error?.response);
     }
 };
 
+const deleteDevice = async (id) => {
+    try {
+       const response= await axiosInstance.delete(`${BASE_URL}${DEVICES_URL}/${id}`);
+        if (response.status==200) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+}
+
 export const deviceServices = {
-    getAll, updateDevice,
-    getDevice
+    getAll,
+    updateDevice,
+    getDevice,
+    deleteDevice
     // CRUD
     // CREATE
     // READ

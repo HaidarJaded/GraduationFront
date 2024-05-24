@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -19,6 +19,8 @@ import {styled} from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import {EditDevice} from "../Devices";
 import {EditCompletedDevice} from "./EditCompletedDevice";
+import {clientsServices} from "../../Routes/api/clients";
+import { Notify } from '../../utils';
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -69,6 +71,7 @@ export function CompletedDevices() {
 
     const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
+    const [deletingId, setDeletingId] = useState(null);
    // ================================================
 
     const handleRowEditStop = (params, event) => {
@@ -84,12 +87,27 @@ export function CompletedDevices() {
         setRowId(id)
         console.log(id);
     };
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
+
+    const handleDeleteClick = (id) => async () => {
+        const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nلا يمكن التراجع عن هذه الخطوة.");
+        if (!confirmed) {
+            return;
+        }
+        setDeletingId(id);
+        if (await completedDevices.deleteCompletedDevice(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setRows(rows.filter((row) => row.id !== id));
+            setDeletingId(null);
+            return;
+        }
+        setDeletingId(null);
     };
+
     const handleSaveClick = (id) => () => {
         setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
     };
+
     const handleCancelClick = (id) => () => {
         setRowModesModel({
             ...rowModesModel,
@@ -101,6 +119,7 @@ export function CompletedDevices() {
             setRows(rows.filter((row) => row.id !== id));
         }
     };
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -128,17 +147,21 @@ export function CompletedDevices() {
             getActions: ({id}) => {
                 return [
                     <GridActionsCellItem
+                        key={id}
                         icon={<EditIcon/>}
                         label="Edit"
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
+                        key={id}
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                 ];
             },
@@ -155,7 +178,7 @@ export function CompletedDevices() {
 
     const route = useRouter();
 
-    async function fetchAndSetCompletedDevices(){
+    const fetchAndSetCompletedDevices = useCallback(async ()=>{
         const params = {
             'repaired_in_center': 1,
             'orderBy': 'date_delivery',
@@ -167,14 +190,15 @@ export function CompletedDevices() {
         // setCompletedDevices(data)
         setPagination(data?.pagination);
         data ? setCompletedDevices(data?.body) : setCompletedDevices([]);
-    }
+    }, [currentPage, pageSize]);
+
     const reloadTable = async update => {
         fetchAndSetCompletedDevices()
     };
 
     useEffect(()=>{
         fetchAndSetCompletedDevices();
-    },[route, pageSize, currentPage]);
+    },[fetchAndSetCompletedDevices,route, pageSize, currentPage]);
 
     useEffect(()=>{
         setRowCount(pagination?.total)

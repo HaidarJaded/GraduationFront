@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import {deviceServices, users} from "../../Routes";
 import EditIcon from "@mui/icons-material/Edit";
@@ -9,6 +9,32 @@ import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {EditDevice} from "../Devices";
 import {EditDeliverie} from "./EditDeliverie";
+import { Notify } from '../../utils';
+import {styled} from "@mui/material/styles";
+
+const StyledGridOverlay = styled('div')(({theme}) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    '& .ant-empty-img-1': {
+        fill: theme.palette.mode === 'light' ? '#aeb8c2' : '#262626',
+    },
+    '& .ant-empty-img-2': {
+        fill: theme.palette.mode === 'light' ? '#f5f5f7' : '#595959',
+    },
+    '& .ant-empty-img-3': {
+        fill: theme.palette.mode === 'light' ? '#dce0e6' : '#434343',
+    },
+    '& .ant-empty-img-4': {
+        fill: theme.palette.mode === 'light' ? '#fff' : '#1c1c1c',
+    },
+    '& .ant-empty-img-5': {
+        fillOpacity: theme.palette.mode === 'light' ? '0.8' : '0.08',
+        fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
+    },
+}));
 
 export function DeliveriesTable() {
 
@@ -16,6 +42,7 @@ export function DeliveriesTable() {
     const [open, setOpen] = React.useState(false);
     const [rows, setRows] = React.useState([]);
     const [rowId, setRowId] = React.useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
 
     const handleClose = () => {
@@ -26,8 +53,21 @@ export function DeliveriesTable() {
         setOpen(true)
         setRowId(id)
     };
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
+
+    const handleDeleteClick = (id) => async () => {
+        const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nلا يمكن التراجع عن هذه الخطوة.");
+        if (!confirmed) {
+            return;
+        }
+        setDeletingId(id);
+        if (await users.deleteUser(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setRows(rows.filter((row) => row.id !== id));
+            setDeletingId(null);
+            return;
+        }
+        setDeletingId(null);
     };
 
     const columns = [
@@ -49,17 +89,21 @@ export function DeliveriesTable() {
             getActions: ({id}) => {
                 return [
                     <GridActionsCellItem
+                        key={id}
                         icon={<EditIcon/>}
                         label="Edit"
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
+                        key={id}
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                 ];
             },
@@ -75,7 +119,7 @@ export function DeliveriesTable() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const route = useRouter()
 
-    async function fetchAndSetUsers() {
+    const  fetchAndSetUsers = useCallback(async()=>{
         const params = {
             'rule*name': 'عامل توصيل',
             'page': currentPage,
@@ -85,11 +129,12 @@ export function DeliveriesTable() {
         const data = await users.getAll(params);
         data ? setDeliveries(data?.body) : setDeliveries([]);
         setPagination(data?.pagination);
+    },[pageSize, currentPage]);
 
-    }
+
     useEffect(() => {
         fetchAndSetUsers();
-    }, [route, pageSize, currentPage]);
+    }, [fetchAndSetUsers,route, pageSize, currentPage]);
     const reloadTable = async update => {
         fetchAndSetDevices()
     };
