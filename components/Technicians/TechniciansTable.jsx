@@ -91,6 +91,7 @@ export function TechniciansTable() {
             getActions: ({id}) => {
                 return [
                     <GridActionsCellItem
+                        key={id}
                         icon={<EditIcon/>}
                         label="Edit"
                         className="textPrimary"
@@ -99,6 +100,7 @@ export function TechniciansTable() {
                         disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
+                        key={id}
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
