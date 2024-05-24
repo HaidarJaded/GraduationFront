@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -14,14 +14,15 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 
-import {deviceServices} from "../../Routes";
-import {useRouter} from "next/router";
-import {EditDevice} from "./EditDevice";
-import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
-import {styled} from "@mui/material/styles";
+import { deviceServices } from "../../Routes";
+import { useRouter } from "next/router";
+import { EditDevice } from "./EditDevice";
+import { Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
+import { Notify } from '../../utils';
 
-const StyledGridOverlay = styled('div')(({theme}) => ({
+const StyledGridOverlay = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -46,20 +47,20 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
 }));
 
 function EditToolbar(props) {
-    const {setRows, setRowModesModel} = props;
+    const { setRows, setRowModesModel } = props;
 
     const handleClick = () => {
         const id = randomId();
-        setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
+        setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
-            [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
+            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
         }));
     };
 
     return (
         <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
+            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
                 Add record
             </Button>
         </GridToolbarContainer>
@@ -67,10 +68,10 @@ function EditToolbar(props) {
 }
 
 export function Devices() {
-   // const [rowModesModel, setRowModesModel] = React.useState({});
+    // const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
-
-//=============================================================
+    const [deletingId, setDeletingId] = useState(null);
+    //=============================================================
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
             event.defaultMuiPrevented = true;
@@ -95,8 +96,27 @@ export function Devices() {
     //     setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
     // };
 
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
+    const handleDeleteClick = (id) => async () => {
+        const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nلا يمكن التراجع عن هذه الخطوة.");
+        if (!confirmed) {
+            return;
+        }
+        setDeletingId(id);
+        const status = devices.find(device => device.id === id)?.status;
+        if (status !== 'لم يتم بدء العمل فيه') {
+            Notify("colored",
+                "عذراً لا يمكن حذف جهاز قد تم بدء العمل به أو أصبح في حالة تسليم", "info");
+            setDeletingId(null);
+            return;
+        }
+        if (await deviceServices.deleteDevice(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setRows(rows.filter((row) => row.id !== id));
+            setDeletingId(null);
+            return;
+        }
+        setDeletingId(null);
     };
 
     // const handleCancelClick = (id) => () => {
@@ -111,25 +131,25 @@ export function Devices() {
     //     }
     // };
 
-//=============================================================
+    //=============================================================
     const columns = [
 
         // {field: 'rowNumber', headerName: '#', width: 70},
-        {field: 'id', headerName: 'ID', width: 70},
-        {field: 'model', headerName: 'Model', width: 130},
-        {field: 'imei', headerName: 'Imei', width: 170},
-        {field: 'code', headerName: 'Code', width: 170},
-        {field: 'clientName', headerName: 'اسم العميل', width: 170},
-        {field: 'userName', headerName: 'اسم فني الصيانة', width: 200},
-        {field: 'status', headerName: 'حالة الجهاز', width: 160},
-        {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'model', headerName: 'Model', width: 130 },
+        { field: 'imei', headerName: 'Imei', width: 170 },
+        { field: 'code', headerName: 'Code', width: 170 },
+        { field: 'clientName', headerName: 'اسم العميل', width: 170 },
+        { field: 'userName', headerName: 'اسم فني الصيانة', width: 200 },
+        { field: 'status', headerName: 'حالة الجهاز', width: 160 },
+        { field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160 },
         {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
             width: 150,
             cellClassName: 'actions',
-            getActions: ({id}) => {
+            getActions: ({ id }) => {
                 // const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
                 // if (isInEditMode) {
@@ -154,18 +174,20 @@ export function Devices() {
 
                 return [
                     <GridActionsCellItem
-                        icon={<EditIcon/>}
+                        icon={<EditIcon />}
                         label="Edit"
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
-                        icon={<DeleteIcon/>}
+                        icon={<DeleteIcon />}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
-                    />,
+                        disabled={deletingId === id}
+                    />
                 ];
             },
         },
@@ -180,7 +202,7 @@ export function Devices() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const route = useRouter()
 
-//fetch data and pagination process
+    //fetch data and pagination process
     async function fetchAndSetDevices() {
         const params = {
             'repaired_in_center': 1,
@@ -216,7 +238,7 @@ export function Devices() {
         return (
             <StyledGridOverlay>
                 <svg
-                    style={{flexShrink: 0}}
+                    style={{ flexShrink: 0 }}
                     width="240"
                     height="200"
                     viewBox="0 0 184 152"
@@ -249,12 +271,12 @@ export function Devices() {
                             d="M149.121 33.292l-6.83 2.65a1 1 0 0 1-1.317-1.23l1.937-6.207c-2.589-2.944-4.109-6.534-4.109-10.408C138.802 8.102 148.92 0 161.402 0 173.881 0 184 8.102 184 18.097c0 9.995-10.118 18.097-22.599 18.097-4.528 0-8.744-1.066-12.28-2.902z"
                         />
                         <g className="ant-empty-img-4" transform="translate(149.65 15.383)">
-                            <ellipse cx="20.654" cy="3.167" rx="2.849" ry="2.815"/>
-                            <path d="M5.698 5.63H0L2.898.704zM9.259.704h4.985V5.63H9.259z"/>
+                            <ellipse cx="20.654" cy="3.167" rx="2.849" ry="2.815" />
+                            <path d="M5.698 5.63H0L2.898.704zM9.259.704h4.985V5.63H9.259z" />
                         </g>
                     </g>
                 </svg>
-                <Box sx={{mt: 1}}>No Data</Box>
+                <Box sx={{ mt: 1 }}>No Data</Box>
             </StyledGridOverlay>
         );
     }
@@ -296,7 +318,7 @@ export function Devices() {
         const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
 
         return (
-            <Stack direction="row" sx={{width: 1, px: 1}} alignItems="center" spacing={2}>
+            <Stack direction="row" sx={{ width: 1, px: 1 }} alignItems="center" spacing={2}>
                 <Box sx={{
                     flexGrow:
                         '1',
@@ -310,7 +332,7 @@ export function Devices() {
                         height: '30px',
                         borderRadius: '10px',
                     }} value={pageSize || 50} onChange={handlePageSizeChange} displayEmpty
-                            inputProps={{'aria-label': 'Page size'}}>
+                        inputProps={{ 'aria-label': 'Page size' }}>
                         <MenuItem value={5}>5</MenuItem>
                         <MenuItem value={10}>10</MenuItem>
                         <MenuItem value={20}>20</MenuItem>
@@ -366,12 +388,12 @@ export function Devices() {
 
     function range(start, end) {
 
-        return Array.from({length: end - start + 2}, (_, i) => start + i);
+        return Array.from({ length: end - start + 2 }, (_, i) => start + i);
     }
 
     return (
         <>
-            {devices ? (<Box sx={{flexGrow: 1, width: 1}}>
+            {devices ? (<Box sx={{ flexGrow: 1, width: 1 }}>
 
                 <DataGrid
                     sx={{
@@ -413,11 +435,11 @@ export function Devices() {
                     />
                 )}
             </Box>)
-                :( <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
-                <Grid item xs={12} sm={6}>
-                    <CircularProgress/>
-                </Grid>
-            </Grid>)}
+                : (<Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
+                    <Grid item xs={12} sm={6}>
+                        <CircularProgress />
+                    </Grid>
+                </Grid>)}
         </>
 
     );

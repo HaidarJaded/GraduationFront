@@ -9,6 +9,7 @@ import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {EditDevice} from "../Devices";
 import {EditDeliverie} from "./EditDeliverie";
+import { Notify } from '../../utils';
 
 export function DeliveriesTable() {
 
@@ -16,6 +17,7 @@ export function DeliveriesTable() {
     const [open, setOpen] = React.useState(false);
     const [rows, setRows] = React.useState([]);
     const [rowId, setRowId] = React.useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
 
     const handleClose = () => {
@@ -26,10 +28,23 @@ export function DeliveriesTable() {
         setOpen(true)
         setRowId(id)
     };
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
-    };
 
+    const handleDeleteClick = (id) => async () => {
+        const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nلا يمكن التراجع عن هذه الخطوة.");
+        if (!confirmed) {
+            return;
+        }
+        setDeletingId(id);
+        if (await users.deleteUser(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setRows(rows.filter((row) => row.id !== id));
+            setDeletingId(null);
+            return;
+        }
+        setDeletingId(null);
+    };
+    
     const columns = [
 
         { field: 'rowNumber', headerName: '#', width: 0.1, },
@@ -54,12 +69,14 @@ export function DeliveriesTable() {
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                 ];
             },

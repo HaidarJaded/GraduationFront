@@ -40,8 +40,21 @@ const getCompletedDevice = async (id,params) => {
     }
 };
 
+const deleteCompletedDevice = async (id) => {
+    try {
+       const response= await axiosInstance.delete(`${BASE_URL}${COMPLETED_DEVICES_URL}/${id}`);
+        if (response.status==200) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+}
+
 export const completedDevices = {
     getAll,
     updateCompletedDevice,
-    getCompletedDevice
+    getCompletedDevice,
+    deleteCompletedDevice
 };

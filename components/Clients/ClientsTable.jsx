@@ -20,18 +20,34 @@ export function ClientsTable() {
     const [rows, setRows] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
+    const [deletingId, setDeletingId] = useState(null);
     const handleClose = () => {
         setOpen(false);
         setRowId(null)
     };
+    
     const handleEditClick = (id) => () => {
         console.log(id);
         setOpen(true)
         setRowId(id)
     };
-    const handleDeleteClick = (id) => () => {
-        setRows(rows.filter((row) => row.id !== id));
+
+    const handleDeleteClick = (id) => async () => {
+        const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nسيتم حذف حميع البيانات المرتبطة ولا يمكن التراجع عن هذه الخطوة.");
+        if (!confirmed) {
+            return;
+        }
+        setDeletingId(id);
+        if (await clientsServices.deleteClient(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setRows(rows.filter((row) => row.id !== id));
+            setDeletingId(null);
+            return;
+        }
+        setDeletingId(null);
     };
+
    //لتعيين قيمة
     const [allClients, setClients] = useState([]);
     const [pagination, setPagination] = useState({});
@@ -136,12 +152,14 @@ export function ClientsTable() {
                         className="textPrimary"
                         onClick={handleEditClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
+                        disabled={deletingId === id}
                     />,
                 ];
             },
