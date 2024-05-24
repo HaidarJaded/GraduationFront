@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,7 +25,7 @@ export function EditDeliverie({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
-    async function fetchAndSetDevice() {
+    const fetchAndSetUsers = useCallback(async () => {
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -34,12 +34,14 @@ export function EditDeliverie({...props}) {
             'deliver_to_client': 0,
         };
         const response = await deviceServices.getDevice(id, params);
-        await setData(response);
-    }
+        setData(response);
+    }, [id]);
 
     useEffect(() => {
-        fetchAndSetDevice()
-    }, [id])
+        fetchAndSetUsers();
+    }, [fetchAndSetUsers]);
+
+
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
@@ -109,7 +111,7 @@ export function EditDeliverie({...props}) {
                     {
                         fontWeight: "bold",
                         direction: "rtl",
-                        color: '#4212d5'
+                        color: '#20095e'
                     }
                 }>{"تعديل معلومات عامل التوصيل"}</DialogTitle>
                 <DialogContent>

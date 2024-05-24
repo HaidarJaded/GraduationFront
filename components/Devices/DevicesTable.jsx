@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -14,15 +14,15 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 
-import { deviceServices } from "../../Routes";
-import { useRouter } from "next/router";
-import { EditDevice } from "./EditDevice";
-import { Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import {deviceServices} from "../../Routes";
+import {useRouter} from "next/router";
+import {EditDevice} from "./EditDevice";
+import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {styled} from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
 import { Notify } from '../../utils';
 
-const StyledGridOverlay = styled('div')(({ theme }) => ({
+const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -51,16 +51,16 @@ function EditToolbar(props) {
 
     const handleClick = () => {
         const id = randomId();
-        setRows((oldRows) => [...oldRows, { id, name: '', age: '', isNew: true }]);
+        setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
         setRowModesModel((oldModel) => ({
             ...oldModel,
-            [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' },
+            [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
         }));
     };
 
     return (
         <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+            <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
                 Add record
             </Button>
         </GridToolbarContainer>
@@ -68,7 +68,7 @@ function EditToolbar(props) {
 }
 
 export function Devices() {
-    // const [rowModesModel, setRowModesModel] = React.useState({});
+   // const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
     //=============================================================
@@ -131,25 +131,25 @@ export function Devices() {
     //     }
     // };
 
-    //=============================================================
+//=============================================================
     const columns = [
 
         // {field: 'rowNumber', headerName: '#', width: 70},
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'model', headerName: 'Model', width: 130 },
-        { field: 'imei', headerName: 'Imei', width: 170 },
-        { field: 'code', headerName: 'Code', width: 170 },
-        { field: 'clientName', headerName: 'اسم العميل', width: 170 },
-        { field: 'userName', headerName: 'اسم فني الصيانة', width: 200 },
-        { field: 'status', headerName: 'حالة الجهاز', width: 160 },
-        { field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160 },
+        {field: 'id', headerName: 'ID', width: 70},
+        {field: 'model', headerName: 'Model', width: 130},
+        {field: 'imei', headerName: 'Imei', width: 170},
+        {field: 'code', headerName: 'Code', width: 170},
+        {field: 'clientName', headerName: 'اسم العميل', width: 170},
+        {field: 'userName', headerName: 'اسم فني الصيانة', width: 200},
+        {field: 'status', headerName: 'حالة الجهاز', width: 160},
+        {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
         {
             field: 'actions',
             type: 'actions',
             headerName: 'Actions',
             width: 150,
             cellClassName: 'actions',
-            getActions: ({ id }) => {
+            getActions: ({id}) => {
                 // const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
                 // if (isInEditMode) {
@@ -174,7 +174,8 @@ export function Devices() {
 
                 return [
                     <GridActionsCellItem
-                        icon={<EditIcon />}
+                        key={id}
+                        icon={<EditIcon/>}
                         label="Edit"
                         className="textPrimary"
                         onClick={handleEditClick(id)}
@@ -182,7 +183,8 @@ export function Devices() {
                         disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
-                        icon={<DeleteIcon />}
+                        key={id}
+                        icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
                         color="inherit"
@@ -202,8 +204,9 @@ export function Devices() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const route = useRouter()
 
-    //fetch data and pagination process
-    async function fetchAndSetDevices() {
+//fetch data and pagination process
+
+    const fetchAndSetDevices= useCallback(async ()=>{
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -217,11 +220,11 @@ export function Devices() {
         const data = await deviceServices.getAll(params);
         setPagination(data?.pagination);
         setDevices(data?.body);
-    }
+    },[pageSize, currentPage]);
 
     useEffect(() => {
         fetchAndSetDevices();
-    }, [route, pageSize, currentPage]);
+    }, [fetchAndSetDevices,route, pageSize, currentPage]);
 
 
     const reloadTable = async update => {
@@ -238,7 +241,7 @@ export function Devices() {
         return (
             <StyledGridOverlay>
                 <svg
-                    style={{ flexShrink: 0 }}
+                    style={{flexShrink: 0}}
                     width="240"
                     height="200"
                     viewBox="0 0 184 152"

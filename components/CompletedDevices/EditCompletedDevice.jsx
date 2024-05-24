@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
@@ -25,7 +25,7 @@ export function EditCompletedDevice({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
-    async function fetchAndSetDevice() {
+    const fetchAndSetCompletedDevice = useCallback(async () => {
         const params = {
             'repaired_in_center': 1,
             'orderBy': 'date_delivery',
@@ -34,11 +34,12 @@ export function EditCompletedDevice({...props}) {
         console.log(id);
         const response = await completedDevices.getCompletedDevice(id, params);
         await setData(response);
-    }
+    }, [id])
+
 
     useEffect(() => {
-        fetchAndSetDevice();
-    }, [id])
+        fetchAndSetCompletedDevice();
+    }, [fetchAndSetCompletedDevice])
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
@@ -71,7 +72,7 @@ export function EditCompletedDevice({...props}) {
     const [selectedModel, setSelectedModel] = useState(data?.model);
     const [selectedUserName, setSelectedUserName] = useState(data?.user_name);
 
-  //  const [modelOptions, setModelOptions] = useState([]);
+    //  const [modelOptions, setModelOptions] = useState([]);
 
     // useEffect(() => {
     //     const _ModelOptions = getEnum(ModelsEnum)
@@ -106,7 +107,13 @@ export function EditCompletedDevice({...props}) {
                 onClose={props?.onCloseDialog}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+                <DialogTitle sx={
+                    {
+                        fontWeight: "bold",
+                        direction: "rtl",
+                        color: '#20095e'
+                    }
+                }>{"تعديل الأجهزة التي تم تسليمها"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
@@ -148,40 +155,40 @@ export function EditCompletedDevice({...props}) {
 
                                 />
                             </Grid>
-                        {/*    <Grid item xs={12}>*/}
-                        {/*        <FormControl fullWidth>*/}
-                        {/*            <InputLabel*/}
-                        {/*                id="model">*/}
-                        {/*                Model*/}
-                        {/*            </InputLabel>*/}
-                        {/*            <Select*/}
-                        {/*                name={"model"}*/}
-                        {/*                labelId="model"*/}
-                        {/*                id="model"*/}
-                        {/*                value={selectedModel}*/}
-                        {/*                onChange={(event) => setSelectedModel(event.target.value)}*/}
-                        {/*                label="Model"*/}
-                        {/*                MenuProps={{*/}
-                        {/*                    sx: {*/}
-                        {/*                        "&& .Mui-selected": {*/}
-                        {/*                            color: "var(--system-light-theme-color)",*/}
-                        {/*                            backgroundColor: "primary.main",*/}
-                        {/*                        },*/}
-                        {/*                    },*/}
-                        {/*                }}*/}
-                        {/*            >*/}
-                        {/*                {modelOptions?.map((model) => (*/}
-                        {/*                    <MenuItem*/}
-                        {/*                        key={model.value}*/}
-                        {/*                        value={model.value}*/}
-                        {/*                    >*/}
-                        {/*                        {model.title}*/}
-                        {/*                    </MenuItem>*/}
-                        {/*                ))}*/}
-                        {/*            </Select>*/}
+                            {/*    <Grid item xs={12}>*/}
+                            {/*        <FormControl fullWidth>*/}
+                            {/*            <InputLabel*/}
+                            {/*                id="model">*/}
+                            {/*                Model*/}
+                            {/*            </InputLabel>*/}
+                            {/*            <Select*/}
+                            {/*                name={"model"}*/}
+                            {/*                labelId="model"*/}
+                            {/*                id="model"*/}
+                            {/*                value={selectedModel}*/}
+                            {/*                onChange={(event) => setSelectedModel(event.target.value)}*/}
+                            {/*                label="Model"*/}
+                            {/*                MenuProps={{*/}
+                            {/*                    sx: {*/}
+                            {/*                        "&& .Mui-selected": {*/}
+                            {/*                            color: "var(--system-light-theme-color)",*/}
+                            {/*                            backgroundColor: "primary.main",*/}
+                            {/*                        },*/}
+                            {/*                    },*/}
+                            {/*                }}*/}
+                            {/*            >*/}
+                            {/*                {modelOptions?.map((model) => (*/}
+                            {/*                    <MenuItem*/}
+                            {/*                        key={model.value}*/}
+                            {/*                        value={model.value}*/}
+                            {/*                    >*/}
+                            {/*                        {model.title}*/}
+                            {/*                    </MenuItem>*/}
+                            {/*                ))}*/}
+                            {/*            </Select>*/}
 
-                        {/*        </FormControl>*/}
-                        {/*    </Grid>*/}
+                            {/*        </FormControl>*/}
+                            {/*    </Grid>*/}
                         </Grid>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>

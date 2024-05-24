@@ -1,17 +1,40 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import {clients, clientsServices} from '../../Routes/api/clients';
+import {clientsServices} from '../../Routes/api/clients';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {deviceServices} from "../../Routes";
 import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
-import {EditDevice} from "../Devices";
 import {EditClient} from "./EditClient";
 import Switch from '@mui/material/Switch';
 import {Notify} from "../../utils";
+import {styled} from "@mui/material/styles";
+
+const StyledGridOverlay = styled('div')(({theme}) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    '& .ant-empty-img-1': {
+        fill: theme.palette.mode === 'light' ? '#aeb8c2' : '#262626',
+    },
+    '& .ant-empty-img-2': {
+        fill: theme.palette.mode === 'light' ? '#f5f5f7' : '#595959',
+    },
+    '& .ant-empty-img-3': {
+        fill: theme.palette.mode === 'light' ? '#dce0e6' : '#434343',
+    },
+    '& .ant-empty-img-4': {
+        fill: theme.palette.mode === 'light' ? '#fff' : '#1c1c1c',
+    },
+    '& .ant-empty-img-5': {
+        fillOpacity: theme.palette.mode === 'light' ? '0.8' : '0.08',
+        fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
+    },
+}));
 
 
 export function ClientsTable() {
@@ -56,22 +79,21 @@ export function ClientsTable() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page);
 
 
-    async function fetchAndSetClients() {
+    const fetchAndSetClients = useCallback(async () => {
         const params = {
             'page': currentPage,
             'per_page': pageSize,
-
         };
         const data = await clientsServices?.getAll(params);
-        // setClients(data);
         setPagination(data?.pagination);
         data ? setClients(data?.body) : setClients([]);
-    }
+    }, [currentPage, pageSize]);
+
     const route = useRouter()
 
     useEffect(() => {
         fetchAndSetClients();
-    }, [route, pageSize, currentPage]);
+    }, [fetchAndSetClients,route, pageSize, currentPage]);
 
     const reloadTable = async update => {
         fetchAndSetDevices()
@@ -147,6 +169,7 @@ export function ClientsTable() {
             getActions: ({id}) => {
                 return [
                     <GridActionsCellItem
+                        key={id}
                         icon={<EditIcon/>}
                         label="Edit"
                         className="textPrimary"
@@ -155,6 +178,7 @@ export function ClientsTable() {
                         disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
+                        key={id}
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
@@ -216,6 +240,7 @@ export function ClientsTable() {
     const isAllSelected = pageSize >= rowCount;
     useEffect(() => {
         const clientsWithNumbers = allClients.map((client, index) => ({
+
             id: client.id,
             rowNumber: index + 1,
             name: client.name,

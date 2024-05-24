@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
     DataGrid,
     GridActionsCellItem,
@@ -8,8 +8,6 @@ import {
     GridToolbarContainer
 } from '@mui/x-data-grid';
 import { completedDevices } from "../../Routes/api/completedDevices";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
@@ -146,6 +144,7 @@ export function CompletedDevices() {
             getActions: ({id}) => {
                 return [
                     <GridActionsCellItem
+                        key={id}
                         icon={<EditIcon/>}
                         label="Edit"
                         className="textPrimary"
@@ -154,6 +153,7 @@ export function CompletedDevices() {
                         disabled={deletingId === id}
                     />,
                     <GridActionsCellItem
+                        key={id}
                         icon={<DeleteIcon/>}
                         label="Delete"
                         onClick={handleDeleteClick(id)}
@@ -175,7 +175,7 @@ export function CompletedDevices() {
 
     const route = useRouter();
 
-    async function fetchAndSetCompletedDevices(){
+    const fetchAndSetCompletedDevices = useCallback(async ()=>{
         const params = {
             'repaired_in_center': 1,
             'orderBy': 'date_delivery',
@@ -187,14 +187,15 @@ export function CompletedDevices() {
         // setCompletedDevices(data)
         setPagination(data?.pagination);
         data ? setCompletedDevices(data?.body) : setCompletedDevices([]);
-    }
+    }, [currentPage, pageSize]);
+
     const reloadTable = async update => {
         fetchAndSetCompletedDevices()
     };
 
     useEffect(()=>{
         fetchAndSetCompletedDevices();
-    },[route, pageSize, currentPage]);
+    },[fetchAndSetCompletedDevices,route, pageSize, currentPage]);
 
     useEffect(()=>{
         setRowCount(pagination?.total)

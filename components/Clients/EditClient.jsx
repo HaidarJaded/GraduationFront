@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,7 +25,8 @@ export function EditClient({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
-    async function fetchAndSetDevice() {
+    const fetchAndSetClient = useCallback(async () => {
+
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -35,11 +36,13 @@ export function EditClient({...props}) {
         };
         const response = await deviceServices.getDevice(id, params);
         await setData(response);
-    }
+    }, [id])
+
 
     useEffect(() => {
-        fetchAndSetDevice()
-    }, [id])
+        fetchAndSetClient()
+    }, [fetchAndSetClient])
+
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
@@ -109,9 +112,10 @@ export function EditClient({...props}) {
                     {
                         fontWeight: "bold",
                         direction: "rtl",
-                        color: '#4212d5'
+                        color: '#20095e'
                     }
-                }>{"تعديل معلومات الزبون"}</DialogTitle>
+                }>
+                    {"تعديل معلومات الزبون"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,7 +25,7 @@ export function EditDevice({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
-    async function fetchAndSetDevice() {
+    const fetchAndSetDevice = useCallback(async () => {
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -35,11 +35,13 @@ export function EditDevice({...props}) {
         };
         const response = await deviceServices.getDevice(id, params);
         await setData(response);
-    }
+    }, [id])
 
     useEffect(() => {
-        fetchAndSetDevice()
-    }, [id])
+        fetchAndSetDevice();
+    }, [fetchAndSetDevice]);
+
+
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
@@ -106,11 +108,11 @@ export function EditDevice({...props}) {
                 aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle sx={
-                  {
-                      fontWeight: "bold",
-                      direction: "rtl",
-                      color: '#4212d5'
-                  }
+                    {
+                        fontWeight: "bold",
+                        direction: "rtl",
+                        color: '#20095e'
+                    }
                 }>{"تعديل جهاز"}</DialogTitle>
                 <DialogContent>
 
