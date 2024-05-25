@@ -40,6 +40,7 @@ export function PermissionsTechnician({...props}) {
 
     const [permissionsTechnician, setPermissionsTechnician] = useState([]);
     const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
+    const [permissions, setPermissions] = useState([]);
     const [ruleTechnician, setRuleTechnician] = useState({});
     const fetchAndSetPermissions = useCallback(async () => {
         const params = {
@@ -49,6 +50,7 @@ export function PermissionsTechnician({...props}) {
         if (data) {
             setPermissionsTechnician(data.body);
             setPermissionsRuleTechnician(data.body?.rule?.permissions || []);
+            setPermissions(data.body?.permissions || []);
             setRuleTechnician(data.body?.rule || {});
             console.log("test")
         } else {
@@ -100,6 +102,31 @@ export function PermissionsTechnician({...props}) {
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
                                     {permissionsRuleTechnician?.map((item, index) => (
+                                        <ListItem
+                                            key={index}
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="delete">
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            }
+                                        >
+                                            <ListItemText
+                                                sx={{ textAlign: "start", margin: 0}}
+                                                primary={    <React.Fragment>
+                                                    <Typography sx={{
+
+                                                        padding: 1, color: "#442d5d",
+                                                        fontSize: 20,
+                                                        borderRadius: "5%",
+                                                    }}>
+                                                        {`صلاحية ${item.name}`}
+                                                    </Typography>
+                                                </React.Fragment>}
+
+                                            />
+                                        </ListItem>
+                                    ))}
+                                    {permissions?.map((item, index) => (
                                         <ListItem
                                             key={index}
                                             secondaryAction={
