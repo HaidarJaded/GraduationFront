@@ -15,7 +15,7 @@ export function DashboardComponent(){
     useEffect(() => {
         const getDashboardInfo = async () => {
             const data = await DashboardInfo.getDashboardInfo();
-            setDashboardInfo(data);
+            data ? setDashboardInfo(data) : setDashboardInfo([]);
         };
         getDashboardInfo();
     }, [])
@@ -26,7 +26,7 @@ export function DashboardComponent(){
                 <Cards data={dashboardInfo}/>
             </div>
             <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={2}>
+                <Grid container spacing={1}>
                     <GridChart title="أكثر أربعة عملاء تعاملا على مدار الشهر">
                         <BasicBars data={dashboardInfo}/>
                     </GridChart>

@@ -240,7 +240,7 @@ export function Layout({ children }) {
                     </ListItem>
                 </List>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
                 <DrawerHeader />
                 {children}
             </Box>

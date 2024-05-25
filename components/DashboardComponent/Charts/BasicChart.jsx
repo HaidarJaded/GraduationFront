@@ -18,7 +18,7 @@ export function BasicBars({ data }) {
     // Combine all weeks into a single array
     const combinedData = firstWeekData.map((item, index) => ({
         name: item.name || `Client ${index + 1}`,
-        firstWeek: item.devices_count,
+        firstWeek: item?.devices_count,
         secondWeek: secondWeekData[index]?.devices_count || 0,
         thirdWeek: thirdWeekData[index]?.devices_count || 0,
         fourthWeek: fourthWeekData[index]?.devices_count || 0,
