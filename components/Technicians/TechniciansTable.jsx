@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem, GridRowEditStopReasons} from '@mui/x-data-grid';
 import {deviceServices, users} from "../../Routes";
 import {EditDevice} from "../Devices";
@@ -146,8 +146,8 @@ export function TechniciansTable() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
-    const route = useRouter()
-    async function fetchAndSetDevices() {
+
+    const fetchAndSetDevices = useCallback(async ()=>{
         const params = {
             'rule*name': 'فني',
             'withCount':'devices',
@@ -157,11 +157,22 @@ export function TechniciansTable() {
         const data = await users.getAll(params);
         setPagination(data?.pagination);
         data ? setTechnicians(data?.body) : setTechnicians([]);
-    }
-
+    }, [currentPage, pageSize]);
+    const route = useRouter()
+    // async function fetchAndSetDevices() {
+    //     const params = {
+    //         // 'rule*name': 'فني',
+    //         'withCount':'devices',
+    //         'page': currentPage,
+    //         'per_page': pageSize,
+    //     };
+    //     const data = await users.getAll(params);
+    //     setPagination(data?.pagination);
+    //     data ? setTechnicians(data?.body) : setTechnicians([]);
+    // }
     useEffect(() => {
         fetchAndSetDevices();
-    }, [route, pageSize, currentPage]);
+    }, [fetchAndSetDevices,route, pageSize, currentPage]);
 
 
     const reloadTable = async update => {
