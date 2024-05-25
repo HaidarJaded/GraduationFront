@@ -4,13 +4,13 @@ const nextConfig = {
     swcMinify: true,
     publicRuntimeConfig: {
         apiUrl: 'https://haidarjaded787.serv00.net/',
-        version: "0.0.1",
+        version: "1.0.5",
         build: "0000",
         updated_at: new Date(Date.now()).toUTCString(),
     },
     generateBuildId: async () => {
         // get the latest git commit hash here
-        return '0.0.0.7'
+        return '1.0.0.0'
     },
     output: 'standalone',
     images: {

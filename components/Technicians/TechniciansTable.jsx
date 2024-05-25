@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import {useRouter} from "next/router";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import {styled} from "@mui/material/styles";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
@@ -49,10 +50,11 @@ export function TechniciansTable() {
     const [rowIdPermissionsTechnician, setRowIdPermissionsTechnician] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
 
-    const handleClickOpen = (id) => {
+     function handleClickOpenPermissions(id) {
+        console.log(';;;;;;;')
         setOpenPermissionsTechnician(true);
         setRowIdPermissionsTechnician(id);
-    };
+    }
 
     const handleClosePermissionsTechnician = () => {
         setOpenPermissionsTechnician(false);
@@ -94,26 +96,7 @@ export function TechniciansTable() {
         { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
         { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
         { field: 'address', headerName: 'العنوان', width: 170 },
-        {
 
-            field: 'PermissionsTechnician',
-            type: 'actions',
-            headerName: 'Actions',
-            width: 150,
-            cellClassName: 'actions',
-            getActions: ({id}) => {
-                return [
-                    <GridActionsCellItem
-                        key={id}
-                        icon={<DeleteIcon/>}
-                        label="Edit"
-                        className="textPrimary"
-                        onClick={handleClickOpen(id)}
-
-                    />,
-                ];
-            },
-        },
         {
             field: 'actions',
             type: 'actions',
@@ -138,6 +121,18 @@ export function TechniciansTable() {
                         onClick={handleDeleteClick(id)}
                         color="inherit"
                         disabled={deletingId === id}
+                    />,
+
+                    <GridActionsCellItem
+                        key={id}
+                        icon={<AdminPanelSettingsIcon/>}
+                        label="Show Permissions"
+                        className="textPrimary"
+                        onClick={()=>{
+                            console.log('dffgf')
+                            setRowIdPermissionsTechnician(id)
+                            setOpenPermissionsTechnician(true)
+                        }}
                     />,
                 ];
             },
@@ -370,7 +365,7 @@ export function TechniciansTable() {
                 />
             )}
 
-            {rowId && (
+            {rowIdPermissionsTechnician && (
                 <PermissionsTechnician
                     open={openPermissionsTechnician}
                     id={rowIdPermissionsTechnician}

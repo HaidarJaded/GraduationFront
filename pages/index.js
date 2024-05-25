@@ -15,6 +15,9 @@ export default function Home() {
         if (!Cookies.get('auth-token')) {
             router.push('/auth/login');
         }
+        else{
+            router.push('/Dashboard')
+        }
     }, [router]);
 
     return (<>

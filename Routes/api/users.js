@@ -35,7 +35,19 @@ const deleteUser = async (id) => {
   }
 }
 
+const getAllPermissions = async (id,params) => {
+    try {
+        return await axiosInstance.get(`${BASE_URL}${USERS_URL}/${id}`, params).then(
+            async response => {
+                return response?.data?.body
+
+            }
+        );
+    } catch (error) {
+
+    }
+};
 export const users = {
   getAll,
-  deleteUser,
+  deleteUser, getAllPermissions
 };

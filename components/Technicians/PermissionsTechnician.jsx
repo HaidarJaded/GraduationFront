@@ -1,50 +1,68 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
+import {useCallback, useEffect, useState} from 'react';
 import Dialog from '@mui/material/Dialog';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import {useState} from "react";
-import {Grid, Paper, Box} from "@mui/material";
+import {Box, Grid, Paper} from "@mui/material";
 import {styled} from "@mui/material/styles";
-import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import ListItem from "@mui/material/ListItem";
+import {users} from "../../Routes";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-const Item = styled(Paper)(({ theme }) => ({
+const Item = styled(Paper)(({theme}) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
+const permissionsExample = [
+    { name: 'إدارة المستخدمين', description: 'يمكنه إدارة المستخدمين وتعديل صلاحياتهم' },
+    { name: 'عرض التقارير', description: 'يمكنه عرض التقارير وتحليل البيانات' },
+    // أضف المزيد من الصلاحيات حسب الحاجة
+];
+
+
+
 export function PermissionsTechnician({...props}) {
-    const [dense, setDense] = React.useState(false);
-    const [secondary, setSecondary] = React.useState(false);
     const {open} = props;
     const [id, setId] = useState(props.id)
+    console.log(id);
+
+    const [permissionsTechnician, setPermissionsTechnician] = useState([]);
+
+    const fetchAndSetPermissions = useCallback(async ()=>{
+        const params = {
+            'with':'permissions,rule.permissions',
+        };
+        const data = await users.getAllPermissions(id,params);
+        data ? setPermissionsTechnician(data?.rule) : setPermissionsTechnician([]);
+        console.log(permissionsTechnician)
+        console.log("mfkdmmklmdk")
+    },[permissionsTechnician])
+
+    useEffect(() => {
+        fetchAndSetPermissions
+    }, [])
 
     return (
         <React.Fragment>
-            {/*<Button variant="outlined" onClick={handleClickOpen}>*/}
-            {/*    Open full-screen dialog*/}
-            {/*</Button>*/}
             <Dialog
                 fullScreen
                 open={open}
                 onClose={props?.onClose}
                 TransitionComponent={Transition}
             >
-                <AppBar sx={{ position: 'relative' }}>
+                <AppBar sx={{position: 'relative'}}>
                     <Toolbar>
                         <IconButton
                             edge="start"
@@ -52,42 +70,51 @@ export function PermissionsTechnician({...props}) {
                             onClick={props?.onClose}
                             aria-label="close"
                         >
-                            <CloseIcon />
+                            <CloseIcon/>
                         </IconButton>
                     </Toolbar>
                 </AppBar>
-                <Box sx={{ flexGrow: 1 }}>
-                    <Grid container spacing={2} columns={24} sx={{ direction:"rtl"}}>
-                        <Grid item xs={8} sx={{margin:3}}>
+                <Box sx={{flexGrow: 1}}>
+                    <Grid container spacing={2} columns={24} sx={{direction: "rtl"}}>
+                        <Grid item xs={8} sx={{margin: 3}}>
                             <Typography sx={{
-                                backgroundColor:"rgba(219,206,206,0.19)",
-                                padding:3,color:"#442d5d",
-                                fontSize:25,
-                                borderRadius:"5%",
+                                backgroundColor: "rgba(219,206,206,0.19)",
+                                padding: 3, color: "#442d5d",
+                                fontSize: 25,
+                                borderRadius: "5%",
                             }}>
-                                صلاحيات المستخدم  :
+                                صلاحيات المستخدم :
                             </Typography>
                             <Item>
 
-                                <List sx={{ width: '100%', maxWidth: 260, bgcolor: 'background.paper',text }}>
-
-                                    <ListItem
-                                        secondaryAction={
-                                            <IconButton edge="end" aria-label="delete">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                        <ListItemText
-                                            primary="صلاحية"
-                                            secondary={
-                                                <React.Fragment>
-                                                  انشاء حساب
-
-                                                </React.Fragment>
+                                <List sx={{ width: '100%', maxWidth: 260, bgcolor: 'background.paper' }}>
+                                    {permissionsExample.map((item, index) => (
+                                        <ListItem
+                                            key={index}
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="delete">
+                                                    <DeleteIcon />
+                                                </IconButton>
                                             }
-                                        />
-                                    </ListItem>
+                                        >
+                                            <ListItemText
+                                                sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
+                                                primary={`صلاحية ${item.name}`} // عرض اسم الصلاحية الفعلي
+                                                secondary={
+                                                    <React.Fragment>
+                                                        <Typography sx={{
+                                                            backgroundColor: "rgba(219,206,206,0.19)",
+                                                            padding: 3, color: "#442d5d",
+                                                            fontSize: 25,
+                                                            borderRadius: "5%",
+                                                        }}>
+                                                            {item.description} // عرض وصف الصلاحية الفعلي
+                                                        </Typography>
+                                                    </React.Fragment>
+                                                }
+                                            />
+                                        </ListItem>
+                                    ))}
                                 </List>
                             </Item>
 
