@@ -34,6 +34,7 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
     },
 }));
 import { Notify } from '../../utils';
+import {PermissionsTechnician} from "./PermissionsTechnician";
 
 export function TechniciansTable() {
     const [rows, setRows] = React.useState([]);
@@ -42,10 +43,21 @@ export function TechniciansTable() {
 
     // for edit
     const [open, setOpen] = React.useState(false);
+    const [openPermissionsTechnician, setOpenPermissionsTechnician] = React.useState(false);
+
     const [rowId, setRowId] = React.useState(null);
+    const [rowIdPermissionsTechnician, setRowIdPermissionsTechnician] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
 
+    const handleClickOpen = (id) => {
+        setOpenPermissionsTechnician(true);
+        setRowIdPermissionsTechnician(id);
+    };
 
+    const handleClosePermissionsTechnician = () => {
+        setOpenPermissionsTechnician(false);
+        setRowIdPermissionsTechnician(null)
+    };
     const handleClose = () => {
         setOpen(false);
         setRowId(null)
@@ -82,6 +94,26 @@ export function TechniciansTable() {
         { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
         { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
         { field: 'address', headerName: 'العنوان', width: 170 },
+        {
+
+            field: 'PermissionsTechnician',
+            type: 'actions',
+            headerName: 'Actions',
+            width: 150,
+            cellClassName: 'actions',
+            getActions: ({id}) => {
+                return [
+                    <GridActionsCellItem
+                        key={id}
+                        icon={<DeleteIcon/>}
+                        label="Edit"
+                        className="textPrimary"
+                        onClick={handleClickOpen(id)}
+
+                    />,
+                ];
+            },
+        },
         {
             field: 'actions',
             type: 'actions',
@@ -335,6 +367,14 @@ export function TechniciansTable() {
                     onCloseDialog={handleClose}
                     id={rowId}
                     update={reloadTable}
+                />
+            )}
+
+            {rowId && (
+                <PermissionsTechnician
+                    open={openPermissionsTechnician}
+                    id={rowIdPermissionsTechnician}
+                    onClose={handleClosePermissionsTechnician}
                 />
             )}
         </Box>

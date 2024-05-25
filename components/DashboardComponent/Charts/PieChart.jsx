@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { PieChart } from '@mui/x-charts/PieChart';
+ //import { PieChart } from '@mui/x-charts/PieChart';
 import { useTheme } from '@mui/material/styles';
+import {Cell, Legend, Pie,PieChart, Tooltip} from "recharts";
 
 function generateColor(index) {
     // const hue = (index * 137) % 360; // Using the golden angle approximation
@@ -17,32 +18,72 @@ function generateColor(index) {
     return customColors[index % customColors.length];
   }
 
-export function BasicPie({data}) {
+// export function BasicPie({data}) {
+//     const theme = useTheme();
+//     const techniciansWithReadyDevicesCount =data?.technicians_with_ready_devices_count;
+//     const dynamicData = techniciansWithReadyDevicesCount?.map((technician, index) => ({
+//         id: index,
+//         value: technician.completed_devices_count,
+//         label: technician.name,
+//         color: generateColor(index),
+//     }))??[];
+//     return (<div style={{
+//             backgroundColor:'White',
+//             display:"flex",
+//             alignItems:"center",
+//             height:"300px",
+//             padding:"20px"
+//         }}>
+//             <PieChart
+//                 series={[
+//                     {
+//                         data: dynamicData,
+//                     },
+//                 ]}
+//                 width={500}
+//                 height={240}
+//
+//             />
+//         </div>
+//     );
+// }
+export function BasicPie({ data }) {
     const theme = useTheme();
-    const techniciansWithReadyDevicesCount =data?.technicians_with_ready_devices_count;
+    const techniciansWithReadyDevicesCount = data?.technicians_with_ready_devices_count;
     const dynamicData = techniciansWithReadyDevicesCount?.map((technician, index) => ({
         id: index,
-        value: technician.completed_devices_count,
-        label: technician.name,
-        color: generateColor(index) 
-      }))??[];
-    return (<div style={{
-            backgroundColor:'White',
-            display:"flex",
-            alignItems:"center",
-            height:"300px",
-            padding:"20px"
-        }}>
-        <PieChart
-            series={[
-                {
-                    data: dynamicData,
-                },
-            ]}
-            width={500}
-            height={240}
+        value: technician?.completed_devices_count,
+        name: technician?.name,
+        color: generateColor(index),
+    })) ?? [];
 
-        />
-    </div>
+
+    return (
+        <div style={{
+            backgroundColor: 'white',
+            display: "flex",
+            justifyContent: "center", // Adjust the chart to be centered horizontally
+            alignItems: "center",
+
+        }}>
+            <PieChart width={500} height={300}>
+                <Pie
+                    data={dynamicData}
+                    cx={250}
+                    cy={110}
+                    labelLine={true}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                >
+                    {
+                        dynamicData?.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)
+                    }
+                </Pie>
+                <Tooltip />
+                <Legend />
+            </PieChart>
+        </div>
     );
 }
+
