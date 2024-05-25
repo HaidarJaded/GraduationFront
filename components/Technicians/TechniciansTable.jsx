@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem, GridRowEditStopReasons} from '@mui/x-data-grid';
-import {deviceServices, users} from "../../Routes";
+import { users} from "../../Routes";
 import {EditDevice} from "../Devices";
 import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
@@ -50,11 +50,11 @@ export function TechniciansTable() {
     const [rowIdPermissionsTechnician, setRowIdPermissionsTechnician] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
 
-     function handleClickOpenPermissions(id) {
-        console.log(';;;;;;;')
-        setOpenPermissionsTechnician(true);
-        setRowIdPermissionsTechnician(id);
-    }
+    //  function handleClickOpenPermissions(id) {
+    //     console.log(';;;;;;;')
+    //     setOpenPermissionsTechnician(true);
+    //     setRowIdPermissionsTechnician(id);
+    // }
 
     const handleClosePermissionsTechnician = () => {
         setOpenPermissionsTechnician(false);
@@ -129,7 +129,6 @@ export function TechniciansTable() {
                         label="Show Permissions"
                         className="textPrimary"
                         onClick={()=>{
-                            console.log('dffgf')
                             setRowIdPermissionsTechnician(id)
                             setOpenPermissionsTechnician(true)
                         }}
