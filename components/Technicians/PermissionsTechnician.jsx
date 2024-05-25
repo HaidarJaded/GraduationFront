@@ -38,21 +38,26 @@ export function PermissionsTechnician({...props}) {
     const [id, setId] = useState(props.id)
     console.log(id);
 
-    const [permissionsTechnician, setPermissionsTechnician] = useState([]);
 
-    const fetchAndSetPermissions = useCallback(async ()=>{
+    const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
+    const [permissionsTechnician, setPermissionsTechnician] = useState([]);
+    const fetchAndSetPermissions = useCallback(async () => {
         const params = {
-            'with':'permissions,rule.permissions',
+            'with': 'permissions,rule.permissions',
         };
-        const data = await users.getAllPermissions(id,params);
-        data ? setPermissionsTechnician(data?.rule) : setPermissionsTechnician([]);
-        console.log(permissionsTechnician)
-        console.log("mfkdmmklmdk")
-    },[permissionsTechnician])
+        const data = await users.getAllPermissions(id, params);
+        setPermissionsTechnician(data ? data?.body : []);
+        setPermissionsRuleTechnician(permissionsTechnician?.rule?.permissions);
+        console.log(permissionsTechnician);
+        console.log(permissionsRuleTechnician);
+
+        console.log("gd ");
+    }, []);
 
     useEffect(() => {
-        fetchAndSetPermissions
-    }, [])
+        fetchAndSetPermissions();
+        console.log("sssss");
+    }, [fetchAndSetPermissions]);
 
     return (
         <React.Fragment>
@@ -75,9 +80,10 @@ export function PermissionsTechnician({...props}) {
                     </Toolbar>
                 </AppBar>
                 <Box sx={{flexGrow: 1}}>
-                    <Grid container spacing={2} columns={24} sx={{direction: "rtl"}}>
-                        <Grid item xs={8} sx={{margin: 3}}>
+                    <Grid container spacing={2} columns={14} sx={{direction: "rtl"}}>
+                        <Grid item xs={12} md={6} sx={{margin: 3}}>
                             <Typography sx={{
+                                width:'inherit',
                                 backgroundColor: "rgba(219,206,206,0.19)",
                                 padding: 3, color: "#442d5d",
                                 fontSize: 25,
@@ -87,7 +93,51 @@ export function PermissionsTechnician({...props}) {
                             </Typography>
                             <Item>
 
-                                <List sx={{ width: '100%', maxWidth: 260, bgcolor: 'background.paper' }}>
+                                <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
+                                    {permissionsExample.map((item, index) => (
+                                        <ListItem
+                                            key={index}
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="delete">
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            }
+                                        >
+                                            <ListItemText
+                                                sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
+                                                primary={`صلاحية ${item.name}`} // عرض اسم الصلاحية الفعلي
+                                                secondary={
+                                                    <React.Fragment>
+                                                        <Typography sx={{
+                                                            backgroundColor: "rgba(219,206,206,0.19)",
+                                                            padding: 3, color: "#442d5d",
+                                                            fontSize: 25,
+                                                            borderRadius: "5%",
+                                                        }}>
+                                                            {item.description} // عرض وصف الصلاحية الفعلي
+                                                        </Typography>
+                                                    </React.Fragment>
+                                                }
+                                            />
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </Item>
+
+                        </Grid>
+                        <Grid item xs={12} md={6} sx={{margin: 3}}>
+                            <Typography sx={{
+                                width:'inherit',
+                                backgroundColor: "rgba(219,206,206,0.19)",
+                                padding: 3, color: "#442d5d",
+                                fontSize: 25,
+                                borderRadius: "5%",
+                            }}>
+                                صلاحيات المستخدم :
+                            </Typography>
+                            <Item>
+
+                                <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
                                     {permissionsExample.map((item, index) => (
                                         <ListItem
                                             key={index}
