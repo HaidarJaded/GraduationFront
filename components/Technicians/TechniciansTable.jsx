@@ -159,17 +159,7 @@ export function TechniciansTable() {
         data ? setTechnicians(data?.body) : setTechnicians([]);
     }, [currentPage, pageSize]);
     const route = useRouter()
-    // async function fetchAndSetDevices() {
-    //     const params = {
-    //         // 'rule*name': 'فني',
-    //         'withCount':'devices',
-    //         'page': currentPage,
-    //         'per_page': pageSize,
-    //     };
-    //     const data = await users.getAll(params);
-    //     setPagination(data?.pagination);
-    //     data ? setTechnicians(data?.body) : setTechnicians([]);
-    // }
+
     useEffect(() => {
         fetchAndSetDevices();
     }, [fetchAndSetDevices,route, pageSize, currentPage]);

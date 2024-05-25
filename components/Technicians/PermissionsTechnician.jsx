@@ -38,27 +38,32 @@ export function PermissionsTechnician({...props}) {
     const [id, setId] = useState(props.id)
     console.log(id);
 
-
-    const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
     const [permissionsTechnician, setPermissionsTechnician] = useState([]);
+    const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
+    const [ruleTechnician, setRuleTechnician] = useState({});
     const fetchAndSetPermissions = useCallback(async () => {
         const params = {
             'with': 'permissions,rule.permissions',
         };
         const data = await users.getAllPermissions(id, params);
-        setPermissionsTechnician(data ? data?.body : []);
-        setPermissionsRuleTechnician(permissionsTechnician?.rule?.permissions);
-        console.log(permissionsTechnician);
-        console.log(permissionsRuleTechnician);
+        if (data) {
+            setPermissionsTechnician(data.body);
+            setPermissionsRuleTechnician(data.body?.rule?.permissions || []);
+            setRuleTechnician(data.body?.rule || {});
+            console.log("test")
+        } else {
+            setPermissionsTechnician([]);
+            setPermissionsRuleTechnician([]);
+            setRuleTechnician([]);
+            console.log("new test")
 
-        console.log("gd ");
+        }
+        console.log(data ? data.body : []);
     }, []);
 
     useEffect(() => {
         fetchAndSetPermissions();
-        console.log("sssss");
-    }, [fetchAndSetPermissions]);
-
+    }, []);
     return (
         <React.Fragment>
             <Dialog
@@ -94,7 +99,7 @@ export function PermissionsTechnician({...props}) {
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
-                                    {permissionsExample.map((item, index) => (
+                                    {permissionsRuleTechnician?.map((item, index) => (
                                         <ListItem
                                             key={index}
                                             secondaryAction={
@@ -104,20 +109,18 @@ export function PermissionsTechnician({...props}) {
                                             }
                                         >
                                             <ListItemText
-                                                sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
-                                                primary={`صلاحية ${item.name}`} // عرض اسم الصلاحية الفعلي
-                                                secondary={
-                                                    <React.Fragment>
-                                                        <Typography sx={{
-                                                            backgroundColor: "rgba(219,206,206,0.19)",
-                                                            padding: 3, color: "#442d5d",
-                                                            fontSize: 25,
-                                                            borderRadius: "5%",
-                                                        }}>
-                                                            {item.description} // عرض وصف الصلاحية الفعلي
-                                                        </Typography>
-                                                    </React.Fragment>
-                                                }
+                                                sx={{ textAlign: "start", margin: 0}}
+                                                primary={    <React.Fragment>
+                                                    <Typography sx={{
+
+                                                        padding: 1, color: "#442d5d",
+                                                        fontSize: 20,
+                                                        borderRadius: "5%",
+                                                    }}>
+                                                        {`صلاحية ${item.name}`}
+                                                    </Typography>
+                                                </React.Fragment>}
+
                                             />
                                         </ListItem>
                                     ))}
@@ -138,9 +141,8 @@ export function PermissionsTechnician({...props}) {
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
-                                    {permissionsExample.map((item, index) => (
                                         <ListItem
-                                            key={index}
+                                            key={ruleTechnician?.id}
                                             secondaryAction={
                                                 <IconButton edge="end" aria-label="delete">
                                                     <DeleteIcon />
@@ -149,22 +151,20 @@ export function PermissionsTechnician({...props}) {
                                         >
                                             <ListItemText
                                                 sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
-                                                primary={`صلاحية ${item.name}`} // عرض اسم الصلاحية الفعلي
-                                                secondary={
+                                                primary={
                                                     <React.Fragment>
                                                         <Typography sx={{
-                                                            backgroundColor: "rgba(219,206,206,0.19)",
-                                                            padding: 3, color: "#442d5d",
-                                                            fontSize: 25,
+                                                            padding: 1, color: "#442d5d",
+                                                            fontSize: 20,
                                                             borderRadius: "5%",
                                                         }}>
-                                                            {item.description} // عرض وصف الصلاحية الفعلي
+                                                            {ruleTechnician ? ruleTechnician.name : 'No name available'}
                                                         </Typography>
                                                     </React.Fragment>
                                                 }
                                             />
                                         </ListItem>
-                                    ))}
+
                                 </List>
                             </Item>
 
