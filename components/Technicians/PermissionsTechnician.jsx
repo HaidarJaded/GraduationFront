@@ -55,6 +55,7 @@ export function PermissionsTechnician({...props}) {
             console.log("test")
         } else {
             setPermissionsTechnician([]);
+            setPermissions([]);
             setPermissionsRuleTechnician([]);
             setRuleTechnician([]);
             console.log("new test")
