@@ -76,11 +76,16 @@ const Item = styled(Paper)(({theme}) => ({
                         </Typography>
                     </Box>
 
-                    <Box sx={{ width: '100%', bgcolor: 'background.paper', padding: 3, borderRadius: "5%", color: "#442d5d" , direction:'rtl'}}>
+                    <Box sx={{ width: '100%', bgcolor: 'background.paper', padding: 3, borderRadius: "2%", color: "#442d5d" , direction:'rtl'}}>
 
                         <List>
                             {rule.permissions?.map((permission) => (
-                                <ListItem key={permission.id} sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
+                                <ListItem key={permission.id} sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}
+                                          secondaryAction={
+                                              <IconButton edge="end" aria-label="delete">
+                                                  <DeleteIcon />
+                                              </IconButton>
+                                          }>
                                     <ListItemText
                                         primary={permission.name}
                                         sx={{ textAlign: "start" }}

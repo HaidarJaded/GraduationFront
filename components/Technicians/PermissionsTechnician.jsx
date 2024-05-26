@@ -14,6 +14,8 @@ import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import ListItem from "@mui/material/ListItem";
 import {users} from "../../Routes";
+import Link from "next/link";
+import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -157,15 +159,37 @@ export function PermissionsTechnician({...props}) {
 
                         </Grid>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
-                            <Typography sx={{
-                                width:'inherit',
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row-reverse',  // هذا يجعل الأيقونة على اليسار والنص على اليمين
+                                alignItems: 'center',
+                                justifyContent: 'space-between',// لمحاذاة العناصر عموديًا
                                 backgroundColor: "rgba(219,206,206,0.19)",
-                                padding: 3, color: "#442d5d",
-                                fontSize: 25,
+                                padding: 3,
                                 borderRadius: "5%",
                             }}>
-                                دور المستخدم :
-                            </Typography>
+
+                                <Link href={'/rules'} passHref>  {/* Remove the underline and style as needed */}
+                                    <IconButton edge="start">
+                                        <Typography sx={{
+                                            color: "#442d5d",
+                                            fontSize: 15,
+                                            marginLeft: 2
+                                        }}>
+                                            جميع الأدوار
+                                        </Typography>
+                                        <ArrowCircleLeftOutlinedIcon />
+                                    </IconButton>
+                                </Link>
+                                <Typography sx={{
+                                    color: "#442d5d",
+                                    fontSize: 25,
+
+                                }}>
+                                    دور المستخدم :
+                                </Typography>
+
+                            </Box>
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
