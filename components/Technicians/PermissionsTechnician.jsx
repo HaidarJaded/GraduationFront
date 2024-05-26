@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import {Box, Grid, Paper} from "@mui/material";
+import {Box, Fab, Grid, Paper} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
@@ -16,6 +16,7 @@ import ListItem from "@mui/material/ListItem";
 import {users} from "../../Routes";
 import Link from "next/link";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
+import AddIcon from "@mui/icons-material/Add";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -92,15 +93,28 @@ export function PermissionsTechnician({...props}) {
                 <Box sx={{flexGrow: 1}}>
                     <Grid container spacing={2} columns={14} sx={{direction: "rtl"}}>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
-                            <Typography sx={{
-                                width:'inherit',
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row-reverse',  // هذا يجعل الأيقونة على اليسار والنص على اليمين
+                                alignItems: 'center',
+                                justifyContent: 'space-between',// لمحاذاة العناصر عموديًا
                                 backgroundColor: "rgba(219,206,206,0.19)",
-                                padding: 3, color: "#442d5d",
-                                fontSize: 25,
+                                padding: 3,
                                 borderRadius: "5%",
                             }}>
-                                صلاحيات المستخدم :
-                            </Typography>
+
+                                <Fab size="small" color="secondary" aria-label="add">
+                                    <AddIcon />
+                                </Fab>
+                                <Typography sx={{
+                                    color: "#442d5d",
+                                    fontSize: 25,
+
+                                }}>
+                                    صلاحيات المستخدم :
+                                </Typography>
+
+                            </Box>
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>

@@ -14,11 +14,10 @@ import {styled} from "@mui/material/styles";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import ListItem from "@mui/material/ListItem";
-import ControlPointRoundedIcon from '@mui/icons-material/ControlPointRounded';
 import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
-import {users} from "../../Routes";
 import {clientsServices} from "../../Routes/api/clients";
 import AddIcon from "@mui/icons-material/Add";
+import {AllPermissions} from "../Permissions";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -30,10 +29,15 @@ const Item = styled(Paper)(({theme}) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
+
 export function PermissionsClient({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id)
     console.log(id);
+
+    const [rowIdAddPermissionsClient, setRowIdAddPermissionsClient] = React.useState(null);
+    const [openAddPermissionsClient, setOpenAddPermissionsClient] = React.useState(false);
+
 
     const [permissionsClient, setPermissionsClient] = useState([]);
     const [permissionsRuleClient, setPermissionsRuleClient] = useState([]);
@@ -43,7 +47,7 @@ export function PermissionsClient({...props}) {
         const params = {
             'with': 'permissions,rule.permissions',
         };
-        const data = await clientsServices.getAllClientPermissions(id,params);
+        const data = await clientsServices.getAllClientPermissions(id, params);
         if (data) {
             setPermissionsClient(data.body);
             setPermissionsRuleClient(data.body?.rule?.permissions || []);
@@ -64,6 +68,15 @@ export function PermissionsClient({...props}) {
     useEffect(() => {
         fetchAndSetPermissions();
     }, []);
+
+    const handleClose = () => {
+        setOpenAddPermissionsClient(false);
+        setRowIdAddPermissionsClient(null);
+    };
+    const reloadGrid = async update => {
+        fetchAndSetPermissions()
+    };
+
     return (
         <React.Fragment>
             <Dialog
@@ -98,7 +111,18 @@ export function PermissionsClient({...props}) {
                             }}>
 
                                 <Fab size="small" color="secondary" aria-label="add">
-                                    <AddIcon />
+                                    <IconButton
+                                        edge="start"
+                                        color="inherit"
+                                        onClick={() => {
+                                            setRowIdAddPermissionsClient(id);
+                                            setOpenAddPermissionsClient(true);
+                                            console.log("ssss")
+                                        }}
+                                        aria-label="close"
+                                    >
+                                        <AddIcon/>
+                                    </IconButton>
                                 </Fab>
                                 <Typography sx={{
                                     color: "#442d5d",
@@ -111,19 +135,24 @@ export function PermissionsClient({...props}) {
                             </Box>
                             <Item>
 
-                                <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
+                                <List sx={{
+                                    width: '100%',
+                                    maxWidth: '100%',
+                                    minWidth: '50%',
+                                    bgcolor: 'background.paper'
+                                }}>
                                     {permissionsRuleClient?.map((item, index) => (
                                         <ListItem
                                             key={index}
                                             secondaryAction={
                                                 <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon />
+                                                    <DeleteIcon/>
                                                 </IconButton>
                                             }
                                         >
                                             <ListItemText
-                                                sx={{ textAlign: "start", margin: 0}}
-                                                primary={    <React.Fragment>
+                                                sx={{textAlign: "start", margin: 0}}
+                                                primary={<React.Fragment>
                                                     <Typography sx={{
 
                                                         padding: 1, color: "#442d5d",
@@ -143,13 +172,13 @@ export function PermissionsClient({...props}) {
                                             key={index}
                                             secondaryAction={
                                                 <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon />
+                                                    <DeleteIcon/>
                                                 </IconButton>
                                             }
                                         >
                                             <ListItemText
-                                                sx={{ textAlign: "start", margin: 0}}
-                                                primary={    <React.Fragment>
+                                                sx={{textAlign: "start", margin: 0}}
+                                                primary={<React.Fragment>
                                                     <Typography sx={{
 
                                                         padding: 1, color: "#442d5d",
@@ -187,7 +216,7 @@ export function PermissionsClient({...props}) {
                                         }}>
                                             جميع الأدوار
                                         </Typography>
-                                        <ArrowCircleLeftOutlinedIcon />
+                                        <ArrowCircleLeftOutlinedIcon/>
                                     </IconButton>
                                 </Link>
                                 <Typography sx={{
@@ -202,12 +231,17 @@ export function PermissionsClient({...props}) {
 
                             <Item>
 
-                                <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
+                                <List sx={{
+                                    width: '100%',
+                                    maxWidth: '100%',
+                                    minWidth: '50%',
+                                    bgcolor: 'background.paper'
+                                }}>
                                     <ListItem
                                         key={ruleClient?.id}
                                     >
                                         <ListItemText
-                                            sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
+                                            sx={{textAlign: "start", margin: 1, fontSize: 100}}
                                             primary={
                                                 <React.Fragment>
                                                     <Typography sx={{
@@ -230,6 +264,14 @@ export function PermissionsClient({...props}) {
                     </Grid>
                 </Box>
             </Dialog>
+            {rowIdAddPermissionsClient && (
+                <AllPermissions
+                    open={openAddPermissionsClient}
+                    id={rowIdAddPermissionsClient}
+                    onClose={handleClose}
+                    update={reloadGrid}/>
+
+            )}
         </React.Fragment>
     );
 }
