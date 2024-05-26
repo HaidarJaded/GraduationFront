@@ -58,6 +58,8 @@ const getAllClientPermissions = async (id,params) => {
   }
 };
 
+
+
 export const clientsServices = {
   getAll,
   getAllClientPermissions,
