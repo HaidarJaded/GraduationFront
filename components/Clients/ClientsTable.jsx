@@ -11,6 +11,8 @@ import {EditClient} from "./EditClient";
 import Switch from '@mui/material/Switch';
 import {Notify} from "../../utils";
 import {styled} from "@mui/material/styles";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import {PermissionsClient} from "./PermissionsClient";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -43,6 +45,8 @@ export function ClientsTable() {
     const [rows, setRows] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
+    const [rowIdPermissionsClient, setRowIdPermissionsClient] = React.useState(null);
+    const [openPermissionsClient, setOpenPermissionsClient] = React.useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const handleClose = () => {
         setOpen(false);
@@ -54,7 +58,10 @@ export function ClientsTable() {
         setOpen(true)
         setRowId(id)
     };
-
+    const handleClosePermissionsClient = () => {
+        setOpenPermissionsClient(false);
+        setRowIdPermissionsClient(null)
+    };
     const handleDeleteClick = (id) => async () => {
         const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nسيتم حذف حميع البيانات المرتبطة ولا يمكن التراجع عن هذه الخطوة.");
         if (!confirmed) {
@@ -122,7 +129,7 @@ export function ClientsTable() {
             {
                 try
                 {
-                    const response =  await clientsServices.updateclients(userId, { account_active: newActiveState });
+                    const response =  await clientsServices.updateClients(userId, { account_active: newActiveState });
                     Notify("light", response.message, "success");
                 } 
                 catch (error)
@@ -184,6 +191,16 @@ export function ClientsTable() {
                         onClick={handleDeleteClick(id)}
                         color="inherit"
                         disabled={deletingId === id}
+                    />,
+                    <GridActionsCellItem
+                        key={id}
+                        icon={<AdminPanelSettingsIcon/>}
+                        label="Show Permissions"
+                        className="textPrimary"
+                        onClick={()=>{
+                            setRowIdPermissionsClient(id)
+                            setOpenPermissionsClient(true)
+                        }}
                     />,
                 ];
             },
@@ -382,6 +399,13 @@ export function ClientsTable() {
                             update={reloadTable}
                         />
                     )}
+               {rowIdPermissionsClient && (
+                   <PermissionsClient
+                       open={openPermissionsClient}
+                       id={rowIdPermissionsClient}
+                       onClose={handleClosePermissionsClient}
+                   />
+               )}
                 </Box>
 
         </>

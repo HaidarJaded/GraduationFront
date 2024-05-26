@@ -22,7 +22,7 @@ const getAll = async (params) => {
     responseErrorHandlers(error?.response);
   }
 };
-const updateclients = async (id,params) => {
+const updateClients = async (id,params) => {
   try {
     return await axiosInstance.put(`${BASE_URL}${CLIENTS_URL}/${id}`, params).then(
         async response => {
@@ -46,9 +46,23 @@ const deleteClient = async (id) => {
     responseErrorHandlers(error?.response);
   }
 }
+const getAllClientPermissions = async (id,params) => {
+  try {
+    return await axiosInstance
+        .get(`${BASE_URL}${CLIENTS_URL}/${id}`, { params })
+        .then(async (response) => {
+          return await response?.data;
+        });
+  } catch (error) {
+    responseErrorHandlers(error?.response);
+  }
+};
+
+
 
 export const clientsServices = {
   getAll,
-  updateclients,
+  getAllClientPermissions,
+  updateClients,
   deleteClient
 };
