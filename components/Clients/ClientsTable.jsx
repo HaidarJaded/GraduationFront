@@ -103,7 +103,7 @@ export function ClientsTable() {
     }, [fetchAndSetClients,route, pageSize, currentPage]);
 
     const reloadTable = async update => {
-        fetchAndSetDevices()
+        fetchAndSetClients()
     };
     useEffect(() => {
         setRowCount(pagination?.total)

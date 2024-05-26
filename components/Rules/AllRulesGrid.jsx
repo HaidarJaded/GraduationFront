@@ -68,15 +68,15 @@ const Item = styled(Paper)(({theme}) => ({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         backgroundColor: "rgba(219,206,206,0.19)",
-                        padding: 3,
+                        padding: 2,
                         borderRadius: "5%",
                     }}>
-                        <Typography sx={{ fontSize: 20, marginBottom: 2 }}>
+                        <Typography sx={{ fontSize: 20, margin: 1 }}>
                             {rule.name}
                         </Typography>
                     </Box>
 
-                    <Box sx={{ width: '100%', bgcolor: 'background.paper', padding: 3, borderRadius: "2%", color: "#442d5d" , direction:'rtl'}}>
+                    <Box sx={{ width: '100%', bgcolor: 'background.paper', padding: 1, borderRadius: "2%", color: "#442d5d" , direction:'rtl'}}>
 
                         <List>
                             {rule.permissions?.map((permission) => (
