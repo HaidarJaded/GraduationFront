@@ -82,7 +82,7 @@ export function AllPermissions({...props}) {
                     }
                 }>{"إضافة صلاحية"}</DialogTitle>
                 <DialogContent>
-                    <List dense sx={{ width: '100%', maxWidth: 560,bgcolor: '#ddd2d245',borderRadius:'78px',paddingRight: '44px'}}>
+                    <List dense sx={{ width: '100%', maxWidth: 560,bgcolor: '#ddd2d245',borderRadius:'10px',paddingRight: '44px'}}>
 
                         {allPermissions.map((permission) => {
                           //  const labelId = `checkbox-list-secondary-label-${value}`;
