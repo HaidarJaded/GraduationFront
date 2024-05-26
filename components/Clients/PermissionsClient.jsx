@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
+import Link from 'next/link';
 import Dialog from '@mui/material/Dialog';
 import List from '@mui/material/List';
 import AppBar from '@mui/material/AppBar';
@@ -8,12 +9,16 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import {Box, Grid, Paper} from "@mui/material";
+import {Box, Fab, Grid, Paper} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import ListItem from "@mui/material/ListItem";
+import ControlPointRoundedIcon from '@mui/icons-material/ControlPointRounded';
+import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
 import {users} from "../../Routes";
+import {clientsServices} from "../../Routes/api/clients";
+import AddIcon from "@mui/icons-material/Add";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -25,39 +30,31 @@ const Item = styled(Paper)(({theme}) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
-const permissionsExample = [
-    { name: 'إدارة المستخدمين', description: 'يمكنه إدارة المستخدمين وتعديل صلاحياتهم' },
-    { name: 'عرض التقارير', description: 'يمكنه عرض التقارير وتحليل البيانات' },
-    // أضف المزيد من الصلاحيات حسب الحاجة
-];
-
-
-
-export function PermissionsTechnician({...props}) {
+export function PermissionsClient({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id)
     console.log(id);
 
-    const [permissionsTechnician, setPermissionsTechnician] = useState([]);
-    const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
+    const [permissionsClient, setPermissionsClient] = useState([]);
+    const [permissionsRuleClient, setPermissionsRuleClient] = useState([]);
     const [permissions, setPermissions] = useState([]);
-    const [ruleTechnician, setRuleTechnician] = useState({});
+    const [ruleClient, setRuleClient] = useState({});
     const fetchAndSetPermissions = useCallback(async () => {
         const params = {
             'with': 'permissions,rule.permissions',
         };
-        const data = await users.getAllPermissions(id, params);
+        const data = await clientsServices.getAllClientPermissions(id,params);
         if (data) {
-            setPermissionsTechnician(data.body);
-            setPermissionsRuleTechnician(data.body?.rule?.permissions || []);
+            setPermissionsClient(data.body);
+            setPermissionsRuleClient(data.body?.rule?.permissions || []);
             setPermissions(data.body?.permissions || []);
-            setRuleTechnician(data.body?.rule || {});
+            setRuleClient(data.body?.rule || {});
             console.log("test")
         } else {
-            setPermissionsTechnician([]);
+            setPermissionsClient([]);
             setPermissions([]);
-            setPermissionsRuleTechnician([]);
-            setRuleTechnician([]);
+            setPermissionsRuleClient([]);
+            setRuleClient([]);
             console.log("new test")
 
         }
@@ -90,19 +87,32 @@ export function PermissionsTechnician({...props}) {
                 <Box sx={{flexGrow: 1}}>
                     <Grid container spacing={2} columns={14} sx={{direction: "rtl"}}>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
-                            <Typography sx={{
-                                width:'inherit',
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row-reverse',  // هذا يجعل الأيقونة على اليسار والنص على اليمين
+                                alignItems: 'center',
+                                justifyContent: 'space-between',// لمحاذاة العناصر عموديًا
                                 backgroundColor: "rgba(219,206,206,0.19)",
-                                padding: 3, color: "#442d5d",
-                                fontSize: 25,
+                                padding: 3,
                                 borderRadius: "5%",
                             }}>
-                                صلاحيات المستخدم :
-                            </Typography>
+
+                                <Fab size="small" color="secondary" aria-label="add">
+                                    <AddIcon />
+                                </Fab>
+                                <Typography sx={{
+                                    color: "#442d5d",
+                                    fontSize: 25,
+
+                                }}>
+                                    صلاحيات المستخدم :
+                                </Typography>
+
+                            </Box>
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
-                                    {permissionsRuleTechnician?.map((item, index) => (
+                                    {permissionsRuleClient?.map((item, index) => (
                                         <ListItem
                                             key={index}
                                             secondaryAction={
@@ -126,6 +136,7 @@ export function PermissionsTechnician({...props}) {
 
                                             />
                                         </ListItem>
+
                                     ))}
                                     {permissions?.map((item, index) => (
                                         <ListItem
@@ -157,41 +168,59 @@ export function PermissionsTechnician({...props}) {
 
                         </Grid>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
-                            <Typography sx={{
-                                width:'inherit',
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row-reverse',  // هذا يجعل الأيقونة على اليسار والنص على اليمين
+                                alignItems: 'center',
+                                justifyContent: 'space-between',// لمحاذاة العناصر عموديًا
                                 backgroundColor: "rgba(219,206,206,0.19)",
-                                padding: 3, color: "#442d5d",
-                                fontSize: 25,
+                                padding: 3,
                                 borderRadius: "5%",
                             }}>
-                                دور المستخدم :
-                            </Typography>
+
+                                <Link href={'/rules'} passHref>  {/* Remove the underline and style as needed */}
+                                    <IconButton edge="start">
+                                        <Typography sx={{
+                                            color: "#442d5d",
+                                            fontSize: 15,
+                                            marginLeft: 2
+                                        }}>
+                                            جميع الأدوار
+                                        </Typography>
+                                        <ArrowCircleLeftOutlinedIcon />
+                                    </IconButton>
+                                </Link>
+                                <Typography sx={{
+                                    color: "#442d5d",
+                                    fontSize: 25,
+
+                                }}>
+                                    دور المستخدم :
+                                </Typography>
+
+                            </Box>
+
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
-                                        <ListItem
-                                            key={ruleTechnician?.id}
-                                            secondaryAction={
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon />
-                                                </IconButton>
+                                    <ListItem
+                                        key={ruleClient?.id}
+                                    >
+                                        <ListItemText
+                                            sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
+                                            primary={
+                                                <React.Fragment>
+                                                    <Typography sx={{
+                                                        padding: 1, color: "#442d5d",
+                                                        fontSize: 20,
+                                                        borderRadius: "5%",
+                                                    }}>
+                                                        {ruleClient ? ruleClient.name : 'No name available'}
+                                                    </Typography>
+                                                </React.Fragment>
                                             }
-                                        >
-                                            <ListItemText
-                                                sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
-                                                primary={
-                                                    <React.Fragment>
-                                                        <Typography sx={{
-                                                            padding: 1, color: "#442d5d",
-                                                            fontSize: 20,
-                                                            borderRadius: "5%",
-                                                        }}>
-                                                            {ruleTechnician ? ruleTechnician.name : 'No name available'}
-                                                        </Typography>
-                                                    </React.Fragment>
-                                                }
-                                            />
-                                        </ListItem>
+                                        />
+                                    </ListItem>
 
                                 </List>
                             </Item>
