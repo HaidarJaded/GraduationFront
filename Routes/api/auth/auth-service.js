@@ -34,15 +34,17 @@ const login = async (login) => {
   }
 };
 
+
+
 const logout = async () => {
     try {
       const response = await axiosInstance.post(`${BASE_URL}${LOGOUT_URL}`);
-      
+
       if (response.status === 200) {
         Cookies.remove("auth-token");
         localStorage.removeItem("profile");
       }
-  
+
       return {
         status: response.status,
       };

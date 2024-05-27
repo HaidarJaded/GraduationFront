@@ -1,20 +1,20 @@
 import * as React from "react";
 import getConfig from "next/config";
-import axios from "axios";
-import Cookies from "js-cookie";
 
-import { responseErrorHandlers } from "../../wrappers";
+import {responseErrorHandlers} from "../../wrappers";
 import axiosInstance from "../../utils/auth/axiosInstance";
 
-const { publicRuntimeConfig } = getConfig();
+const {publicRuntimeConfig} = getConfig();
 
-const CLIENTS_URL = "api/permissions";
+const permissions_URL = "api/permissions";
+const permissionsClients_URL = "api/permission_clients";
+const permissionsUsers_URL = "api/permission_users";
 const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 
 const getAllPermissions = async () => {
     try {
         return await axiosInstance
-            .get(`${BASE_URL}${CLIENTS_URL}`)
+            .get(`${BASE_URL}${permissions_URL}`)
             .then(async (response) => {
                 return await response?.data;
             });
@@ -23,8 +23,24 @@ const getAllPermissions = async () => {
     }
 };
 
+const addPermissions = async (permissions) => {
+    try {
+        const response = await axiosInstance.post(`${BASE_URL}${permissionsClients_URL}`, permissions);
+        return response?.data;
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
+const addPermissionsUser = async (permissions) => {
+    try {
+        const response = await axiosInstance.post(`${BASE_URL}${permissionsUsers_URL}`, permissions);
+        return response?.data;
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
 
 export const permissionsServices = {
-    getAllPermissions,
+    getAllPermissions, addPermissions, addPermissionsUser
 };

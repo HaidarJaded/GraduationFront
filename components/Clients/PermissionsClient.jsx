@@ -269,7 +269,9 @@ export function PermissionsClient({...props}) {
                     open={openAddPermissionsClient}
                     id={rowIdAddPermissionsClient}
                     onClose={handleClose}
-                    update={reloadGrid}/>
+                    update={reloadGrid}
+                    user="Client"/>
+
 
             )}
         </React.Fragment>
