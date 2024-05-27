@@ -64,7 +64,8 @@ export function AllPermissions({...props}) {
                 try {
                     const response = await permissionsServices.addPermissions(dataPermissionsClient);
                     Notify("light", response.message, "success")
-                    props.onCloseDialog()
+                    props.onClose();
+                    update('update');
                     console.log(dataPermissionsClient)
 
                 } catch (error) {
@@ -73,7 +74,9 @@ export function AllPermissions({...props}) {
             } else {
                 console.log("false")
             }
-        } else {
+        }
+        else if (user === "user")
+        {
             let dataPermissionsUser = {};
             Object.assign(dataPermissionsUser, {"permissions_ids": checkedPermissions});
             Object.assign(dataPermissionsUser, {"user_id": id});
@@ -81,7 +84,28 @@ export function AllPermissions({...props}) {
                 try {
                     const response = await permissionsServices.addPermissionsUser(dataPermissionsUser);
                     Notify("light", response.message, "success")
-                    props.onCloseDialog()
+                    props.onClose();
+                    update('update');
+
+                } catch (error) {
+                    console.log(error)
+                }
+            } else {
+                console.log("false")
+            }
+        }
+
+        else if (user === "rule")
+        {
+            let dataPermissionsRule = {};
+            Object.assign(dataPermissionsRule, {"permissions_ids": checkedPermissions});
+            Object.assign(dataPermissionsRule, {"rule_id": id});
+            if (Object.keys(dataPermissionsRule.permissions_ids).length > 0) {
+                try {
+                    const response = await permissionsServices.addPermissionsRule(dataPermissionsRule);
+                    Notify("light", response.message, "success")
+                    props.onClose();
+                    update('update');
 
                 } catch (error) {
                     console.log(error)
@@ -150,7 +174,7 @@ export function AllPermissions({...props}) {
                     </List>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onCloseDialog}>Disagree</Button>
+                    <Button onClick={props?.onClose}>Disagree</Button>
                     <Button type={'submit'}>إضافة</Button>
                 </DialogActions>
             </Dialog>
