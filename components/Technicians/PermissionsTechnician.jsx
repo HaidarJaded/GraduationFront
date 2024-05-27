@@ -17,6 +17,7 @@ import {users} from "../../Routes";
 import Link from "next/link";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import AddIcon from "@mui/icons-material/Add";
+import {AllPermissions} from "../Permissions";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -40,6 +41,12 @@ export function PermissionsTechnician({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id)
     console.log(id);
+
+
+    const [rowIdAddPermissionsTechnician, setRowIdAddPermissionsTechnician] = React.useState(null);
+    const [openAddPermissionsTechnician, setOpenAddPermissionsTechnician] = React.useState(false);
+
+
 
     const [permissionsTechnician, setPermissionsTechnician] = useState([]);
     const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
@@ -70,6 +77,13 @@ export function PermissionsTechnician({...props}) {
     useEffect(() => {
         fetchAndSetPermissions();
     }, []);
+    const handleClose = () => {
+        setOpenAddPermissionsTechnician(false);
+        setRowIdAddPermissionsTechnician(null);
+    };
+    const reloadGrid = async update => {
+        fetchAndSetPermissions()
+    };
     return (
         <React.Fragment>
             <Dialog
@@ -104,7 +118,18 @@ export function PermissionsTechnician({...props}) {
                             }}>
 
                                 <Fab size="small" color="secondary" aria-label="add">
-                                    <AddIcon />
+                                    <IconButton
+                                        edge="start"
+                                        color="inherit"
+                                        onClick={() => {
+                                            setRowIdAddPermissionsTechnician(id);
+                                            setOpenAddPermissionsTechnician(true);
+                                            console.log("ssss")
+                                        }}
+                                        aria-label="close"
+                                    >
+                                        <AddIcon/>
+                                    </IconButton>
                                 </Fab>
                                 <Typography sx={{
                                     color: "#442d5d",
@@ -239,6 +264,14 @@ export function PermissionsTechnician({...props}) {
                     </Grid>
                 </Box>
             </Dialog>
+            {rowIdAddPermissionsTechnician && (
+                <AllPermissions
+                    open={openAddPermissionsTechnician}
+                    id={rowIdAddPermissionsTechnician}
+                    onClose={handleClose}
+                    update={reloadGrid}
+                    user="user"/>
+            )}
         </React.Fragment>
     );
 }
