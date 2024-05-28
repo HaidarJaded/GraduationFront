@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
-import {DataGrid, GridActionsCellItem, GridRowEditStopReasons} from '@mui/x-data-grid';
-import { users} from "../../Routes";
+import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
+import {users} from "../../Routes";
 import {EditDevice} from "../Devices";
 import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
@@ -10,6 +10,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import {styled} from "@mui/material/styles";
+import {Notify} from '../../utils';
+import {PermissionsTechnician} from "./PermissionsTechnician";
+import AddIcon from "@mui/icons-material/Add";
+import {AddUser} from "../Users";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -34,8 +38,6 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
         fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
     },
 }));
-import { Notify } from '../../utils';
-import {PermissionsTechnician} from "./PermissionsTechnician";
 
 export function TechniciansTable() {
     const [rows, setRows] = React.useState([]);
@@ -45,9 +47,12 @@ export function TechniciansTable() {
     // for edit
     const [open, setOpen] = React.useState(false);
     const [openPermissionsTechnician, setOpenPermissionsTechnician] = React.useState(false);
+    const [openAddTechnician, setOpenAddTechnician] = React.useState(false);
 
     const [rowId, setRowId] = React.useState(null);
     const [rowIdPermissionsTechnician, setRowIdPermissionsTechnician] = React.useState(null);
+    const [rowIdAddTechnician, setRowIdAddTechnician] = React.useState(null);
+
     const [deletingId, setDeletingId] = useState(null);
 
     //  function handleClickOpenPermissions(id) {
@@ -55,7 +60,10 @@ export function TechniciansTable() {
     //     setOpenPermissionsTechnician(true);
     //     setRowIdPermissionsTechnician(id);
     // }
-
+    const handleCloseAddTechnician = () => {
+        setOpenAddTechnician(false);
+        setRowIdAddTechnician(null)
+    };
     const handleClosePermissionsTechnician = () => {
         setOpenPermissionsTechnician(false);
         setRowIdPermissionsTechnician(null)
@@ -87,15 +95,15 @@ export function TechniciansTable() {
 
     const columns = [
 
-        { field: 'rowNumber', headerName: '#', width: 0.1, },
-        { field: 'name', headerName: 'الاسم', width: 130 },
-        { field: 'last_name', headerName: 'الكنية', width: 130 },
-        { field: 'at_work', headerName: 'حالة العمل', width: 130 },
-        { field: 'devices_count', headerName: 'الاجهزة المسؤول عنها', width: 150 },
-        { field: 'email', headerName: 'البريد الالكتروني', width: 170 },
-        { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
-        { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
-        { field: 'address', headerName: 'العنوان', width: 170 },
+        {field: 'rowNumber', headerName: '#', width: 0.1,},
+        {field: 'name', headerName: 'الاسم', width: 130},
+        {field: 'last_name', headerName: 'الكنية', width: 130},
+        {field: 'at_work', headerName: 'حالة العمل', width: 130},
+        {field: 'devices_count', headerName: 'الاجهزة المسؤول عنها', width: 150},
+        {field: 'email', headerName: 'البريد الالكتروني', width: 170},
+        {field: 'phone', headerName: 'رقم الهاتف', width: 170},
+        {field: 'created_at', headerName: 'تاريخ التسجيل', width: 160},
+        {field: 'address', headerName: 'العنوان', width: 170},
 
         {
             field: 'actions',
@@ -128,7 +136,7 @@ export function TechniciansTable() {
                         icon={<AdminPanelSettingsIcon/>}
                         label="Show Permissions"
                         className="textPrimary"
-                        onClick={()=>{
+                        onClick={() => {
                             setRowIdPermissionsTechnician(id)
                             setOpenPermissionsTechnician(true)
                         }}
@@ -146,10 +154,10 @@ export function TechniciansTable() {
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
 
-    const fetchAndSetDevices = useCallback(async ()=>{
+    const fetchAndSetDevices = useCallback(async () => {
         const params = {
             'rule*name': 'فني',
-            'withCount':'devices',
+            'withCount': 'devices',
             'page': currentPage,
             'per_page': pageSize,
         };
@@ -161,7 +169,7 @@ export function TechniciansTable() {
 
     useEffect(() => {
         fetchAndSetDevices();
-    }, [fetchAndSetDevices,route, pageSize, currentPage]);
+    }, [fetchAndSetDevices, route, pageSize, currentPage]);
 
 
     const reloadTable = async update => {
@@ -173,6 +181,7 @@ export function TechniciansTable() {
         setCurrentPage(pagination?.current_page)
 
     }, [pagination])
+
     function CustomNoRowsOverlay() {
         return (
             <StyledGridOverlay>
@@ -223,13 +232,13 @@ export function TechniciansTable() {
     const isAllSelected = pageSize >= rowCount;
 
     useEffect(() => {
-        const rowsTechnicians = allTechnicians?.map((user, index)=> ({
+        const rowsTechnicians = allTechnicians?.map((user, index) => ({
             id: user.id,
             rowNumber: index + 1,
             name: user.name,
             last_name: user.last_name,
             at_work: user.at_work === 1 ? "نشط" : "غير نشط",
-            devices_count:user.devices_count,
+            devices_count: user.devices_count,
             email: user.email,
             phone: user.phone,
             created_at: user.created_at,
@@ -356,6 +365,17 @@ export function TechniciansTable() {
                 }}
 
             />
+            <Box sx={{marginRight: 5, direction: "rtl"}}>
+                <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                        endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                        onClick={() => {
+                            setRowIdAddTechnician(2)
+                            setOpenAddTechnician(true)
+                        }}
+                >
+                    إضافة فني
+                </Button>
+            </Box>
             {rowId && (
                 <EditDevice
                     open={open}
@@ -370,6 +390,14 @@ export function TechniciansTable() {
                     open={openPermissionsTechnician}
                     id={rowIdPermissionsTechnician}
                     onClose={handleClosePermissionsTechnician}
+                />
+            )}
+            {rowIdAddTechnician && (
+                <AddUser
+                    open={openAddTechnician}
+                    ruleId={rowIdAddTechnician}
+                    onClose={handleCloseAddTechnician}
+                    update={reloadTable}
                 />
             )}
         </Box>

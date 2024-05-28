@@ -3,5 +3,6 @@ export * from './Title';
 export * from './Rules';
 export * from './Permissions';
 export * from './Notices';
+export * from './Users';
 
 // export * from './Technicians/TechniciansTable';

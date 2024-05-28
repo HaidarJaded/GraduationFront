@@ -17,9 +17,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
+import NotificationsActiveRoundedIcon from '@mui/icons-material/NotificationsActiveRounded';
 import RoomServiceIcon from '@mui/icons-material/RoomService';
-import { BarChart, Devices } from "@mui/icons-material";
 import DevicesIcon from "@mui/icons-material/Devices";
 import EngineeringRoundedIcon from '@mui/icons-material/EngineeringRounded';
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
@@ -176,6 +175,7 @@ export function Layout({ children }) {
                 <Divider />
                 <List sx={{ direction: 'rlt' }}>
                     {[
+
                         { text: 'الصفحة الرئيسية', link: '/Dashboard', icon: <HomeIcon color="#442d5d" /> }, // Example icon for the homepage
                         { text: 'الأجهزة', link: '/devices', icon: <DevicesIcon sx={{ color: "#442d5d" }} /> },
                         { text: 'الأجهزة التي تم تسليمها', link: '/completedDevices', icon: <MdOutlineSendToMobile style={{ color: "#442d5d" }} size={30} /> },
@@ -184,7 +184,7 @@ export function Layout({ children }) {
                         { text: 'العملاء', link: '/clients', icon: <Handshake color="#442d5d" /> },
                         { text: 'الخدمات', link: '/services', icon: <MiscellaneousServicesIcon sx={{ color: "#442d5d" }} /> },
                         { text: 'الطلبات', link: '/orders', icon: <RoomServiceIcon sx={{ color: "#442d5d" }}/> },// Example icon for customers
-                        { text: 'البريد', link: '/notices', icon: <MailIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail
+                        { text: 'الاشعارات', link: '/notices', icon: <NotificationsActiveRoundedIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail
                     ].map((item, index) => (
                         <ListItem key={index} disablePadding sx={{ display: 'block' }}>
                             <Link href={item.link} passHref>

@@ -1,7 +1,6 @@
 import {useRouter} from "next/router";
 import {useEffect} from "react";
 import Cookies from "js-cookie";
-import {Devices} from "../../components/Devices";
 import {AccordionNotices} from "../../components";
 
 
