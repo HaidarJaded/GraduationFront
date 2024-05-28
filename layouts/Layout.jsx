@@ -184,7 +184,7 @@ export function Layout({ children }) {
                         { text: 'العملاء', link: '/clients', icon: <Handshake color="#442d5d" /> },
                         { text: 'الخدمات', link: '/services', icon: <MiscellaneousServicesIcon sx={{ color: "#442d5d" }} /> },
                         { text: 'الطلبات', link: '/orders', icon: <RoomServiceIcon sx={{ color: "#442d5d" }}/> },// Example icon for customers
-                        { text: 'البريد', link: '/mail', icon: <MailIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail
+                        { text: 'البريد', link: '/notices', icon: <MailIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail
                     ].map((item, index) => (
                         <ListItem key={index} disablePadding sx={{ display: 'block' }}>
                             <Link href={item.link} passHref>

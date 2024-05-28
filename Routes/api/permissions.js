@@ -9,6 +9,7 @@ const {publicRuntimeConfig} = getConfig();
 const permissions_URL = "api/permissions";
 const permissionsClients_URL = "api/permission_clients";
 const permissionsUsers_URL = "api/permission_users";
+const permissionsRules_URL = "api/permission_rules";
 const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 
 const getAllPermissions = async () => {
@@ -40,7 +41,16 @@ const addPermissionsUser = async (permissions) => {
     }
 };
 
+const addPermissionsRule = async (permissions) => {
+    try {
+        const response = await axiosInstance.post(`${BASE_URL}${permissionsRules_URL}`, permissions);
+        return response?.data;
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
 export const permissionsServices = {
-    getAllPermissions, addPermissions, addPermissionsUser
+    getAllPermissions, addPermissions, addPermissionsUser,
+    addPermissionsRule
 };
