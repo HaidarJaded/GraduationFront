@@ -29,10 +29,10 @@ export function AllPermissions({...props}) {
     const [allPermissions, setAllPermissions] = useState([]);
 
     const fetchAndSetPermissions = useCallback(async () => {
-        const data = await permissionsServices.getAllPermissions();
-        data ? setAllPermissions(data?.body) : setAllPermissions([]);
-        console.log(data?.body);
-
+        const params={'all_data':1};
+        const data = await permissionsServices.getAllPermissions(params);
+        const allPermissions = data?.body.filter(permission => !props.userPermissions.some(userPermission => userPermission.id === permission.id));
+        data ? setAllPermissions(allPermissions) : setAllPermissions([]);
     }, [])
 
     useEffect(() => {

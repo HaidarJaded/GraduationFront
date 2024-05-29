@@ -12,10 +12,10 @@ const permissionsUsers_URL = "api/permission_users";
 const permissionsRules_URL = "api/permission_rules";
 const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 
-const getAllPermissions = async () => {
+const getAllPermissions = async (params) => {
     try {
         return await axiosInstance
-            .get(`${BASE_URL}${permissions_URL}`)
+            .get(`${BASE_URL}${permissions_URL}`,{params})
             .then(async (response) => {
                 return await response?.data;
             });
