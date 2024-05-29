@@ -13,6 +13,7 @@ import {Notify} from "../../utils";
 import {styled} from "@mui/material/styles";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import {PermissionsClient} from "./PermissionsClient";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -79,7 +80,7 @@ export function ClientsTable() {
     };
 
    //لتعيين قيمة
-    const [allClients, setClients] = useState([]);
+    const [clients, setClients] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
@@ -256,7 +257,7 @@ export function ClientsTable() {
     }
     const isAllSelected = pageSize >= rowCount;
     useEffect(() => {
-        const clientsWithNumbers = allClients.map((client, index) => ({
+        const clientsWithNumbers = clients.map((client, index) => ({
 
             id: client.id,
             rowNumber: index + 1,
@@ -273,7 +274,7 @@ export function ClientsTable() {
         }));
 
         setRows(clientsWithNumbers); // Now `rowsDevices` is derived directly from the updated `devices`
-    }, [allClients]);
+    }, [clients]);
     function range(start, end) {
 
         return Array.from({length: end - start + 2}, (_, i) => start + i);
@@ -369,7 +370,24 @@ export function ClientsTable() {
 
     return (
         <>
-           <Box sx={{flexGrow: 1, width: 1}}>
+            {clients.length===0?(
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                        Loading...
+                    </Typography>
+                    <Box sx={{ width: '50%' }}>
+                        <LinearProgress />
+                    </Box>
+                </Box>
+            ):(
+                <Box sx={{flexGrow: 1, width: 1}}>
 
                     <DataGrid
                         sx={{
@@ -399,14 +417,16 @@ export function ClientsTable() {
                             update={reloadTable}
                         />
                     )}
-               {rowIdPermissionsClient && (
-                   <PermissionsClient
-                       open={openPermissionsClient}
-                       id={rowIdPermissionsClient}
-                       onClose={handleClosePermissionsClient}
-                   />
-               )}
+                    {rowIdPermissionsClient && (
+                        <PermissionsClient
+                            open={openPermissionsClient}
+                            id={rowIdPermissionsClient}
+                            onClose={handleClosePermissionsClient}
+                        />
+                    )}
                 </Box>
+            )}
+
 
         </>
 

@@ -2,6 +2,7 @@ import getConfig from "next/config";
 
 import {responseErrorHandlers} from "../../wrappers";
 import axiosInstance from "../../utils/auth/axiosInstance";
+import {deviceServices} from "./devices";
 
 const {publicRuntimeConfig} = getConfig();
 
@@ -50,7 +51,7 @@ const deleteCompletedDevice = async (id) => {
     }
 }
 
-export const completedDevices = {
+export const completedDevicesServices = {
     getAll,
     updateCompletedDevice,
     getCompletedDevice,

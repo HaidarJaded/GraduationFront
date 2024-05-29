@@ -13,6 +13,7 @@ import { Notify } from '../../utils';
 import {styled} from "@mui/material/styles";
 import {AddUser} from "../Users";
 import AddIcon from "@mui/icons-material/Add";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -122,7 +123,7 @@ export function DeliveriesTable() {
     ];
     //get Deliveries from Api
 
-    const [allDeliveries, setDeliveries] = useState([]);
+    const [deliveries, setDeliveries] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
@@ -205,7 +206,7 @@ export function DeliveriesTable() {
     const isAllSelected = pageSize >= rowCount;
 
     useEffect(() => {
-        const rowsDeliveries =  allDeliveries?.map((user, index) => ({
+        const rowsDeliveries =  deliveries?.map((user, index) => ({
             id: user.id,
             rowNumber: index + 1,
             name: user.name,
@@ -218,7 +219,7 @@ export function DeliveriesTable() {
         }));
 
         setRows(rowsDeliveries); // Now `rowsDevices` is derived directly from the updated `devices`
-    }, [allDeliveries]);
+    }, [deliveries]);
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -314,58 +315,75 @@ export function DeliveriesTable() {
     }
 
     return (
-        <Box sx={{flexGrow: 1, width: 1}}>
+        <>
+            {deliveries.length===0?(<Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                width: '100%',
+            }}>
+                <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    Loading...
+                </Typography>
+                <Box sx={{ width: '50%' }}>
+                    <LinearProgress />
+                </Box>
+            </Box>):( <Box sx={{flexGrow: 1, width: 1}}>
 
-            <DataGrid
-                sx={{
-                    '&.MuiDataGrid-root': {
-                        minHeight: 'calc(100vh - 130px)',
-                        height: '100%',
-                        maxWidth: "calc(100vw - 100px)",
-                    },
-                    '& .MuiDataGrid-main': {
-                        maxHeight: 'calc(100vh - 180px)'
-                    }
-                }}
-                rows={rows}
-                columns={columns}
-                loading={rows.length === 0}
-                components={{
-                    noRowsOverlay: CustomNoRowsOverlay,
-                    Pagination: CustomPagination,
-                }}
+                <DataGrid
+                    sx={{
+                        '&.MuiDataGrid-root': {
+                            minHeight: 'calc(100vh - 130px)',
+                            height: '100%',
+                            maxWidth: "calc(100vw - 100px)",
+                        },
+                        '& .MuiDataGrid-main': {
+                            maxHeight: 'calc(100vh - 180px)'
+                        }
+                    }}
+                    rows={rows}
+                    columns={columns}
+                    loading={rows.length === 0}
+                    components={{
+                        noRowsOverlay: CustomNoRowsOverlay,
+                        Pagination: CustomPagination,
+                    }}
 
-            />
-            <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
-                <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
-                        endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                        onClick={() => {
-                            setRowIdAddDeliveries(4)
-                            setRowNameAddDeliveries('عامل توصيل ');
-                            setOpenAddDeliveries(true);
-                        }}
-                >
-                    إضافة عامل توصيل
-                </Button>
-            </Box>
-            {rowId && (
-                <EditDeliverie
-                    open={open}
-                    onCloseDialog={handleClose}
-                    id={rowId}
-                    update={reloadTable}
                 />
-            )}
-            {rowIdAddDeliveries && (
-                <AddUser
-                    open={openAddDeliveries}
-                    ruleId={rowIdAddDeliveries}
-                    ruleName={rowNameAddDeliveries}
-                    onClose={handleCloseAddTechnician}
-                    update={reloadTable}
-                />
-            )}
+                <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
+                    <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                            onClick={() => {
+                                setRowIdAddDeliveries(4)
+                                setRowNameAddDeliveries('عامل توصيل ');
+                                setOpenAddDeliveries(true);
+                            }}
+                    >
+                        إضافة عامل توصيل
+                    </Button>
+                </Box>
+                {rowId && (
+                    <EditDeliverie
+                        open={open}
+                        onCloseDialog={handleClose}
+                        id={rowId}
+                        update={reloadTable}
+                    />
+                )}
+                {rowIdAddDeliveries && (
+                    <AddUser
+                        open={openAddDeliveries}
+                        ruleId={rowIdAddDeliveries}
+                        ruleName={rowNameAddDeliveries}
+                        onClose={handleCloseAddTechnician}
+                        update={reloadTable}
+                    />
+                )}
 
-        </Box>
+            </Box>)}
+        </>
+
     );
 }

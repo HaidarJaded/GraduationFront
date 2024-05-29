@@ -7,17 +7,17 @@ import {
     GridRowModes,
     GridToolbarContainer
 } from '@mui/x-data-grid';
-import { completedDevices } from "../../Routes/api/completedDevices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
-import {EditDevice} from "../Devices";
 import {EditCompletedDevice} from "./EditCompletedDevice";
-import { Notify } from '../../utils';
+import {Notify} from '../../utils';
+import LinearProgress from "@mui/material/LinearProgress";
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -42,6 +42,7 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
         fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
     },
 }));
+
 function EditToolbar(props) {
     const {setRows, setRowModesModel} = props;
 
@@ -69,7 +70,7 @@ export function CompletedDevices() {
     const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
-   // ================================================
+    // ================================================
 
     const handleRowEditStop = (params, event) => {
         if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -124,16 +125,16 @@ export function CompletedDevices() {
 
     const columns = [
 
-        { field: 'rowNumber', headerName: '#', width: 60 },
-        { field: 'model', headerName: 'Model', width: 130 },
-        { field: 'imei', headerName: 'Imei', width: 150 },
-        { field: 'code', headerName: 'Code', width: 130 },
-        { field: 'client_name', headerName: 'اسم العميل', width: 170 },
-        { field: 'user_name', headerName: 'اسم فني الصيانة', width: 160 },
-        { field: 'cost_to_client', headerName: 'الكلفة', width: 160 },
-        { field: 'status', headerName: 'حالة الجهاز', width: 160 },
-        { field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160 },
-        { field: 'date_delivery_client', headerName: 'تاريخ التسليم', width: 100 },
+        {field: 'rowNumber', headerName: '#', width: 60},
+        {field: 'model', headerName: 'Model', width: 130},
+        {field: 'imei', headerName: 'Imei', width: 150},
+        {field: 'code', headerName: 'Code', width: 130},
+        {field: 'client_name', headerName: 'اسم العميل', width: 170},
+        {field: 'user_name', headerName: 'اسم فني الصيانة', width: 160},
+        {field: 'cost_to_client', headerName: 'الكلفة', width: 160},
+        {field: 'status', headerName: 'حالة الجهاز', width: 160},
+        {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
+        {field: 'date_delivery_client', headerName: 'تاريخ التسليم', width: 100},
 
         {
             field: 'actions',
@@ -167,7 +168,7 @@ export function CompletedDevices() {
     ];
 
 //====================================================================================
-    const [completed_devices, setCompletedDevices] = useState([]);
+    const [completedDevices, setCompletedDevices] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total);
     const [pageSize, setPageSize] = useState(pagination?.per_page);
@@ -175,7 +176,7 @@ export function CompletedDevices() {
 
     const route = useRouter();
 
-    const fetchAndSetCompletedDevices = useCallback(async ()=>{
+    const fetchAndSetCompletedDevices = useCallback(async () => {
         const params = {
             'repaired_in_center': 1,
             'orderBy': 'date_delivery',
@@ -183,7 +184,7 @@ export function CompletedDevices() {
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await completedDevices.getAll(params);
+        const data = await completedDevicesServices.getAll(params);
         // setCompletedDevices(data)
         setPagination(data?.pagination);
         data ? setCompletedDevices(data?.body) : setCompletedDevices([]);
@@ -193,22 +194,20 @@ export function CompletedDevices() {
         fetchAndSetCompletedDevices()
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchAndSetCompletedDevices();
-    },[fetchAndSetCompletedDevices,route, pageSize, currentPage]);
+    }, [fetchAndSetCompletedDevices, route, pageSize, currentPage]);
 
-    useEffect(()=>{
+    useEffect(() => {
         setRowCount(pagination?.total)
         setPageSize(pagination?.per_page)
         setCurrentPage(pagination?.current_page)
-    },[pagination])
-
+    }, [pagination])
 
 
     const isAllSelected = pageSize >= rowCount;
-    useEffect(()=>
-    {
-        const rowsWithNumbers = completed_devices?.map((row, index) => ({
+    useEffect(() => {
+        const rowsWithNumbers = completedDevices?.map((row, index) => ({
             id: row?.id,
             rowNumber: index + 1,
             model: row?.model,
@@ -223,7 +222,7 @@ export function CompletedDevices() {
         }));
         setRows(rowsWithNumbers);
         //console.log(rows);
-    },[completed_devices])
+    }, [completedDevices])
 
     function CustomNoRowsOverlay() {
         return (
@@ -360,6 +359,7 @@ export function CompletedDevices() {
             </Stack>
         );
     }
+
     function range(start, end) {
 
         return Array.from({length: end - start + 2}, (_, i) => start + i);
@@ -367,42 +367,57 @@ export function CompletedDevices() {
 
     return (
 
-        <Box sx={{flexGrow: 1, width: 1,p:0}}>
-            {completed_devices? (<DataGrid
-                    sx={{
-                        '&.MuiDataGrid-root': {
-                            minHeight: 'calc(100vh - 130px)',
-                            height: '100%',
-                            maxWidth: "calc(100vw - 100px)",
-                        },
-                        '& .MuiDataGrid-main': {
-                            maxHeight: 'calc(100vh - 180px)'
-                        }
-                    }}
-                rows={rows}
-                columns={columns}
-                loading={rows.length === 0}
-                components={{
-                    noRowsOverlay: CustomNoRowsOverlay,
-                    Pagination: CustomPagination,
-                }}
-            />):
-                (<Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
-                <Grid item xs={12} sm={6}>
-                    <CircularProgress/>
-                </Grid>
-            </Grid>)}
+        <>
+            {completedDevices.length===0 ?(
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                        Loading...
+                    </Typography>
+                    <Box sx={{ width: '50%' }}>
+                        <LinearProgress />
+                    </Box>
+                </Box>
+            ):(
+                <Box sx={{flexGrow: 1, width: 1, p: 0}}>
+                    <DataGrid
+                        sx={{
+                            '&.MuiDataGrid-root': {
+                                minHeight: 'calc(100vh - 130px)',
+                                height: '100%',
+                                maxWidth: "calc(100vw - 100px)",
+                            },
+                            '& .MuiDataGrid-main': {
+                                maxHeight: 'calc(100vh - 180px)'
+                            }
+                        }}
+                        rows={rows}
+                        columns={columns}
+                        loading={rows.length === 0}
+                        components={{
+                            noRowsOverlay: CustomNoRowsOverlay,
+                            Pagination: CustomPagination,
+                        }}
+                    />
 
+                    {rowId && (
+                        <EditCompletedDevice
+                            open={open}
+                            onCloseDialog={handleClose}
+                            id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
+                </Box>
 
-            {rowId && (
-                <EditCompletedDevice
-                    open={open}
-                    onCloseDialog={handleClose}
-                    id={rowId}
-                    update={reloadTable}
-                />
             )}
-        </Box>
+        </>
     );
 
 }
