@@ -5,15 +5,13 @@ import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {useCallback, useEffect, useState} from "react";
+import {Box, CircularProgress, Grid, Pagination, Select, Stack, Typography} from "@mui/material";
+import {servicesServices} from "../../Routes/api/services";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -26,86 +24,91 @@ const ExpandMore = styled((props) => {
     }),
 }));
 
+
 export function RecipeReviewCard() {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+    const [services, setServices] = useState([]);
+    const fetchAndSetServices = useCallback(async () => {
+        const params = {
+            "dir": "[asc,desc]",
+            "page": "1",
+            "per_page": "10",
+        };
+        const data = await servicesServices.getAllServices(params);
+        data ? setServices(data?.body) : setServices([]);
+    }, []);
 
+
+    useEffect(() => {
+        fetchAndSetServices();
+        console.log(services)
+    }, [fetchAndSetServices]);
     return (
-        <Card sx={{ maxWidth: 335,minWidth:335}}>
-            <CardHeader
-                avatar={
-                    <Avatar sx={{ bgcolor: '#50439ccc' }} aria-label="recipe">
-                       S
-                    </Avatar>
-                }
-                // action={
-                //     <IconButton aria-label="settings">
-                //         <MoreVertIcon />
-                //     </IconButton>
-                // }
-                title="consequatur خدمة "
-               //created_at
-                subheader="September 14, 2016"
-            />
-            <CardMedia
-                component="img"
-                height="194"
-                image="/assets/images/svg/logo-black.svg"
-                alt="Paella dish"
-            />
-            <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                    السعر:200$
-                </Typography>
-                <Typography variant="body3" color="text.secondary">
-                    الوقت: 46
-                </Typography>
-            </CardContent>
-            <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                </IconButton>
-                {/*<ExpandMore*/}
-                {/*    expand={expanded}*/}
-                {/*    onClick={handleExpandClick}*/}
-                {/*    aria-expanded={expanded}*/}
-                {/*    aria-label="show more"*/}
-                {/*>*/}
-                {/*    <ExpandMoreIcon />*/}
-                {/*</ExpandMore>*/}
-            </CardActions>
-            {/*<Collapse in={expanded} timeout="auto" unmountOnExit>*/}
-            {/*    <CardContent>*/}
-            {/*        <Typography paragraph>Method:</Typography>*/}
-            {/*        <Typography paragraph>*/}
-            {/*            Heat 1/2 cup of the broth in a pot until simmering, add saffron and set*/}
-            {/*            aside for 10 minutes.*/}
-            {/*        </Typography>*/}
-            {/*        <Typography paragraph>*/}
-            {/*            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over*/}
-            {/*            medium-high heat. Add chicken, shrimp and chorizo, and cook, stirring*/}
-            {/*            occasionally until lightly browned, 6 to 8 minutes. Transfer shrimp to a*/}
-            {/*            large plate and set aside, leaving chicken and chorizo in the pan. Add*/}
-            {/*            pimentón, bay leaves, garlic, tomatoes, onion, salt and pepper, and cook,*/}
-            {/*            stirring often until thickened and fragrant, about 10 minutes. Add*/}
-            {/*            saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.*/}
-            {/*        </Typography>*/}
-            {/*        <Typography paragraph>*/}
-            {/*            Add rice and stir very gently to distribute. Top with artichokes and*/}
-            {/*            peppers, and cook without stirring, until most of the liquid is absorbed,*/}
-            {/*            15 to 18 minutes. Reduce heat to medium-low, add reserved shrimp and*/}
-            {/*            mussels, tucking them down into the rice, and cook again without*/}
-            {/*            stirring, until mussels have opened and rice is just tender, 5 to 7*/}
-            {/*            minutes more. (Discard any mussels that don&apos;t open.)*/}
-            {/*        </Typography>*/}
-            {/*        <Typography>*/}
-            {/*            Set aside off of the heat to let rest for 10 minutes, and then serve.*/}
-            {/*        </Typography>*/}
-            {/*    </CardContent>*/}
-            {/*</Collapse>*/}
-        </Card>
+        <>
+            {services.length===0?(
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                        Loading...
+                    </Typography>
+                    <Box sx={{ width: '50%' }}>
+                        <LinearProgress />
+                    </Box>
+                </Box>
+            ):(
+                <Box>
+                    <Grid container spacing={2}>
+                        {services.map((service) => (
+                            <Grid item xs={12} sm={6} md={6} lg={3} key={service.id}>
+                                <Card sx={{ maxWidth: 295, minWidth: 295, marginX:2,marginY:2 , borderRadius: "20px" }}>
+                                    <CardMedia
+                                        sx={{ marginY: 2, borderRadius: "20px" }}
+                                        component="img"
+                                        height="225"
+                                        image="/assets/images/svg/logo-black.svg"
+                                        alt="Service Image"
+                                    />
+                                    <CardHeader
+                                        avatar={
+                                            <Avatar sx={{ bgcolor: '#50439ccc', padding: 3 }} aria-label="recipe">
+                                                MYP
+                                            </Avatar>
+                                        }
+                                        title={`${service.name} خدمة`}
+                                        subheader={service.created_at}
+                                    />
+                                    <CardContent sx={{ direction: "rtl" }}>
+                                        <Typography variant="body1" color="text.secondary">
+                                            {`السعر: ${service.price}`}
+                                        </Typography>
+                                        <Typography variant="body1" color="text.secondary">
+                                            {`الوقت: ${service.time_required}`}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions disableSpacing>
+                                        <IconButton aria-label="add to favorites">
+                                            <FavoriteIcon />
+                                        </IconButton>
+                                    </CardActions>
+                                </Card>
+
+                            </Grid>
+                        ))}
+
+                    </Grid>
+                    <Pagination count={10} hidePrevButton hideNextButton />
+                </Box>
+            )}
+        </>
     );
 }
