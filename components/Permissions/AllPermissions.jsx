@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {Checkbox, List, ListItem, ListItemButton, ListItemText} from "@mui/material";
+import {Checkbox, CircularProgress, Grid, List, ListItem, ListItemButton, ListItemText} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/router";
 import {permissionsServices} from "../../Routes/api/permissions";
@@ -125,59 +125,68 @@ export function AllPermissions({...props}) {
 
     return (
         <>
-            <Dialog
-                component="form"
-                onSubmit={handleSubmit(onSubmit)}
-                open={open}
-                TransitionComponent={Transition}
-                keepMounted
-                onClose={props?.onClose}
-                aria-describedby="alert-dialog-slide-description"
-            >
-                <DialogTitle sx={
-                    {
-                        fontWeight: "bold",
-                        direction: "rtl",
-                        color: '#20095e'
-                    }
-                }>{"إضافة صلاحية"}</DialogTitle>
-                <DialogContent>
-                    <List dense sx={{
-                        width: '100%',
-                        maxWidth: 560,
-                        bgcolor: '#ddd2d245',
-                        borderRadius: '10px',
-                        paddingRight: '44px'
-                    }}>
+            {allPermissions.length===0?(
+                <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
+                    <Grid item xs={12} sm={6}>
+                        <CircularProgress/>
+                    </Grid>
+                </Grid>
+            ):(
+                <Dialog
+                    component="form"
+                    onSubmit={handleSubmit(onSubmit)}
+                    open={open}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={props?.onClose}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle sx={
+                        {
+                            fontWeight: "bold",
+                            direction: "rtl",
+                            color: '#20095e'
+                        }
+                    }>{"إضافة صلاحية"}</DialogTitle>
+                    <DialogContent>
+                        <List dense sx={{
+                            width: '100%',
+                            maxWidth: 560,
+                            bgcolor: '#ddd2d245',
+                            borderRadius: '10px',
+                            paddingRight: '44px'
+                        }}>
 
-                        {allPermissions.map((permission) => {
-                            //  const labelId = `checkbox-list-secondary-label-${value}`;
-                            return (
-                                <ListItem
-                                    sx={{maxWidth: 560}}
-                                    key={permission.id}
-                                    secondaryAction={
-                                        <Checkbox
-                                            edge="end"
-                                            checked={checkedPermissions.indexOf(permission.id) !== -1}
-                                            onChange={() => handleToggle(permission.id)}
-                                        />
-                                    }
+                            {allPermissions.map((permission) => {
+                                //  const labelId = `checkbox-list-secondary-label-${value}`;
+                                return (
+                                    <ListItem
+                                        sx={{maxWidth: 560}}
+                                        key={permission.id}
+                                        secondaryAction={
+                                            <Checkbox
+                                                edge="end"
+                                                checked={checkedPermissions.indexOf(permission.id) !== -1}
+                                                onChange={() => handleToggle(permission.id)}
+                                            />
+                                        }
 
-                                >
-                                    <ListItemButton>
-                                        <ListItemText id={permission.id} primary={permission.name}/>
-                                    </ListItemButton>
-                                </ListItem>
-                            );
-                        })}
-                    </List>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={props?.onClose}>Disagree</Button>
-                    <Button type={'submit'}>إضافة</Button>
-                </DialogActions>
-            </Dialog>
+                                    >
+                                        <ListItemButton>
+                                            <ListItemText id={permission.id} primary={permission.name}/>
+                                        </ListItemButton>
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={props?.onClose}>Disagree</Button>
+                        <Button type={'submit'}>إضافة</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+
         </>
     );
 }

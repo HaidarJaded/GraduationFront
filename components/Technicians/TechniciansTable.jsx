@@ -14,6 +14,7 @@ import {Notify} from '../../utils';
 import {PermissionsTechnician} from "./PermissionsTechnician";
 import AddIcon from "@mui/icons-material/Add";
 import {AddUser} from "../Users";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -149,7 +150,7 @@ export function TechniciansTable() {
     ];
     //get Technicians from Api
 
-    const [allTechnicians, setTechnicians] = useState([]);
+    const [technicians, setTechnicians] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
@@ -233,7 +234,7 @@ export function TechniciansTable() {
     const isAllSelected = pageSize >= rowCount;
 
     useEffect(() => {
-        const rowsTechnicians = allTechnicians?.map((user, index) => ({
+        const rowsTechnicians = technicians?.map((user, index) => ({
             id: user.id,
             rowNumber: index + 1,
             name: user.name,
@@ -247,7 +248,7 @@ export function TechniciansTable() {
         }));
 
         setRows(rowsTechnicians); // Now `rowsDevices` is derived directly from the updated `devices`
-    }, [allTechnicians]);
+    }, [technicians]);
 
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
@@ -344,65 +345,83 @@ export function TechniciansTable() {
     }
 
     return (
-        <Box sx={{flexGrow: 1, width: 1}}>
+     <>
+         {technicians.length===0?  (  <Box sx={{
+             display: 'flex',
+             flexDirection: 'column',
+             justifyContent: 'center',
+             alignItems: 'center',
+             height: '100vh',
+             width: '100%',
+         }}>
+             <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                 Loading...
+             </Typography>
+             <Box sx={{ width: '50%' }}>
+                 <LinearProgress />
+             </Box>
+         </Box>):(<Box sx={{flexGrow: 1, width: 1}}>
 
-            <DataGrid
-                sx={{
-                    '&.MuiDataGrid-root': {
-                        minHeight: 'calc(100vh - 130px)',
-                        height: '100%',
-                        maxWidth: "calc(100vw - 100px)",
-                    },
-                    '& .MuiDataGrid-main': {
-                        maxHeight: 'calc(100vh - 180px)'
-                    }
-                }}
-                rows={rows}
-                columns={columns}
-                loading={rows.length === 0}
-                components={{
-                    noRowsOverlay: CustomNoRowsOverlay,
-                    Pagination: CustomPagination,
-                }}
+             <DataGrid
+                 sx={{
+                     '&.MuiDataGrid-root': {
+                         minHeight: 'calc(100vh - 130px)',
+                         height: '100%',
+                         maxWidth: "calc(100vw - 100px)",
+                     },
+                     '& .MuiDataGrid-main': {
+                         maxHeight: 'calc(100vh - 180px)'
+                     }
+                 }}
+                 rows={rows}
+                 columns={columns}
+                 loading={rows.length === 0}
+                 components={{
+                     noRowsOverlay: CustomNoRowsOverlay,
+                     Pagination: CustomPagination,
+                 }}
 
-            />
-            <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
-                <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
-                        endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                        onClick={() => {
-                            setRowIdAddTechnician(2)
-                            setRowNameAddTechnician('فني ');
-                            setOpenAddTechnician(true);
-                        }}
-                >
-                    إضافة فني
-                </Button>
-            </Box>
-            {rowId && (
-                <EditDevice
-                    open={open}
-                    onCloseDialog={handleClose}
-                    id={rowId}
-                    update={reloadTable}
-                />
-            )}
+             />
+             <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
+                 <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                         endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                         onClick={() => {
+                             setRowIdAddTechnician(2)
+                             setRowNameAddTechnician('فني ');
+                             setOpenAddTechnician(true);
+                         }}
+                 >
+                     إضافة فني
+                 </Button>
+             </Box>
+             {rowId && (
+                 <EditDevice
+                     open={open}
+                     onCloseDialog={handleClose}
+                     id={rowId}
+                     update={reloadTable}
+                 />
+             )}
 
-            {rowIdPermissionsTechnician && (
-                <PermissionsTechnician
-                    open={openPermissionsTechnician}
-                    id={rowIdPermissionsTechnician}
-                    onClose={handleClosePermissionsTechnician}
-                />
-            )}
-            {rowIdAddTechnician && (
-                <AddUser
-                    open={openAddTechnician}
-                    ruleId={rowIdAddTechnician}
-                    ruleName={rowNameAddTechnician}
-                    onClose={handleCloseAddTechnician}
-                    update={reloadTable}
-                />
-            )}
-        </Box>
+             {rowIdPermissionsTechnician && (
+                 <PermissionsTechnician
+                     open={openPermissionsTechnician}
+                     id={rowIdPermissionsTechnician}
+                     onClose={handleClosePermissionsTechnician}
+                 />
+             )}
+             {rowIdAddTechnician && (
+                 <AddUser
+                     open={openAddTechnician}
+                     ruleId={rowIdAddTechnician}
+                     ruleName={rowNameAddTechnician}
+                     onClose={handleCloseAddTechnician}
+                     update={reloadTable}
+                 />
+             )}
+         </Box>)}
+     </>
+
     );
 }
+
