@@ -18,6 +18,8 @@ import Link from "next/link";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import {AllPermissions} from "../Permissions";
+import { permissionsServices } from '../../Routes/api/permissions';
+import { Notify } from '../../utils';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -45,10 +47,11 @@ export function PermissionsTechnician({...props}) {
 
     const [rowIdAddPermissionsTechnician, setRowIdAddPermissionsTechnician] = React.useState(null);
     const [openAddPermissionsTechnician, setOpenAddPermissionsTechnician] = React.useState(false);
-
+    const [deletingId, setDeletingId] = React.useState(null);
 
 
     const [permissionsTechnician, setPermissionsTechnician] = useState([]);
+    const [permissionsTechnicianRows, setPermissionsTechnicianRows] = useState([]);
     const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
     const [permissions, setPermissions] = useState([]);
     const [ruleTechnician, setRuleTechnician] = useState({});
@@ -70,7 +73,6 @@ export function PermissionsTechnician({...props}) {
             console.log("new test")
 
         }
-        console.log(data ? data.body : []);
     }, []);
 
     useEffect(() => {
@@ -82,6 +84,15 @@ export function PermissionsTechnician({...props}) {
     };
     const reloadGrid = async update => {
         fetchAndSetPermissions()
+    };
+    const handleDeleteClick = (permissionId) => async () => {
+        setDeletingId(permissionId);
+        if (await permissionsServices.deletePermissionFromUser(id, permissionId)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setPermissions(permissions.filter((permission) => permission.id !== id));
+        }
+        setDeletingId(null);
     };
     return (
         <React.Fragment>
@@ -142,36 +153,16 @@ export function PermissionsTechnician({...props}) {
                             <Item>
 
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
-                                    {permissionsRuleTechnician?.map((item, index) => (
-                                        <ListItem
-                                            key={index}
-                                            secondaryAction={
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            }
-                                        >
-                                            <ListItemText
-                                                sx={{ textAlign: "start", margin: 0}}
-                                                primary={    <React.Fragment>
-                                                    <Typography sx={{
-
-                                                        padding: 1, color: "#442d5d",
-                                                        fontSize: 20,
-                                                        borderRadius: "5%",
-                                                    }}>
-                                                        {`صلاحية ${item.name}`}
-                                                    </Typography>
-                                                </React.Fragment>}
-
-                                            />
-                                        </ListItem>
-                                    ))}
                                     {permissions?.map((item, index) => (
                                         <ListItem
                                             key={index}
                                             secondaryAction={
-                                                <IconButton edge="end" aria-label="delete">
+                                                <IconButton edge="end"
+                                                 aria-label="delete" 
+                                                 onClick={handleDeleteClick(item.id)} 
+                                                 disabled={deletingId === item.id}
+                                                 >
+                                                    
                                                     <DeleteIcon />
                                                 </IconButton>
                                             }
@@ -224,20 +215,19 @@ export function PermissionsTechnician({...props}) {
                                     fontSize: 25,
 
                                 }}>
-                                    دور المستخدم :
+                                    صلاحيات دور المستخدم ({ruleTechnician ? ruleTechnician.name : 'No name available'})
                                 </Typography>
 
                             </Box>
                             <Item>
-
                                 <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
                                         <ListItem
                                             key={ruleTechnician?.id}
-                                            secondaryAction={
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            }
+                                            // secondaryAction={
+                                            //     <IconButton edge="end" aria-label="delete">
+                                            //         <DeleteIcon />
+                                            //     </IconButton>
+                                            // }
                                         >
                                             <ListItemText
                                                 sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
@@ -248,7 +238,30 @@ export function PermissionsTechnician({...props}) {
                                                             fontSize: 20,
                                                             borderRadius: "5%",
                                                         }}>
-                                                            {ruleTechnician ? ruleTechnician.name : 'No name available'}
+                                                            {permissionsRuleTechnician?.map((item, index) => (
+                                                                // <ListItem
+                                                                //     key={index}
+                                                                //     secondaryAction={
+                                                                //         <IconButton edge="end" aria-label="delete">
+                                                                //             <DeleteIcon />
+                                                                //         </IconButton>
+                                                                //     }
+                                                                // ></ListItem>
+                                                                    <ListItemText
+                                                                        sx={{ textAlign: "start", margin: 0 }}
+                                                                        primary={<React.Fragment>
+                                                                            <Typography sx={{
+
+                                                                                padding: 1, color: "#442d5d",
+                                                                                fontSize: 20,
+                                                                                borderRadius: "5%",
+                                                                            }}>
+                                                                                {`صلاحية ${item.name}`}
+                                                                            </Typography>
+                                                                        </React.Fragment>}
+                                                                    />
+                                                                
+                                                            ))}
                                                         </Typography>
                                                     </React.Fragment>
                                                 }
