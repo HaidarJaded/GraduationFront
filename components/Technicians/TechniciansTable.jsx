@@ -52,6 +52,7 @@ export function TechniciansTable() {
     const [rowId, setRowId] = React.useState(null);
     const [rowIdPermissionsTechnician, setRowIdPermissionsTechnician] = React.useState(null);
     const [rowIdAddTechnician, setRowIdAddTechnician] = React.useState(null);
+    const [rowNameAddTechnician, setRowNameAddTechnician] = React.useState(null);
 
     const [deletingId, setDeletingId] = useState(null);
 
@@ -370,7 +371,8 @@ export function TechniciansTable() {
                         endIcon={<AddIcon sx={{marginRight: 2}}/>}
                         onClick={() => {
                             setRowIdAddTechnician(2)
-                            setOpenAddTechnician(true)
+                            setRowNameAddTechnician('فني ');
+                            setOpenAddTechnician(true);
                         }}
                 >
                     إضافة فني
@@ -396,6 +398,7 @@ export function TechniciansTable() {
                 <AddUser
                     open={openAddTechnician}
                     ruleId={rowIdAddTechnician}
+                    ruleName={rowNameAddTechnician}
                     onClose={handleCloseAddTechnician}
                     update={reloadTable}
                 />

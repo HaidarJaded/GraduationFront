@@ -120,7 +120,7 @@ export function Layout({ children }) {
     const handleLogout = async () => {
         const response = await authServices.logout()
 
-        if (response?.status == 200) {
+        if (response?.status === 200) {
             Notify("colored", 'You have been logged out successfully.', "success");
             await router.push('/auth/login');
         }

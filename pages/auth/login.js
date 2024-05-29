@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
+import {Box, Button, Container, CssBaseline, InputAdornment, TextField, Typography} from '@mui/material';
 
 import { useRouter } from "next/router";
 
@@ -11,11 +11,22 @@ import Cookies from 'js-cookie';
 import axiosInstance from '../../utils/auth/axiosInstance';
 import getConfig from "next/config";
 import { authServices } from '../../Routes';
+import IconButton from "@mui/material/IconButton";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 
 export default function LoginPage() {
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => {
+        setShowPassword((prev) => !prev);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
     const router = useRouter();
     //what can this code do
     useEffect(() => {
@@ -34,6 +45,7 @@ export default function LoginPage() {
     const formOptions = getValidationObject("email", "password");
     const { register, handleSubmit, formState } = useForm(formOptions);
     const { errors } = formState;
+
 
     const onSubmit = async (email) => {
         const response = await authServices.login(email)
@@ -110,12 +122,25 @@ export default function LoginPage() {
                         fullWidth
                         name="password"
                         label="Password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         id="password"
                         autoComplete="current-password"
                         {...register('password')}
                         helperText={errors.password && errors.password?.message || (data.login?.length > 0 && data.password[0])}
                         error={(errors.password || data.password?.length > 0) && true}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     <Button
                         type="submit"

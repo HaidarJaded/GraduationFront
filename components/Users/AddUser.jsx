@@ -1,16 +1,18 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {Checkbox, List, ListItem, ListItemButton, ListItemText} from "@mui/material";
+import {Box, InputAdornment, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/router";
-import {permissionsServices} from "../../Routes/api/permissions";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import {users} from "../../Routes";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -19,84 +21,42 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export function AddUser({...props}) {
-    const user = props.user
-    const {open} = props;
-    const [ruleId, setRuleId] = useState(props.ruleId)
-    const route = useRouter()
-    const [data, setData] = useState();
-    const {update} = props;
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
-    const [allPermissions, setAllPermissions] = useState([]);
-
-    const fetchAndSetPermissions = useCallback(async () => {
-        const data = await permissionsServices.getAllPermissions();
-        data ? setAllPermissions(data?.body) : setAllPermissions([]);
-        console.log(data?.body);
-
-    }, [])
-
-    useEffect(() => {
-        fetchAndSetPermissions();
-    }, [fetchAndSetPermissions]);
-
-    const [checkedPermissions, setCheckedPermissions] = useState([]);
-
-    const {register, handleSubmit, formState} = useForm();
-    const {errors} = formState;
-    const handleToggle = (value) => {
-        const currentIndex = checkedPermissions.indexOf(value);
-        const newChecked = [...checkedPermissions];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-        setCheckedPermissions(newChecked);
+    const handleClickShowPasswordConfirmation = () => {
+        setShowPasswordConfirmation((prev) => !prev);
     };
 
-    const onSubmit = async () => {
-        if (ruleId === 2) {
-            let dataPermissionsClient = {};
-            Object.assign(dataPermissionsClient, {"permissions_ids": checkedPermissions});
-            Object.assign(dataPermissionsClient, {"client_id": id});
-            if (Object.keys(dataPermissionsClient.permissions_ids).length > 0) {
-                try {
-                    const response = await permissionsServices.addPermissions(dataPermissionsClient);
-                    Notify("light", response.message, "success")
-                    props.onClose();
-                    update('update');
-                    console.log(dataPermissionsClient)
+    const handleMouseDownPasswordConfirmation = (event) => {
+        event.preventDefault();
+    };
+    const handleClickShowPassword = () => {
+        setShowPassword((prev) => !prev);
+    };
 
-                } catch (error) {
-                    console.log(error)
-                }
-            } else {
-                console.log("false")
-            }
-        }
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+    const user = props.user
+    const {open} = props;
+    const [ruleId, setRuleId] = useState(props.ruleId);
+    const [ruleName, setRuleName] = useState(props.ruleName)
+    const {update} = props;
+    const route = useRouter()
 
-        else
-        {
-            let dataPermissionsRule = {};
-            Object.assign(dataPermissionsRule, {"permissions_ids": checkedPermissions});
-            Object.assign(dataPermissionsRule, {"rule_id": id});
-            if (Object.keys(dataPermissionsRule.permissions_ids).length > 0) {
-                try {
-                    const response = await permissionsServices.addPermissionsRule(dataPermissionsRule);
-                    Notify("light", response.message, "success")
-                    props.onClose();
-                    update('update');
+    const [data, setData] = useState({
+        email: "", name: "", last_name: "", rule_id: ruleId, password: "", password_confirmation: "",
+    });
+    const formOptions = getValidationObject("email", "password","password_confirmation");
+    const {register, handleSubmit, formState} = useForm(formOptions);
+    const {errors} = formState;
 
-                } catch (error) {
-                    console.log(error)
-                }
-            } else {
-                console.log("false")
-            }
-        }
-
-
+    const onSubmit = async (user) => {
+        const data = Object.assign(user, {rule_id: ruleId})
+        const response =  await users.addUser(data);
+        Notify("light", response?.message, "success")
+        update('update');
     };
 
     return (
@@ -109,6 +69,7 @@ export function AddUser({...props}) {
                 keepMounted
                 onClose={props?.onClose}
                 aria-describedby="alert-dialog-slide-description"
+                noValidate
             >
                 <DialogTitle sx={
                     {
@@ -116,42 +77,117 @@ export function AddUser({...props}) {
                         direction: "rtl",
                         color: '#20095e'
                     }
-                }>`${ruleId}`اضافة </DialogTitle>
+                }>إضافة {ruleName} </DialogTitle>
                 <DialogContent>
-                    <List dense sx={{
-                        width: '100%',
-                        maxWidth: 560,
-                        bgcolor: '#ddd2d245',
-                        borderRadius: '10px',
-                        paddingRight: '44px'
-                    }}>
+                    <Box   sx={{width: "400px"}}>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
 
-                        {allPermissions.map((permission) => {
-                            //  const labelId = `checkbox-list-secondary-label-${value}`;
-                            return (
-                                <ListItem
-                                    sx={{maxWidth: 560}}
-                                    key={permission.id}
-                                    secondaryAction={
-                                        <Checkbox
-                                            edge="end"
-                                            checked={checkedPermissions.indexOf(permission.id) !== -1}
-                                            onChange={() => handleToggle(permission.id)}
-                                        />
-                                    }
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address "
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                 {...register('email')}
+                                helperText={errors.email && errors.email?.message || (data.email?.length > 0 && data.email[0])}
+                                error={(errors.email || data.email?.length > 0) && true}
+                            />
+                        </Box>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="name"
+                                label="name "
+                                name="name"
+                                autoComplete="email"
+                                autoFocus
+                                 {...register('name')}
+                                helperText={errors.name && errors.name?.message || (data.name?.length > 0 && data.name[0])}
+                                error={(errors.name || data.name?.length > 0) && true}
+                            />
+                        </Box>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="last_name"
+                                label="Last name "
+                                name="last_name"
+                                autoComplete="last_name"
+                                autoFocus
+                                 {...register('last_name')}
+                                helperText={errors.last_name && errors.last_name?.message || (data.last_name?.length > 0 && data.last_name[0])}
+                                error={(errors.last_name || data.last_name?.length > 0) && true}
+                            />
+                        </Box>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                autoComplete="current-password"
+                                {...register('password')}
+                                helperText={errors.password && errors.password?.message || (data.login?.length > 0 && data.password[0])}
+                                error={(errors.password || data.password?.length > 0) && true}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                            >
+                                                {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Box>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password_confirmation"
+                                label="password confirmation"
+                                type={showPasswordConfirmation ? 'text' : 'password'}
+                                id="password_confirmation"
+                                autoComplete="current-password"
+                                {...register('password_confirmation')}
+                                helperText={errors.password_confirmation && errors.password_confirmation?.message || (data.login?.length > 0 && data.password_confirmation[0])}
+                                error={(errors.password_confirmation || data.password_confirmation?.length > 0) && true}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPasswordConfirmation}
+                                                onMouseDown={handleMouseDownPasswordConfirmation}
+                                            >
+                                                {showPasswordConfirmation ? <VisibilityOff/> : <Visibility/>}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Box>
 
-                                >
-                                    <ListItemButton>
-                                        <ListItemText id={permission.id} primary={permission.name}/>
-                                    </ListItemButton>
-                                </ListItem>
-                            );
-                        })}
-                    </List>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onClose}>Disagree</Button>
-                    <Button type={'submit'}>إضافة</Button>
+                    <Button type='submit'>إضافة</Button>
                 </DialogActions>
             </Dialog>
         </>

@@ -22,6 +22,14 @@ const getAll = async (params) => {
     responseErrorHandlers(error?.response);
   }
 };
+const addUser = async (user) => {
+    try {
+        const response = await axiosInstance.post(`${BASE_URL}${USERS_URL}`, user);
+        return response?.data;
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
 const deleteUser = async (id) => {
   try {
@@ -48,5 +56,6 @@ const getAllPermissions = async (id,params) => {
 };
 export const users = {
   getAll,
+  addUser,
   deleteUser, getAllPermissions
 };
