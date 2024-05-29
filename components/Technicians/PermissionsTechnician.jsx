@@ -93,6 +93,7 @@ export function PermissionsTechnician({...props}) {
             setPermissions(permissions.filter((permission) => permission.id !== id));
         }
         setDeletingId(null);
+        reloadGrid("update")
     };
     return (
         <React.Fragment>
@@ -158,11 +159,12 @@ export function PermissionsTechnician({...props}) {
                                             key={index}
                                             secondaryAction={
                                                 <IconButton edge="end"
-                                                 aria-label="delete" 
-                                                 onClick={handleDeleteClick(item.id)} 
+                                                 aria-label="delete"
+                                                 onClick={handleDeleteClick(item.id)}
                                                  disabled={deletingId === item.id}
+
                                                  >
-                                                    
+
                                                     <DeleteIcon />
                                                 </IconButton>
                                             }
@@ -198,7 +200,7 @@ export function PermissionsTechnician({...props}) {
                                 borderRadius: "5%",
                             }}>
 
-                                <Link href={'/rules'} passHref>  {/* Remove the underline and style as needed */}
+                                <Link href={'/rules'} passHref>
                                     <IconButton edge="start">
                                         <Typography sx={{
                                             color: "#442d5d",

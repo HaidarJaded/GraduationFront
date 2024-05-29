@@ -62,9 +62,22 @@ const deletePermissionFromUser = async (userId, permissionId) => {
         responseErrorHandlers(error?.response);
     }
 }
+const deletePermissionFromClient = async (clientId, permissionId) => {
+    try {
+        const response = await axiosInstance.delete(`${BASE_URL}${permissionsClients_URL}/${clientId}/${permissionId}`)
+        if (response.status == 200) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        return false;
+        responseErrorHandlers(error?.response);
+    }
+}
 
 export const permissionsServices = {
     getAllPermissions, addPermissions, addPermissionsUser,
     addPermissionsRule,
-    deletePermissionFromUser
+    deletePermissionFromUser,
+    deletePermissionFromClient
 };
