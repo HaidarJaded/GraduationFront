@@ -55,7 +55,10 @@ export function AddUser({...props}) {
     const onSubmit = async (user) => {
         const data = Object.assign(user, {rule_id: ruleId})
         const response =  await users.addUser(data);
-        Notify("light", response?.message, "success")
+        if (response?.status === 200) {
+            Notify("colored", `${response?.message || 'Logged in success'}`, "success")
+        }
+        props.onClose();
         update('update');
     };
 

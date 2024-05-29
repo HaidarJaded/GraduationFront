@@ -366,7 +366,7 @@ export function TechniciansTable() {
                 }}
 
             />
-            <Box sx={{marginRight: 5, direction: "rtl"}}>
+            <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
                 <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
                         endIcon={<AddIcon sx={{marginRight: 2}}/>}
                         onClick={() => {

@@ -24,12 +24,21 @@ const getAll = async (params) => {
 };
 const addUser = async (user) => {
     try {
-        const response = await axiosInstance.post(`${BASE_URL}${USERS_URL}`, user);
-        return response?.data;
+        return await axiosInstance
+            .post(`${BASE_URL}${USERS_URL}`, user)
+            .then(async (response) => {
+                const result = await response?.data;
+                return {
+                    data: result,
+                    status: response?.status,
+                };
+            });
     } catch (error) {
         responseErrorHandlers(error?.response);
     }
 };
+
+
 
 const deleteUser = async (id) => {
   try {
