@@ -2,7 +2,8 @@ import {useRouter} from "next/router";
 import {useEffect} from "react";
 import Cookies from "js-cookie";
 import {RecipeReviewCard} from "../../components/Services";
-import {Box} from "@mui/material";
+import {Box, Grid} from "@mui/material";
+import {Title} from "../../components";
 
 export default function TechniciansPage() {
     const router = useRouter();
@@ -13,18 +14,6 @@ export default function TechniciansPage() {
         }
     }, [router]);
     return (
-        <Box sx={{
-             display: "flex",
-            flexWrap: 'wrap',
-            flexDirection: 'row-reverse',
-            justifyContent: 'space-between',
-            alignContent: 'flex-start',
-            alignItems: 'space-between'
-        }}>
-            <RecipeReviewCard/>
-            <RecipeReviewCard/>
-            <RecipeReviewCard/>
-            <RecipeReviewCard/>
-        </Box>
+        <RecipeReviewCard/>
     );
 }
