@@ -52,6 +52,7 @@ export function PermissionsTechnician({...props}) {
     const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
     const [permissions, setPermissions] = useState([]);
     const [ruleTechnician, setRuleTechnician] = useState({});
+    const [allTechnicianPermission, setAllTechnicianPermission] = useState({});
     const fetchAndSetPermissions = useCallback(async () => {
         const params = {
             'with': 'permissions,rule.permissions',
@@ -62,6 +63,7 @@ export function PermissionsTechnician({...props}) {
             setPermissionsRuleTechnician(data.body?.rule?.permissions || []);
             setPermissions(data.body?.permissions || []);
             setRuleTechnician(data.body?.rule || {});
+            setAllTechnicianPermission(permissions.concat(permissionsRuleTechnician))
             console.log("test")
         } else {
             setPermissionsTechnician([]);
@@ -270,7 +272,8 @@ export function PermissionsTechnician({...props}) {
                     id={rowIdAddPermissionsTechnician}
                     onClose={handleClose}
                     update={reloadGrid}
-                    user="user"/>
+                    user="user"
+                    userPermissions={allTechnicianPermission}/>
             )}
         </React.Fragment>
     );
