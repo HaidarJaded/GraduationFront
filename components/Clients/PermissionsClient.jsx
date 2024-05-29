@@ -18,6 +18,8 @@ import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutl
 import {clientsServices} from "../../Routes/api/clients";
 import AddIcon from "@mui/icons-material/Add";
 import {AllPermissions} from "../Permissions";
+import {permissionsServices} from "../../Routes/api/permissions";
+import {Notify} from "../../utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -37,6 +39,7 @@ export function PermissionsClient({...props}) {
 
     const [rowIdAddPermissionsClient, setRowIdAddPermissionsClient] = React.useState(null);
     const [openAddPermissionsClient, setOpenAddPermissionsClient] = React.useState(false);
+    const [deletingId, setDeletingId] = React.useState(null);
 
 
     const [permissionsClient, setPermissionsClient] = useState([]);
@@ -75,6 +78,16 @@ export function PermissionsClient({...props}) {
     };
     const reloadGrid = async update => {
         fetchAndSetPermissions()
+    };
+    const handleDeleteClick = (permissionId) => async () => {
+        setDeletingId(permissionId);
+        if (await permissionsServices.deletePermissionFromClient(id, permissionId)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            setPermissions(permissions.filter((permission) => permission.id !== id));
+        }
+        setDeletingId(null);
+        reloadGrid("update")
     };
 
     return (
@@ -141,37 +154,17 @@ export function PermissionsClient({...props}) {
                                     minWidth: '50%',
                                     bgcolor: 'background.paper'
                                 }}>
-                                    {permissionsRuleClient?.map((item, index) => (
-                                        <ListItem
-                                            key={index}
-                                            secondaryAction={
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon/>
-                                                </IconButton>
-                                            }
-                                        >
-                                            <ListItemText
-                                                sx={{textAlign: "start", margin: 0}}
-                                                primary={<React.Fragment>
-                                                    <Typography sx={{
-
-                                                        padding: 1, color: "#442d5d",
-                                                        fontSize: 20,
-                                                        borderRadius: "5%",
-                                                    }}>
-                                                        {`صلاحية ${item.name}`}
-                                                    </Typography>
-                                                </React.Fragment>}
-
-                                            />
-                                        </ListItem>
-
-                                    ))}
                                     {permissions?.map((item, index) => (
                                         <ListItem
                                             key={index}
                                             secondaryAction={
-                                                <IconButton edge="end" aria-label="delete">
+                                                <IconButton edge="end"
+                                                            aria-label="delete"
+                                                            onClick={handleDeleteClick(item.id)}
+                                                            disabled={deletingId === item.id}
+
+                                                >
+
                                                     <DeleteIcon/>
                                                 </IconButton>
                                             }
@@ -191,7 +184,9 @@ export function PermissionsClient({...props}) {
 
                                             />
                                         </ListItem>
+
                                     ))}
+
                                 </List>
                             </Item>
 
@@ -207,7 +202,7 @@ export function PermissionsClient({...props}) {
                                 borderRadius: "5%",
                             }}>
 
-                                <Link href={'/rules'} passHref>  {/* Remove the underline and style as needed */}
+                                <Link href={'/rules'} passHref>
                                     <IconButton edge="start">
                                         <Typography sx={{
                                             color: "#442d5d",
@@ -224,24 +219,24 @@ export function PermissionsClient({...props}) {
                                     fontSize: 25,
 
                                 }}>
-                                    دور المستخدم :
+                                    صلاحيات دور المستخدم ({ruleClient ? ruleClient.name : 'No name available'})
                                 </Typography>
 
                             </Box>
 
                             <Item>
 
-                                <List sx={{
-                                    width: '100%',
-                                    maxWidth: '100%',
-                                    minWidth: '50%',
-                                    bgcolor: 'background.paper'
-                                }}>
+                                <List sx={{ width: '100%', maxWidth: '100%', minWidth: '50%', bgcolor: 'background.paper' }}>
                                     <ListItem
                                         key={ruleClient?.id}
+                                        // secondaryAction={
+                                        //     <IconButton edge="end" aria-label="delete">
+                                        //         <DeleteIcon />
+                                        //     </IconButton>
+                                        // }
                                     >
                                         <ListItemText
-                                            sx={{textAlign: "start", margin: 1, fontSize: 100}}
+                                            sx={{ textAlign: "start", margin: 1, fontSize: 100 }}
                                             primary={
                                                 <React.Fragment>
                                                     <Typography sx={{
@@ -249,7 +244,30 @@ export function PermissionsClient({...props}) {
                                                         fontSize: 20,
                                                         borderRadius: "5%",
                                                     }}>
-                                                        {ruleClient ? ruleClient.name : 'No name available'}
+                                                        {permissionsRuleClient?.map((item, index) => (
+                                                            // <ListItem
+                                                            //     key={index}
+                                                            //     secondaryAction={
+                                                            //         <IconButton edge="end" aria-label="delete">
+                                                            //             <DeleteIcon />
+                                                            //         </IconButton>
+                                                            //     }
+                                                            // ></ListItem>
+                                                            <ListItemText
+                                                                sx={{ textAlign: "start", margin: 0 }}
+                                                                primary={<React.Fragment>
+                                                                    <Typography sx={{
+
+                                                                        padding: 1, color: "#442d5d",
+                                                                        fontSize: 20,
+                                                                        borderRadius: "5%",
+                                                                    }}>
+                                                                        {`صلاحية ${item.name}`}
+                                                                    </Typography>
+                                                                </React.Fragment>}
+                                                            />
+
+                                                        ))}
                                                     </Typography>
                                                 </React.Fragment>
                                             }
@@ -270,7 +288,8 @@ export function PermissionsClient({...props}) {
                     id={rowIdAddPermissionsClient}
                     onClose={handleClose}
                     update={reloadGrid}
-                    user="Client"/>
+                    user="Client"
+                    userPermissions={permissions}/>
 
 
             )}
