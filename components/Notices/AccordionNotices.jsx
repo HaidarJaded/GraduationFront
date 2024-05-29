@@ -63,7 +63,7 @@ export function AccordionNotices() {
 
     useEffect(() => {
         fetchAndSetNotifications();
-    }, []);
+    }, [fetchAndSetNotifications]);
 
     return (
         <Box>

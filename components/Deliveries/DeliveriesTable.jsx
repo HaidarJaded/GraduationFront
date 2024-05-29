@@ -11,6 +11,8 @@ import {EditDevice} from "../Devices";
 import {EditDeliverie} from "./EditDeliverie";
 import { Notify } from '../../utils';
 import {styled} from "@mui/material/styles";
+import {AddUser} from "../Users";
+import AddIcon from "@mui/icons-material/Add";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -40,10 +42,18 @@ export function DeliveriesTable() {
 
     //get users from Api
     const [open, setOpen] = React.useState(false);
+    const [openAddDeliveries, setOpenAddDeliveries] = React.useState(false);
+
     const [rows, setRows] = React.useState([]);
     const [rowId, setRowId] = React.useState(null);
-    const [deletingId, setDeletingId] = useState(null);
+    const [rowIdAddDeliveries, setRowIdAddDeliveries] = React.useState(null);
+    const [rowNameAddDeliveries, setRowNameAddDeliveries] = React.useState(null);
 
+    const [deletingId, setDeletingId] = useState(null);
+    const handleCloseAddTechnician = () => {
+        setOpenAddDeliveries(false);
+        setRowIdAddDeliveries(null)
+    };
 
     const handleClose = () => {
         setOpen(false);
@@ -136,7 +146,7 @@ export function DeliveriesTable() {
         fetchAndSetUsers();
     }, [fetchAndSetUsers,route, pageSize, currentPage]);
     const reloadTable = async update => {
-        fetchAndSetDevices()
+        fetchAndSetUsers()
     };
     useEffect(() => {
         setRowCount(pagination?.total)
@@ -326,6 +336,18 @@ export function DeliveriesTable() {
                 }}
 
             />
+            <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
+                <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                        endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                        onClick={() => {
+                            setRowIdAddDeliveries(4)
+                            setRowNameAddDeliveries('عامل توصيل ');
+                            setOpenAddDeliveries(true);
+                        }}
+                >
+                    إضافة عامل توصيل
+                </Button>
+            </Box>
             {rowId && (
                 <EditDeliverie
                     open={open}
@@ -334,6 +356,16 @@ export function DeliveriesTable() {
                     update={reloadTable}
                 />
             )}
+            {rowIdAddDeliveries && (
+                <AddUser
+                    open={openAddDeliveries}
+                    ruleId={rowIdAddDeliveries}
+                    ruleName={rowNameAddDeliveries}
+                    onClose={handleCloseAddTechnician}
+                    update={reloadTable}
+                />
+            )}
+
         </Box>
     );
 }

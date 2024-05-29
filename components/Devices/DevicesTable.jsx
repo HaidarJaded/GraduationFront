@@ -21,6 +21,8 @@ import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "
 import {styled} from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
 import { Notify } from '../../utils';
+import LinearProgress from "@mui/material/LinearProgress";
+import IconButton from "@mui/material/IconButton";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -396,53 +398,65 @@ export function Devices() {
 
     return (
         <>
-            {devices ? (<Box sx={{ flexGrow: 1, width: 1 }}>
+            {devices.length===0 ?
+                 (  <Box sx={{
+                     display: 'flex',
+                     flexDirection: 'column',
+                     justifyContent: 'center',
+                     alignItems: 'center',
+                     height: '100vh',
+                     width: '100%',
+                 }}>
+                     <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                         Loading...
+                     </Typography>
+                     <Box sx={{ width: '50%' }}>
+                         <LinearProgress />
+                     </Box>
+                 </Box>):(
 
-                <DataGrid
-                    sx={{
-                        '&.MuiDataGrid-root': {
-                            minHeight: 'calc(100vh - 130px)',
-                            height: '100%',
-                            maxWidth: "calc(100vw - 100px)",
-                        },
-                        '& .MuiDataGrid-main': {
-                            maxHeight: 'calc(100vh - 180px)'
-                        }
-                    }}
-                    rows={rows}
-                    columns={columns}
-                    loading={rows.length === 0}
-                    // checkboxSelection
-                    // rowModesModel={rowModesModel}
-                    // onRowModesModelChange={handleRowModesModelChange}
-                    // onRowEditStop={handleRowEditStop}
-                    // processRowUpdate={processRowUpdate}
-                    // slots={{
-                    //     toolbar: EditToolbar,
-                    // }}
-                    // slotProps={{
-                    //     toolbar: {setRows, setRowModesModel},
-                    // }}
-                    components={{
-                        noRowsOverlay: CustomNoRowsOverlay,
-                        Pagination: CustomPagination,
-                    }}
 
-                />
-                {rowId && (
-                    <EditDevice
-                        open={open}
-                        onCloseDialog={handleClose}
-                        id={rowId}
-                        update={reloadTable}
+                    <Box sx={{ flexGrow: 1, width: 1 }}>
+                    <DataGrid
+                        sx={{
+                            '&.MuiDataGrid-root': {
+                                minHeight: 'calc(100vh - 130px)',
+                                height: '100%',
+                                maxWidth: "calc(100vw - 80px)",
+                            },
+                            '& .MuiDataGrid-main': {
+                                maxHeight: 'calc(100vh - 180px)'
+                            }
+                        }}
+                        rows={rows}
+                        columns={columns}
+                        loading={rows.length === 0}
+                        // checkboxSelection
+                        // rowModesModel={rowModesModel}
+                        // onRowModesModelChange={handleRowModesModelChange}
+                        // onRowEditStop={handleRowEditStop}
+                        // processRowUpdate={processRowUpdate}
+                        // slots={{
+                        //     toolbar: EditToolbar,
+                        // }}
+                        // slotProps={{
+                        //     toolbar: {setRows, setRowModesModel},
+                        // }}
+                        components={{
+                            noRowsOverlay: CustomNoRowsOverlay,
+                            Pagination: CustomPagination,
+                        }}
+
                     />
-                )}
-            </Box>)
-                : (<Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
-                    <Grid item xs={12} sm={6}>
-                        <CircularProgress />
-                    </Grid>
-                </Grid>)}
+                    {rowId && (
+                        <EditDevice
+                            open={open}
+                            onCloseDialog={handleClose}
+                            id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
+                </Box>)}
         </>
 
     );
