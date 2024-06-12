@@ -12,13 +12,15 @@ import {useRouter} from "next/router";
 import {Notify} from "../../utils";
 // import {ModelsEnum} from "../../enums";
 // import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
-import {completedDevices} from "../../Routes/api/completedDevices";
+import {completedDevices, completedDevicesServices} from "../../Routes/api/completedDevices";
+import {deviceServices} from "../../Routes";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export function EditCompletedDevice({...props}) {
+    console.log("EditCompletedDevice after open pop",props.id);
     const {open} = props;
     const [id, setId] = useState(props.id)
     const route = useRouter()
@@ -31,15 +33,22 @@ export function EditCompletedDevice({...props}) {
             'orderBy': 'date_delivery',
             'dir': 'desc',
         };
-        console.log(id);
-        const response = await completedDevices.getCompletedDevice(id, params);
-        await setData(response);
-    }, [id])
+        console.log("shhsffffeesss", id);
+        const response = await completedDevicesServices.getCompletedDevice(id, params);
+        setData(response);
+        console.log(response);
+    }, [id]);
 
+    useEffect(() => {
+        // تحديث id عندما تتغير props.id
+        setId(props.id);
+    }, [props.id]);
 
     useEffect(() => {
         fetchAndSetCompletedDevice();
-    }, [fetchAndSetCompletedDevice])
+    }, [id, fetchAndSetCompletedDevice]);
+
+
     const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
@@ -56,7 +65,7 @@ export function EditCompletedDevice({...props}) {
             Object.assign(dataDevice, {"user_name": selectedUserName})
         if (Object.keys(dataDevice).length > 0) {
             try {
-                const response = await completedDevices.updateCompletedDevice(id, dataDevice);
+                const response = await completedDevicesServices.updateCompletedDevice(id, dataDevice);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');

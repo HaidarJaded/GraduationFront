@@ -81,6 +81,7 @@ export function CompletedDevices() {
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState();
     const handleEditClick = (id) => () => {
+        console.log("onSubmit called with email:", id);
         setOpen(true)
         setRowId(id)
         console.log(id);

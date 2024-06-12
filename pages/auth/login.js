@@ -48,6 +48,7 @@ export default function LoginPage() {
 
 
     const onSubmit = async (email) => {
+
         const response = await authServices.login(email)
         if (response?.status === 200) {
             Notify("colored", `${response?.message || 'Logged in success'}`, "success")
