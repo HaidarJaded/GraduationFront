@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,45 +8,57 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
+import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
-// import {ModelsEnum} from "../../enums";
-// import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
-import {completedDevices, completedDevicesServices} from "../../Routes/api/completedDevices";
-import {deviceServices} from "../../Routes";
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
+//import {ModelsEnum} from "../../enums";
+//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export function EditCompletedDevice({...props}) {
-    console.log("EditCompletedDevice after open pop",props.id);
+    console.log(props.id)
     const {open} = props;
     const [id, setId] = useState(props.id)
     const route = useRouter()
-    const [data, setData] = useState();
+    const [data, setData] = useState({});
+    const dataRef = useRef(data);
     const {update} = props;
 
-    const fetchAndSetCompletedDevice = useCallback(async () => {
+    const [selectedInfo, setSelectedInfo] = useState(data?.info);
+    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
+    const [selectedModel, setSelectedModel] = useState(data?.model);
+    const [modelOptions, setModelOptions] = useState([]);
+
+    useEffect(() => {
+        dataRef.current = data; // Update ref every time data changes
+    }, [data]);
+
+    const fetchAndSetDevice = useCallback(async () => {
         const params = {
             'repaired_in_center': 1,
-            'orderBy': 'date_delivery',
+            'with': 'client,user',
+            'orderBy': 'date_receipt',
             'dir': 'desc',
+            'deliver_to_client': 0,
         };
-        console.log("shhsffffeesss", id);
         const response = await completedDevicesServices.getCompletedDevice(id, params);
         setData(response);
-        console.log(response);
+        console.log("kkkkkkkkkkkkk",response);
     }, [id]);
 
     useEffect(() => {
-        // تحديث id عندما تتغير props.id
-        setId(props.id);
-    }, [props.id]);
+        fetchAndSetDevice();
+    }, [id]);
 
     useEffect(() => {
-        fetchAndSetCompletedDevice();
-    }, [id, fetchAndSetCompletedDevice]);
+        setSelectedInfo(data?.info);
+        setSelectedModel(data?.model);
+        // Update other dependent state as necessary
+    }, [data]);
 
 
     const {register, handleSubmit, formState} = useForm();
@@ -59,13 +71,13 @@ export function EditCompletedDevice({...props}) {
             Object.assign(dataDevice, {"info": selectedInfo})
         // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
         //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
+        console.log(selectedModel)
+        console.log(data?.model)
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
-        if (selectedUserName && selectedUserName !== data?.user_name)
-            Object.assign(dataDevice, {"user_name": selectedUserName})
         if (Object.keys(dataDevice).length > 0) {
             try {
-                const response = await completedDevicesServices.updateCompletedDevice(id, dataDevice);
+                const response = await deviceServices.updateDevice(id, dataDevice);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -76,12 +88,7 @@ export function EditCompletedDevice({...props}) {
         }
     }
 
-    const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    // const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
-    const [selectedModel, setSelectedModel] = useState(data?.model);
-    const [selectedUserName, setSelectedUserName] = useState(data?.user_name);
 
-    //  const [modelOptions, setModelOptions] = useState([]);
 
     // useEffect(() => {
     //     const _ModelOptions = getEnum(ModelsEnum)
@@ -95,11 +102,11 @@ export function EditCompletedDevice({...props}) {
             case 'info' :
                 setSelectedInfo(event.target.value)
                 break;
-            case 'model' :
+            // case 'fix_steps' :
+            //     setSelectedFixSteps(event.target.value)
+            //     break;
+            case 'model':
                 setSelectedModel(event.target.value)
-                break;
-            case 'user_name' :
-                setSelectedUserName(event.target.value)
                 break;
             default:
                 break;
@@ -122,7 +129,7 @@ export function EditCompletedDevice({...props}) {
                         direction: "rtl",
                         color: '#20095e'
                     }
-                }>{"تعديل الأجهزة التي تم تسليمها"}</DialogTitle>
+                }>{"تعديل جهاز"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
@@ -132,7 +139,7 @@ export function EditCompletedDevice({...props}) {
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
                                     name="info"
-                                    defaultValue={`${data?.info || ''}`}
+                                    defaultValue={selectedInfo}
                                     fullWidth
                                     id="info"
                                     label="Info"
@@ -145,59 +152,60 @@ export function EditCompletedDevice({...props}) {
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
                                     name="model"
-                                    defaultValue={`${data?.model || ''}`}
+                                    defaultValue={selectedModel}
                                     fullWidth
                                     id="model"
                                     label="model"
 
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="user_name"
-                                    defaultValue={`${data?.user_name || ''}`}
-                                    fullWidth
-                                    id="user_name"
-                                    label="user name"
+                            {/*<Grid item xs={12} sm={6}>*/}
+                            {/*    <TextField*/}
+                            {/*        margin="normal"*/}
+                            {/*        onKeyUp={handleKeyUp}*/}
+                            {/*        name="fix_steps"*/}
+                            {/*        defaultValue={`${data?.fix_steps || ''}`}*/}
+                            {/*        fullWidth*/}
+                            {/*        id="fix_steps"*/}
+                            {/*        label="Fix Steps"*/}
 
-                                />
-                            </Grid>
-                            {/*    <Grid item xs={12}>*/}
-                            {/*        <FormControl fullWidth>*/}
-                            {/*            <InputLabel*/}
-                            {/*                id="model">*/}
-                            {/*                Model*/}
-                            {/*            </InputLabel>*/}
-                            {/*            <Select*/}
-                            {/*                name={"model"}*/}
-                            {/*                labelId="model"*/}
-                            {/*                id="model"*/}
-                            {/*                value={selectedModel}*/}
-                            {/*                onChange={(event) => setSelectedModel(event.target.value)}*/}
-                            {/*                label="Model"*/}
-                            {/*                MenuProps={{*/}
-                            {/*                    sx: {*/}
-                            {/*                        "&& .Mui-selected": {*/}
-                            {/*                            color: "var(--system-light-theme-color)",*/}
-                            {/*                            backgroundColor: "primary.main",*/}
-                            {/*                        },*/}
+                            {/*    />*/}
+                            {/*</Grid>*/}
+
+                            {/*<Grid item xs={12}>*/}
+                            {/*    <FormControl fullWidth>*/}
+                            {/*        <InputLabel*/}
+                            {/*            id="model">*/}
+                            {/*            Model*/}
+                            {/*        </InputLabel>*/}
+                            {/*        <Select*/}
+                            {/*            name={"model"}*/}
+                            {/*            labelId="model"*/}
+                            {/*            id="model"*/}
+                            {/*            value={selectedModel}*/}
+                            {/*            onChange={(event) => setSelectedModel(event.target.value)}*/}
+                            {/*            label="Model"*/}
+                            {/*            MenuProps={{*/}
+                            {/*                sx: {*/}
+                            {/*                    "&& .Mui-selected": {*/}
+                            {/*                        color: "var(--system-light-theme-color)",*/}
+                            {/*                        backgroundColor: "primary.main",*/}
                             {/*                    },*/}
-                            {/*                }}*/}
-                            {/*            >*/}
-                            {/*                {modelOptions?.map((model) => (*/}
-                            {/*                    <MenuItem*/}
-                            {/*                        key={model.value}*/}
-                            {/*                        value={model.value}*/}
-                            {/*                    >*/}
-                            {/*                        {model.title}*/}
-                            {/*                    </MenuItem>*/}
-                            {/*                ))}*/}
-                            {/*            </Select>*/}
+                            {/*                },*/}
+                            {/*            }}*/}
+                            {/*        >*/}
+                            {/*            {modelOptions?.map((model) => (*/}
+                            {/*                <MenuItem*/}
+                            {/*                    key={model.value}*/}
+                            {/*                    value={model.value}*/}
+                            {/*                >*/}
+                            {/*                    {model.title}*/}
+                            {/*                </MenuItem>*/}
+                            {/*            ))}*/}
+                            {/*        </Select>*/}
 
-                            {/*        </FormControl>*/}
-                            {/*    </Grid>*/}
+                            {/*    </FormControl>*/}
+                            {/*</Grid>*/}
                         </Grid>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>

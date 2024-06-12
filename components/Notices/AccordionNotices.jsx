@@ -56,7 +56,10 @@ export function AccordionNotices() {
     const [notifications, setNotifications] = useState([]);
 
     const fetchAndSetNotifications = useCallback(async () => {
-        const data = await notificationsServices.getAll();
+        const params = {
+            'dir': 'desc'
+        };
+        const data = await notificationsServices.getAll(params);
         setNotifications(data?.body);
         console.log(data?.body)
     }, []);

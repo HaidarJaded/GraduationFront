@@ -9,10 +9,10 @@ const {publicRuntimeConfig} = getConfig();
 const NOTIFICATIONS_URL = "api/notifications/admin";
 const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 
-const getAll = async () => {
+const getAll = async (params) => {
     try {
         return await axiosInstance
-            .get(`${BASE_URL}${NOTIFICATIONS_URL}`)
+            .get(`${BASE_URL}${NOTIFICATIONS_URL}`,{params})
             .then(async (response) => {
                 return await response?.data;
             });
