@@ -13,7 +13,7 @@ import {styled} from "@mui/material/styles";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import ListItem from "@mui/material/ListItem";
-import {users} from "../../Routes";
+import {usersServices} from "../../Routes";
 import Link from "next/link";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import AddIcon from "@mui/icons-material/Add";
@@ -31,11 +31,7 @@ const Item = styled(Paper)(({theme}) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
-const permissionsExample = [
-    { name: 'إدارة المستخدمين', description: 'يمكنه إدارة المستخدمين وتعديل صلاحياتهم' },
-    { name: 'عرض التقارير', description: 'يمكنه عرض التقارير وتحليل البيانات' },
-    // أضف المزيد من الصلاحيات حسب الحاجة
-];
+
 
 
 
@@ -59,7 +55,7 @@ export function PermissionsTechnician({...props}) {
         const params = {
             'with': 'permissions,rule.permissions',
         };
-        const data = await users.getAllPermissions(id, params);
+        const data = await usersServices.getAllPermissions(id, params);
         if (data) {
             setPermissionsTechnician(data.body);
             setPermissionsRuleTechnician(data.body?.rule?.permissions || []);

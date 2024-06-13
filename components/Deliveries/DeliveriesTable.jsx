@@ -71,7 +71,7 @@ export function DeliveriesTable() {
             return;
         }
         setDeletingId(id);
-        if (await users.deleteUser(id)) {
+        if (await usersServices.deleteUser(id)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
             setRows(rows.filter((row) => row.id !== id));
@@ -137,7 +137,7 @@ export function DeliveriesTable() {
             'per_page': pageSize,
 
         };
-        const data = await users.getAll(params);
+        const data = await usersServices.getAll(params);
         data ? setDeliveries(data?.body) : setDeliveries([]);
         setPagination(data?.pagination);
     },[pageSize, currentPage]);

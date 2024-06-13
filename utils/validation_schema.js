@@ -29,6 +29,14 @@ export function getValidationObject() {
                     .required('Password confirmation is required')
                     .oneOf([Yup.ref('password'), null], 'Password confirmation must match');
                 break;
+            case "name":
+                result['name'] = Yup.string()
+                    .required('name is required');
+                break;
+            case "last_name":
+                result['last_name'] = Yup.string()
+                    .required('last name is required');
+                break;
         }
     }
 

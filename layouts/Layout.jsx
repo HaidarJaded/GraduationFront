@@ -18,11 +18,12 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import NotificationsActiveRoundedIcon from '@mui/icons-material/NotificationsActiveRounded';
-import RoomServiceIcon from '@mui/icons-material/RoomService';
+import RoomServiceOutlinedIcon from '@mui/icons-material/RoomServiceOutlined';
 import DevicesIcon from "@mui/icons-material/Devices";
-import EngineeringRoundedIcon from '@mui/icons-material/EngineeringRounded';
+import EngineeringOutlinedIcon from '@mui/icons-material/EngineeringOutlined';
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import { Handshake } from "lucide-react";
+import { ShoppingCart } from 'lucide-react';
 import { Logout } from "@mui/icons-material";
 import GroupsIcon from '@mui/icons-material/Groups';
 import { HomeIcon } from "lucide-react";
@@ -180,10 +181,11 @@ export function Layout({ children }) {
                         { text: 'الأجهزة', link: '/devices', icon: <DevicesIcon sx={{ color: "#442d5d" }} /> },
                         { text: 'الأجهزة التي تم تسليمها', link: '/completedDevices', icon: <MdOutlineSendToMobile style={{ color: "#442d5d" }} size={30} /> },
                         { text: 'عمّال التوصيل', link: '/deliveries', icon: <GroupsIcon sx={{ color: "#442d5d" }} /> }, // Example icon for devices
-                        { text: 'الفنيين', link: '/technicians', icon: <EngineeringRoundedIcon sx={{ color: "#442d5d" }} /> }, // Example icon for technicians
+                        { text: 'الفنيين', link: '/technicians', icon: <EngineeringOutlinedIcon sx={{ color: "#442d5d" }} /> }, // Example icon for technicians
                         { text: 'العملاء', link: '/clients', icon: <Handshake color="#442d5d" /> },
+                        { text: 'المنتجات', link: '/products', icon: <ShoppingCart color="#442d5d" /> },
                         { text: 'الخدمات', link: '/services', icon: <MiscellaneousServicesIcon sx={{ color: "#442d5d" }} /> },
-                        { text: 'الطلبات', link: '/orders', icon: <RoomServiceIcon sx={{ color: "#442d5d" }}/> },// Example icon for customers
+                        { text: 'الطلبات', link: '/orders', icon: <RoomServiceOutlinedIcon sx={{ color: "#442d5d" }}/> },// Example icon for customers
                         { text: 'الاشعارات', link: '/notices', icon: <NotificationsActiveRoundedIcon sx={{ color: "#442d5d" }} /> }, // Example icon for mail
                     ].map((item, index) => (
                         <ListItem key={index} disablePadding sx={{ display: 'block' }}>
