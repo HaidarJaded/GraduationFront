@@ -39,7 +39,7 @@ export function AllRulesGrid() {
         const data = await rulesServices.getAllRulePermissions(params);
         if (data) {
             setRules(data?.body);
-
+            console.log(data?.body);
         } else {
 
             console.log("new test")
@@ -101,6 +101,7 @@ const handleClose = () => {
                                         onClick={() => {
                                             setRowIdAddPermissionsRule(rule.id);
                                             setOpenAddPermissionsRule(true);
+                                            setPermissionsRules(rule.permissions);
                                             console.log(rule.id)
                                         }}
                                         aria-label="close"
@@ -147,6 +148,7 @@ const handleClose = () => {
                     id={rowIdAddPermissionsRule}
                     onClose={handleClose}
                     update={reloadGrid}
+                    userPermissions={permissionsRules}
                     user="rule"
                 />
             )}
