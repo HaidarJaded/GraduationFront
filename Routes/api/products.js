@@ -21,9 +21,43 @@ const getAllProducts = async (params) => {
         responseErrorHandlers(error?.response);
     }
 };
+const getProduct = async (id) => {
+    try {
+        return await axiosInstance
+            .get(`${BASE_URL}${PRODUCTS_URL}/${id}`)
+            .then(async (response) => {
+                return await response?.data?.body;
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
+const updateProduct = async (id, params) => {
+    try {
+        return await axiosInstance
+            .put(`${BASE_URL}${PRODUCTS_URL}/${id}`, params)
+            .then(async response => {
+                    return response?.data;
+                }
+            );
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
+const deleteProduct=async (id)=>{
+    try {
+        const response= await axiosInstance.delete(`${BASE_URL}${PRODUCTS_URL}/${id}`);
+        return response.status === 200;
 
+    }  catch (error){
+        responseErrorHandlers(error?.response)
+    }
+};
 
 
 export const servicesProducts = {
     getAllProducts,
+    deleteProduct,
+    getProduct,
+    updateProduct,
 };

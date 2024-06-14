@@ -14,6 +14,10 @@ import {servicesServices} from "../../Routes/api/services";
 import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
 import {Heading} from "lucide-react";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import {Notify} from "../../utils";
+import {EditService} from "../Services/EditService";
+import {EditProduct} from "./EditProduct";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -28,11 +32,35 @@ const ExpandMore = styled((props) => {
 
 
 export function ProductCard() {
-    const [expanded, setExpanded] = React.useState(false);
-
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
+    // const [expanded, setExpanded] = React.useState(false);
+    //
+    // const handleExpandClick = () => {
+    //     setExpanded(!expanded);
+    // };
+    const [open, setOpen] = React.useState(false);
+    const [rowId, setRowId] = React.useState(null);
+    const [deletingId, setDeletingId] = useState(null);
+    const handleEditClick = (id) => () => {
+        setOpen(true)
+        setRowId(id)
     };
+    const handleClose = () => {
+        setOpen(false);
+        setRowId(null)
+    };
+    const handleDeleteClick = (id) => async () => {
+        setDeletingId(id);
+        if (await servicesProducts.deleteProduct(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+        }
+        setDeletingId(null);
+        reloadTable("update")
+    };
+    const reloadTable = async update => {
+        fetchAndSetProducts()
+    };
+
     const [products, setProducts] = useState([]);
     const fetchAndSetProducts = useCallback(async () => {
         const params = {
@@ -98,8 +126,14 @@ export function ProductCard() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
+                                        <IconButton aria-label="edit" sx={{ color: "#f02828" }}>
+                                            <FavoriteIcon
+                                                onClick={handleEditClick(product.id) }/>
+                                        </IconButton>
                                         <IconButton aria-label="edit">
-                                            <FavoriteIcon />
+                                            <DeleteIcon
+                                                onClick={handleDeleteClick(product.id) }
+                                                disabled={deletingId === product.id}/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>
@@ -108,6 +142,14 @@ export function ProductCard() {
                         ))}
 
                     </Grid>
+                    {rowId && (
+                        <EditProduct
+                            open={open}
+                            onCloseDialog={handleClose}
+                            id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
                     <Pagination count={10} hidePrevButton hideNextButton />
                 </Box>
             )}
