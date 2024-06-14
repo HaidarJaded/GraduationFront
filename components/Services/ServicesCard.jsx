@@ -9,11 +9,14 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {useCallback, useEffect, useState} from "react";
-import {Box, CircularProgress, Grid, Pagination, Select, Stack, Typography} from "@mui/material";
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import {Box, Grid, Pagination, Typography} from "@mui/material";
 import {servicesServices} from "../../Routes/api/services";
 import LinearProgress from "@mui/material/LinearProgress";
-import {EditDevice} from "../Devices";
 import {EditService} from "./EditService";
+import {Notify} from "../../utils";
+import {deviceServices} from "../../Routes";
+import {permissionsServices} from "../../Routes/api/permissions";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -31,11 +34,20 @@ export function RecipeReviewCard() {
 
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
-
+    const [deletingId, setDeletingId] = useState(null);
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
+    };
+    const handleDeleteClick = (id) => async () => {
+        setDeletingId(id);
+        if (await servicesServices.deleteService(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+        }
+        setDeletingId(null);
+        reloadTable("update")
     };
     const handleClose = () => {
         setOpen(false);
@@ -116,6 +128,11 @@ export function RecipeReviewCard() {
                                         <IconButton aria-label="edit" sx={{ color: "#f02828" }}>
                                             <FavoriteIcon
                                                 onClick={handleEditClick(service.id) }/>
+                                        </IconButton>
+                                        <IconButton aria-label="edit">
+                                            <DeleteIcon
+                                                onClick={handleDeleteClick(service.id) }
+                                                disabled={deletingId === service.id}/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>

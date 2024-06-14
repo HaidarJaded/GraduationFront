@@ -35,18 +35,29 @@ const getService = async (id) => {
 
 const updateService = async (id, params) => {
     try {
-            return await axiosInstance
-                .put(`${BASE_URL}${SERVICES_URL}/${id}`, params)
-                .then(async response => {
-                return response?.data;
-            }
-        );
+        return await axiosInstance
+            .put(`${BASE_URL}${SERVICES_URL}/${id}`, params)
+            .then(async response => {
+                    return response?.data;
+                }
+            );
     } catch (error) {
         responseErrorHandlers(error?.response);
     }
 };
-
+const deleteService=async (id)=>{
+  try {
+      const response= await axiosInstance.delete(`${BASE_URL}${SERVICES_URL}/${id}`);
+      if (response.status==200) {
+          return true;
+      }
+      return false;
+  }  catch (error){
+      responseErrorHandlers(error?.response)
+  }
+};
 export const servicesServices = {
     getAllServices, getService
-    , updateService
+    , updateService,
+    deleteService
 };
