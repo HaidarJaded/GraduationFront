@@ -12,6 +12,8 @@ import {useCallback, useEffect, useState} from "react";
 import {Box, CircularProgress, Grid, Pagination, Select, Stack, Typography} from "@mui/material";
 import {servicesServices} from "../../Routes/api/services";
 import LinearProgress from "@mui/material/LinearProgress";
+import {EditDevice} from "../Devices";
+import {EditService} from "./EditService";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -26,10 +28,25 @@ const ExpandMore = styled((props) => {
 
 
 export function RecipeReviewCard() {
+
+    const [open, setOpen] = React.useState(false);
+    const [rowId, setRowId] = React.useState(null);
+
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
+    };
+    const handleClose = () => {
+        setOpen(false);
+        setRowId(null)
+    };
+    const handleEditClick = (id) => () => {
+        setOpen(true)
+        setRowId(id)
+    };
+    const reloadTable = async update => {
+        fetchAndSetServices()
     };
     const [services, setServices] = useState([]);
     const fetchAndSetServices = useCallback(async () => {
@@ -84,7 +101,7 @@ export function RecipeReviewCard() {
                                                 MYP
                                             </Avatar>
                                         }
-                                        title={`${service.name} خدمة`}
+                                        title={` خدمة ${service.name}`}
                                         subheader={service.created_at}
                                     />
                                     <CardContent sx={{ direction: "rtl" }}>
@@ -96,8 +113,9 @@ export function RecipeReviewCard() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
-                                        <IconButton aria-label="add to favorites">
-                                            <FavoriteIcon />
+                                        <IconButton aria-label="edit" sx={{ color: "#f02828" }}>
+                                            <FavoriteIcon
+                                                onClick={handleEditClick(service.id) }/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>
@@ -106,6 +124,14 @@ export function RecipeReviewCard() {
                         ))}
 
                     </Grid>
+                    {rowId && (
+                        <EditService
+                            open={open}
+                            onCloseDialog={handleClose}
+                            id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
                     <Pagination count={10} hidePrevButton hideNextButton />
                 </Box>
             )}

@@ -11,6 +11,7 @@ import {useForm} from "react-hook-form";
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
+import {servicesServices} from "../../Routes/api/services";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -25,21 +26,15 @@ export function EditService({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
-    const fetchAndSetDevice = useCallback(async () => {
-        const params = {
-            'repaired_in_center': 1,
-            'with': 'client,user',
-            'orderBy': 'date_receipt',
-            'dir': 'desc',
-            'deliver_to_client': 0,
-        };
-        const response = await deviceServices.getDevice(id, params);
+    const fetchAndSetService = useCallback(async () => {
+
+        const response = await servicesServices.getService(id);
         await setData(response);
     }, [id])
 
     useEffect(() => {
-        fetchAndSetDevice();
-    }, [fetchAndSetDevice]);
+        fetchAndSetService();
+    }, [fetchAndSetService]);
 
 
     const {register, handleSubmit, formState} = useForm();
@@ -47,18 +42,22 @@ export function EditService({...props}) {
 
 
     const onSubmit = async () => {
-        let dataDevice = {}
-        if (selectedInfo && selectedInfo !== data?.info)
-            Object.assign(dataDevice, {"info": selectedInfo})
-        console.log(selectedModel)
-        console.log(data?.model)
-        if (selectedModel && selectedModel !== data?.model)
-            Object.assign(dataDevice, {"model": selectedModel})
-        if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
-            Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
-        if (Object.keys(dataDevice).length > 0) {
+        let dataService = {}
+
+        if (selectedTimeRequired && selectedTimeRequired !== data?.time_required)
+            Object.assign(dataService, {"time_required": selectedTimeRequired})
+
+        if (selectedName && selectedName !== data?.name)
+            Object.assign(dataService, {"name": selectedName})
+
+        if (selectedPrice && selectedPrice !== data?.price)
+            Object.assign(dataService, {"price": selectedPrice})
+
+        if (selectedDeviceModel && selectedDeviceModel !== data?.device_model)
+            Object.assign(dataService, {"device_model": selectedDeviceModel})
+        if (Object.keys(dataService).length > 0) {
             try {
-                const response = await deviceServices.updateDevice(id, dataDevice);
+                const response = await servicesServices.updateService(id, dataService);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -69,9 +68,10 @@ export function EditService({...props}) {
         }
     }
 
-    const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
-    const [selectedModel, setSelectedModel] = useState(data?.model);
+    const [selectedTimeRequired, setSelectedTimeRequired] = useState(data?.time_required);
+    const [selectedName, setSelectedName] = useState(data?.name);
+    const [selectedPrice, setSelectedPrice] = useState(data?.price);
+    const [selectedDeviceModel, setSelectedDeviceModel] = useState(data?.device_model);
     const [modelOptions, setModelOptions] = useState([]);
 
     // useEffect(() => {
@@ -83,14 +83,17 @@ export function EditService({...props}) {
     function handleKeyUp(event) {
         let keyName = event.target.name;
         switch (keyName) {
-            case 'info' :
-                setSelectedInfo(event.target.value)
+            case 'device_model' :
+                setSelectedDeviceModel(event.target.value)
                 break;
-            case 'cost_to_client':
-                setSelectedCostToClient(event.target.value)
+            case 'price':
+                setSelectedPrice(event.target.value)
                 break;
-            case 'model':
-                setSelectedModel(event.target.value)
+            case 'time_required':
+                setSelectedTimeRequired(event.target.value)
+                break;
+            case 'name':
+                setSelectedName(event.target.value)
                 break;
             default:
                 break;
@@ -113,7 +116,7 @@ export function EditService({...props}) {
                         direction: "rtl",
                         color: '#20095e'
                     }
-                }>{"تعديل جهاز"}</DialogTitle>
+                }>{"تعديل خدمة"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
@@ -122,74 +125,51 @@ export function EditService({...props}) {
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
-                                    name="info"
-                                    defaultValue={`${data?.info || ''}`}
+                                    name="name"
+                                    defaultValue={`${data?.name || ''}`}
                                     fullWidth
-                                    id="info"
-                                    label="Info"
+                                    id="name"
+                                    label="اسم الخدمة"
                                     autoFocus
                                 />
                             </Grid>
 
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="model"
-                                    defaultValue={`${data?.model || ''}`}
-                                    fullWidth
-                                    id="model"
-                                    label="model"
+                            {/*<Grid item xs={12} sm={6}>*/}
+                            {/*    <TextField*/}
+                            {/*        margin="normal"*/}
+                            {/*        onKeyUp={handleKeyUp}*/}
+                            {/*        name="device_model"*/}
+                            {/*        defaultValue={`${data?.device_model || ''}`}*/}
+                            {/*        fullWidth*/}
+                            {/*        id="device_model"*/}
+                            {/*        label="نوع الجهاز"*/}
 
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="cost_to_client"
-                                    defaultValue={`${data?.cost_to_client || ''}`}
-                                    fullWidth
-                                    id="cost_to_client"
-                                    label="الكلفة"
-
-                                />
-                            </Grid>
-
-                            {/*<Grid item xs={12}>*/}
-                            {/*    <FormControl fullWidth>*/}
-                            {/*        <InputLabel*/}
-                            {/*            id="model">*/}
-                            {/*            Model*/}
-                            {/*        </InputLabel>*/}
-                            {/*        <Select*/}
-                            {/*            name={"model"}*/}
-                            {/*            labelId="model"*/}
-                            {/*            id="model"*/}
-                            {/*            value={selectedModel}*/}
-                            {/*            onChange={(event) => setSelectedModel(event.target.value)}*/}
-                            {/*            label="Model"*/}
-                            {/*            MenuProps={{*/}
-                            {/*                sx: {*/}
-                            {/*                    "&& .Mui-selected": {*/}
-                            {/*                        color: "var(--system-light-theme-color)",*/}
-                            {/*                        backgroundColor: "primary.main",*/}
-                            {/*                    },*/}
-                            {/*                },*/}
-                            {/*            }}*/}
-                            {/*        >*/}
-                            {/*            {modelOptions?.map((model) => (*/}
-                            {/*                <MenuItem*/}
-                            {/*                    key={model.value}*/}
-                            {/*                    value={model.value}*/}
-                            {/*                >*/}
-                            {/*                    {model.title}*/}
-                            {/*                </MenuItem>*/}
-                            {/*            ))}*/}
-                            {/*        </Select>*/}
-
-                            {/*    </FormControl>*/}
+                            {/*    />*/}
                             {/*</Grid>*/}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="price"
+                                    defaultValue={`${data?.price || ''}`}
+                                    fullWidth
+                                    id="price"
+                                    label="السعر"
+
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="time_required"
+                                    defaultValue={`${data?.time_required || ''}`}
+                                    fullWidth
+                                    id="time_required"
+                                    label="الوقت المطلوب"
+
+                                />
+                            </Grid>
                         </Grid>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
@@ -202,8 +182,8 @@ export function EditService({...props}) {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onCloseDialog}>Disagree</Button>
-                    <Button type={'submit'}>Agree</Button>
+                    <Button onClick={props?.onCloseDialog}>إلغاء التعديل</Button>
+                    <Button type={'submit'}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>

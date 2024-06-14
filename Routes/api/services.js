@@ -2,10 +2,10 @@ import * as React from "react";
 import getConfig from "next/config";
 
 
-import { responseErrorHandlers } from "../../wrappers";
+import {responseErrorHandlers} from "../../wrappers";
 import axiosInstance from "../../utils/auth/axiosInstance";
 
-const { publicRuntimeConfig } = getConfig();
+const {publicRuntimeConfig} = getConfig();
 
 const SERVICES_URL = "api/services";
 const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
@@ -13,7 +13,7 @@ const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 const getAllServices = async (params) => {
     try {
         return await axiosInstance
-            .get(`${BASE_URL}${SERVICES_URL}`, { params })
+            .get(`${BASE_URL}${SERVICES_URL}`, {params})
             .then(async (response) => {
                 return await response?.data;
             });
@@ -21,9 +21,32 @@ const getAllServices = async (params) => {
         responseErrorHandlers(error?.response);
     }
 };
+const getService = async (id) => {
+    try {
+        return await axiosInstance
+            .get(`${BASE_URL}${SERVICES_URL}/${id}`)
+            .then(async (response) => {
+                return await response?.data?.body;
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
-
+const updateService = async (id, params) => {
+    try {
+            return await axiosInstance
+                .put(`${BASE_URL}${SERVICES_URL}/${id}`, params)
+                .then(async response => {
+                return response?.data;
+            }
+        );
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
 export const servicesServices = {
-    getAllServices,
+    getAllServices, getService
+    , updateService
 };
