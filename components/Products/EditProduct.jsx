@@ -8,9 +8,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
+import {servicesServices} from "../../Routes/api/services";
+import {servicesProducts} from "../../Routes/api/products";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -18,28 +19,22 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function EditDeliverie({...props}) {
+export function EditProduct({...props}) {
     const {open} = props;
-    const [id, setId] = useState(props.id)
+    const [id, setId] = useState(props.id);
     const route = useRouter()
     const [data, setData] = useState();
     const {update} = props;
 
-    const fetchAndSetUsers = useCallback(async () => {
-        const params = {
-            'repaired_in_center': 1,
-            'with': 'client,user',
-            'orderBy': 'date_receipt',
-            'dir': 'desc',
-            'deliver_to_client': 0,
-        };
-        const response = await deviceServices.getDevice(id, params);
-        setData(response);
-    }, [id]);
+    const fetchAndSetProduct = useCallback(async () => {
+
+        const response = await servicesProducts.getProduct(id);
+        await setData(response);
+    }, [id])
 
     useEffect(() => {
-        fetchAndSetUsers();
-    }, [fetchAndSetUsers]);
+        fetchAndSetProduct();
+    }, [fetchAndSetProduct]);
 
 
     const {register, handleSubmit, formState} = useForm();
@@ -47,18 +42,19 @@ export function EditDeliverie({...props}) {
 
 
     const onSubmit = async () => {
-        let dataDevice = {}
-        if (selectedInfo && selectedInfo !== data?.info)
-            Object.assign(dataDevice, {"info": selectedInfo})
-        // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
-        //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
-        console.log(selectedModel)
-        console.log(data?.model)
-        if (selectedModel && selectedModel !== data?.model)
-            Object.assign(dataDevice, {"model": selectedModel})
-        if (Object.keys(dataDevice).length > 0) {
+        let dataProduct = {}
+
+        if (selectedName && selectedName !== data?.name)
+            Object.assign(dataProduct, {"name": selectedName})
+
+        if (selectedPrice && selectedPrice !== data?.price)
+            Object.assign(dataProduct, {"price": selectedPrice})
+
+        if (selectedQuantity && selectedQuantity !== data?.quantity)
+            Object.assign(dataProduct, {"quantity": selectedQuantity})
+        if (Object.keys(dataProduct).length > 0) {
             try {
-                const response = await deviceServices.updateDevice(id, dataDevice);
+                const response = await servicesProducts.updateProduct(id, dataProduct);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -69,10 +65,10 @@ export function EditDeliverie({...props}) {
         }
     }
 
-    const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
-    const [selectedModel, setSelectedModel] = useState(data?.model);
-    const [modelOptions, setModelOptions] = useState([]);
+    const [selectedQuantity, setSelectedQuantity] = useState(data?.quantity);
+    const [selectedName, setSelectedName] = useState(data?.name);
+    const [selectedPrice, setSelectedPrice] = useState(data?.price);
+
 
     // useEffect(() => {
     //     const _ModelOptions = getEnum(ModelsEnum)
@@ -83,14 +79,14 @@ export function EditDeliverie({...props}) {
     function handleKeyUp(event) {
         let keyName = event.target.name;
         switch (keyName) {
-            case 'info' :
-                setSelectedInfo(event.target.value)
+            case 'price':
+                setSelectedPrice(event.target.value)
                 break;
-            // case 'fix_steps' :
-            //     setSelectedFixSteps(event.target.value)
-            //     break;
-            case 'model':
-                setSelectedModel(event.target.value)
+            case 'quantity':
+                setSelectedQuantity(event.target.value)
+                break;
+            case 'name':
+                setSelectedName(event.target.value)
                 break;
             default:
                 break;
@@ -113,7 +109,7 @@ export function EditDeliverie({...props}) {
                         direction: "rtl",
                         color: '#20095e'
                     }
-                }>{"تعديل معلومات عامل التوصيل"}</DialogTitle>
+                }>{"تعديل منتج"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
@@ -122,11 +118,11 @@ export function EditDeliverie({...props}) {
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
-                                    name="info"
-                                    defaultValue={`${data?.info || ''}`}
+                                    name="name"
+                                    defaultValue={`${data?.name || ''}`}
                                     fullWidth
-                                    id="info"
-                                    label="Info"
+                                    id="name"
+                                    label="اسم المنتج"
                                     autoFocus
                                 />
                             </Grid>
@@ -135,11 +131,23 @@ export function EditDeliverie({...props}) {
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
-                                    name="model"
-                                    defaultValue={`${data?.model || ''}`}
+                                    name="price"
+                                    defaultValue={`${data?.price || ''}`}
                                     fullWidth
-                                    id="model"
-                                    label="model"
+                                    id="price"
+                                    label="السعر"
+
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="quantity"
+                                    defaultValue={`${data?.quantity || ''}`}
+                                    fullWidth
+                                    id="quantity"
+                                    label="الكمية"
 
                                 />
                             </Grid>
@@ -155,8 +163,8 @@ export function EditDeliverie({...props}) {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onCloseDialog}>Disagree</Button>
-                    <Button type={'submit'}>Agree</Button>
+                    <Button onClick={props?.onCloseDialog}>إلغاء التعديل</Button>
+                    <Button type={'submit'}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>

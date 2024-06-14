@@ -1,17 +1,16 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import {deviceServices, users} from "../../Routes";
+import {deviceServices, users, usersServices} from "../../Routes";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
 import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {EditDevice} from "../Devices";
-import {EditDeliverie} from "./EditDeliverie";
 import { Notify } from '../../utils';
 import {styled} from "@mui/material/styles";
-import {AddUser} from "../Users";
+import {AddUser, EditUser} from "../Users";
 import AddIcon from "@mui/icons-material/Add";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -71,7 +70,7 @@ export function DeliveriesTable() {
             return;
         }
         setDeletingId(id);
-        if (await users.deleteUser(id)) {
+        if (await usersServices.deleteUser(id)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
             setRows(rows.filter((row) => row.id !== id));
@@ -137,7 +136,7 @@ export function DeliveriesTable() {
             'per_page': pageSize,
 
         };
-        const data = await users.getAll(params);
+        const data = await usersServices.getAll(params);
         data ? setDeliveries(data?.body) : setDeliveries([]);
         setPagination(data?.pagination);
     },[pageSize, currentPage]);
@@ -365,9 +364,11 @@ export function DeliveriesTable() {
                     </Button>
                 </Box>
                 {rowId && (
-                    <EditDeliverie
+                    <EditUser
                         open={open}
                         onCloseDialog={handleClose}
+                        ruleId={4}
+                        ruleName={'عامل توصيل'}
                         id={rowId}
                         update={reloadTable}
                     />

@@ -11,6 +11,7 @@ import {useForm} from "react-hook-form";
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
+import {clientsServices} from "../../Routes/api/clients";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -25,16 +26,16 @@ export function EditClient({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
+    const [selectedCenterName, setSelectedCenterName] = useState(data?.center_name);
+
+
+
     const fetchAndSetClient = useCallback(async () => {
 
         const params = {
-            'repaired_in_center': 1,
-            'with': 'client,user',
-            'orderBy': 'date_receipt',
             'dir': 'desc',
-            'deliver_to_client': 0,
         };
-        const response = await deviceServices.getDevice(id, params);
+        const response = await clientsServices.getClient(id, params);
         await setData(response);
     }, [id])
 
@@ -48,18 +49,13 @@ export function EditClient({...props}) {
 
 
     const onSubmit = async () => {
-        let dataDevice = {}
-        if (selectedInfo && selectedInfo !== data?.info)
-            Object.assign(dataDevice, {"info": selectedInfo})
-        // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
-        //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
-        console.log(selectedModel)
-        console.log(data?.model)
-        if (selectedModel && selectedModel !== data?.model)
-            Object.assign(dataDevice, {"model": selectedModel})
-        if (Object.keys(dataDevice).length > 0) {
+        let dataClient = {}
+        if (selectedCenterName && selectedCenterName !== data?.center_name)
+            Object.assign(dataClient, {"center_name": selectedCenterName})
+
+        if (Object.keys(dataClient).length > 0) {
             try {
-                const response = await deviceServices.updateDevice(id, dataDevice);
+                const response = await clientsServices.updateClients(id, dataClient);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -70,28 +66,13 @@ export function EditClient({...props}) {
         }
     }
 
-    const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
-    const [selectedModel, setSelectedModel] = useState(data?.model);
-    const [modelOptions, setModelOptions] = useState([]);
-
-    // useEffect(() => {
-    //     const _ModelOptions = getEnum(ModelsEnum)
-    //     setModelOptions(_ModelOptions)
-    // }, [])
 
 
     function handleKeyUp(event) {
         let keyName = event.target.name;
         switch (keyName) {
-            case 'info' :
-                setSelectedInfo(event.target.value)
-                break;
-            // case 'fix_steps' :
-            //     setSelectedFixSteps(event.target.value)
-            //     break;
-            case 'model':
-                setSelectedModel(event.target.value)
+            case 'center_name' :
+                setSelectedCenterName(event.target.value);
                 break;
             default:
                 break;
@@ -115,34 +96,21 @@ export function EditClient({...props}) {
                         color: '#20095e'
                     }
                 }>
-                    {"تعديل معلومات الزبون"}</DialogTitle>
+                    {"تعديل معلومات العميل"}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
                         <Grid container maxWidth="lg" spacing={1}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={12}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
-                                    name="info"
-                                    defaultValue={`${data?.info || ''}`}
+                                    name="center_name"
+                                    defaultValue={`${data?.center_name || ''}`}
                                     fullWidth
-                                    id="info"
-                                    label="Info"
+                                    id="center_name"
+                                    label="اسم مركز العميل"
                                     autoFocus
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="model"
-                                    defaultValue={`${data?.model || ''}`}
-                                    fullWidth
-                                    id="model"
-                                    label="model"
-
                                 />
                             </Grid>
                         </Grid>

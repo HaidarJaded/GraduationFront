@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import {users} from "../../Routes";
+import {users, usersServices} from "../../Routes";
 import {EditDevice} from "../Devices";
 import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
@@ -15,6 +15,7 @@ import {PermissionsTechnician} from "./PermissionsTechnician";
 import AddIcon from "@mui/icons-material/Add";
 import {AddUser} from "../Users";
 import LinearProgress from "@mui/material/LinearProgress";
+import {EditUser} from "../Users/EditUser";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -75,6 +76,7 @@ export function TechniciansTable() {
         setRowId(null)
     };
     const handleEditClick = (id) => () => {
+        setRowIdAddTechnician(2);
         setOpen(true)
         setRowId(id)
     };
@@ -85,7 +87,7 @@ export function TechniciansTable() {
             return;
         }
         setDeletingId(id);
-        if (await users.deleteUser(id)) {
+        if (await usersServices.deleteUser(id)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
             setRows(rows.filter((row) => row.id !== id));
@@ -156,26 +158,26 @@ export function TechniciansTable() {
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
 
-    const fetchAndSetDevices = useCallback(async () => {
+    const fetchAndSetTechnicians = useCallback(async () => {
         const params = {
             'rule*name': 'فني',
             'withCount': 'devices',
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await users.getAll(params);
+        const data = await usersServices.getAll(params);
         setPagination(data?.pagination);
         data ? setTechnicians(data?.body) : setTechnicians([]);
     }, [currentPage, pageSize]);
     const route = useRouter()
 
     useEffect(() => {
-        fetchAndSetDevices();
-    }, [fetchAndSetDevices, route, pageSize, currentPage]);
+        fetchAndSetTechnicians();
+    }, [fetchAndSetTechnicians, route, pageSize, currentPage]);
 
 
     const reloadTable = async update => {
-        fetchAndSetDevices()
+        fetchAndSetTechnicians()
     };
     useEffect(() => {
         setRowCount(pagination?.total)
@@ -395,9 +397,11 @@ export function TechniciansTable() {
                  </Button>
              </Box>
              {rowId && (
-                 <EditDevice
+                 <EditUser
                      open={open}
                      onCloseDialog={handleClose}
+                     ruleId={2}
+                     ruleName={'فني'}
                      id={rowId}
                      update={reloadTable}
                  />

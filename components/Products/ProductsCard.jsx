@@ -9,13 +9,19 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {useCallback, useEffect, useState} from "react";
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import {Box, Grid, Pagination, Typography} from "@mui/material";
+import {Box, CircularProgress, Grid, Pagination, Select, Stack, Typography} from "@mui/material";
 import {servicesServices} from "../../Routes/api/services";
 import LinearProgress from "@mui/material/LinearProgress";
-import {EditService} from "./EditService";
+import {servicesProducts} from "../../Routes/api/products";
+import {Heading} from "lucide-react";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {Notify} from "../../utils";
-
+import {EditService} from "../Services/EditService";
+import {EditProduct} from "./EditProduct";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import {AddUser} from "../Users";
+import {AddProduct} from "./AddProduct";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -29,55 +35,62 @@ const ExpandMore = styled((props) => {
 }));
 
 
-export function RecipeReviewCard() {
-
-    const [open, setOpen] = React.useState(false);
-    const [rowId, setRowId] = React.useState(null);
-    const [deletingId, setDeletingId] = useState(null);
+export function ProductCard() {
     // const [expanded, setExpanded] = React.useState(false);
-
+    //
     // const handleExpandClick = () => {
     //     setExpanded(!expanded);
     // };
+    const [rowIdAddProduct, setRowIdAddProduct] = React.useState(false);
+    const [openAddProduct, setOpenAddProduct] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [rowId, setRowId] = React.useState(null);
+    const [deletingId, setDeletingId] = useState(null);
+
+    const handleCloseAddProduct = () => {
+        setOpenAddProduct(false);
+        setRowIdAddProduct(null)
+    };
+    const handleEditClick = (id) => () => {
+        setOpen(true)
+        setRowId(id)
+    };
+    const handleClose = () => {
+        setOpen(false);
+        setRowId(null)
+    };
     const handleDeleteClick = (id) => async () => {
         setDeletingId(id);
-        if (await servicesServices.deleteService(id)) {
+        if (await servicesProducts.deleteProduct(id)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
         }
         setDeletingId(null);
         reloadTable("update")
     };
-    const handleClose = () => {
-        setOpen(false);
-        setRowId(null)
-    };
-    const handleEditClick = (id) => () => {
-        setOpen(true)
-        setRowId(id)
-    };
     const reloadTable = async update => {
-        fetchAndSetServices()
+        fetchAndSetProducts()
     };
-    const [services, setServices] = useState([]);
-    const fetchAndSetServices = useCallback(async () => {
+
+    const [products, setProducts] = useState([]);
+    const fetchAndSetProducts = useCallback(async () => {
         const params = {
             "dir": "[asc,desc]",
             "page": "1",
             "per_page": "10",
         };
-        const data = await servicesServices.getAllServices(params);
-        data ? setServices(data?.body) : setServices([]);
+        const data = await servicesProducts.getAllProducts(params);
+        data ? setProducts(data?.body) : setProducts([]);
     }, []);
 
 
     useEffect(() => {
-        fetchAndSetServices();
-        console.log(services)
-    }, [fetchAndSetServices]);
+        fetchAndSetProducts();
+        console.log(products)
+    }, [fetchAndSetProducts]);
     return (
         <>
-            {services.length===0?(
+            {products.length===0?(
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -95,9 +108,18 @@ export function RecipeReviewCard() {
                 </Box>
             ):(
                 <Box>
+                    <Button sx={{ margin:2 ,padding: "13px", direction: "rtl"}} variant="contained"
+                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                            onClick={() => {
+                                setRowIdAddProduct(1)
+                                setOpenAddProduct(true);
+                            }}
+                    >
+                        إضافة منتج
+                    </Button>
                     <Grid container spacing={2}>
-                        {services.map((service) => (
-                            <Grid item xs={12} sm={6} md={6} lg={3} key={service.id}>
+                        {products.map((product) => (
+                            <Grid item xs={12} sm={6} md={6} lg={3} key={product.id}>
                                 <Card sx={{ maxWidth: 295, minWidth: 295, marginX:2,marginY:2 , borderRadius: "20px" }}>
                                     <CardMedia
                                         sx={{ marginY: 2, borderRadius: "20px" }}
@@ -112,26 +134,26 @@ export function RecipeReviewCard() {
                                                 MYP
                                             </Avatar>
                                         }
-                                        title={` خدمة ${service.name}`}
-                                        subheader={service.created_at}
+                                        title={`${product.name} منتج `}
+                                        subheader={product.created_at}
                                     />
                                     <CardContent sx={{ direction: "rtl" }}>
-                                        <Typography variant="body1" color="text.secondary">
-                                            {`السعر: ${service.price}`}
+                                        <Typography variant="body1" color="text.primary">
+                                            {`السعر: ${product.price}`}
                                         </Typography>
-                                        <Typography variant="body1" color="text.secondary">
-                                            {`الوقت: ${service.time_required}`}
+                                        <Typography variant="body1" color="text.primary">
+                                            {`الكمية : ${product.quantity}`}
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
                                         <IconButton aria-label="edit" sx={{ color: "#f02828" }}>
                                             <FavoriteIcon
-                                                onClick={handleEditClick(service.id) }/>
+                                                onClick={handleEditClick(product.id) }/>
                                         </IconButton>
                                         <IconButton aria-label="edit">
                                             <DeleteIcon
-                                                onClick={handleDeleteClick(service.id) }
-                                                disabled={deletingId === service.id}/>
+                                                onClick={handleDeleteClick(product.id) }
+                                                disabled={deletingId === product.id}/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>
@@ -141,10 +163,17 @@ export function RecipeReviewCard() {
 
                     </Grid>
                     {rowId && (
-                        <EditService
+                        <EditProduct
                             open={open}
                             onCloseDialog={handleClose}
                             id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
+                    {rowIdAddProduct && (
+                        <AddProduct
+                            open={openAddProduct}
+                            onClose={handleCloseAddProduct}
                             update={reloadTable}
                         />
                     )}

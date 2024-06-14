@@ -26,7 +26,7 @@ const updateCompletedDevice = async (id,params) => {
             }
         );
     } catch (error) {
-
+        responseErrorHandlers(error?.response);
     }
 };
 const getCompletedDevice = async (id,params) => {

@@ -84,7 +84,8 @@ export function PermissionsClient({...props}) {
         if (await permissionsServices.deletePermissionFromClient(id, permissionId)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
-            setPermissions(permissions.filter((permission) => permission.id !== id));
+            //why id ?
+            setPermissions(permissions.filter((permission) => permission.id !== permissionId));
         }
         setDeletingId(null);
         reloadGrid("update")

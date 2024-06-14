@@ -13,6 +13,8 @@ import AddIcon from "@mui/icons-material/Add";
 import {rulesServices} from "../../Routes/api/rules";
 import {AllPermissions} from "../Permissions";
 import LinearProgress from "@mui/material/LinearProgress";
+import {permissionsServices} from "../../Routes/api/permissions";
+import {Notify} from "../../utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -27,6 +29,9 @@ const Item = styled(Paper)(({theme}) => ({
 
 export function AllRulesGrid() {
 //
+    const [deletingId, setDeletingId] = React.useState(null);
+    const [id, setId] = useState(null)
+
     const [rowIdAddPermissionsRule, setRowIdAddPermissionsRule] = React.useState(null);
     const [openAddPermissionsRule, setOpenAddPermissionsRule] = React.useState(false);
     const [rules, setRules] = useState([]);
@@ -39,7 +44,7 @@ export function AllRulesGrid() {
         const data = await rulesServices.getAllRulePermissions(params);
         if (data) {
             setRules(data?.body);
-
+            console.log(data?.body);
         } else {
 
             console.log("new test")
@@ -61,6 +66,18 @@ const handleClose = () => {
         fetchAndSetRules()
     };
 
+    const handleDeleteClick = (id,permissionId) => async () => {
+        setDeletingId(permissionId);
+        setId(id);
+        if (await permissionsServices.deletePermissionFromRule(id, permissionId)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+            //why id ?
+            setPermissionsRules(permissionsRules.filter((permissionsRule) => permissionsRule.id !== permissionId));
+        }
+        setDeletingId(null);
+        reloadGrid("update")
+    };
     return (
         <>
             {rules.length === 0 ? (
@@ -101,6 +118,7 @@ const handleClose = () => {
                                         onClick={() => {
                                             setRowIdAddPermissionsRule(rule.id);
                                             setOpenAddPermissionsRule(true);
+                                            setPermissionsRules(rule.permissions);
                                             console.log(rule.id)
                                         }}
                                         aria-label="close"
@@ -125,8 +143,14 @@ const handleClose = () => {
                                     {rule.permissions?.map((permission) => (
                                         <ListItem key={permission.id} sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}
                                                   secondaryAction={
-                                                      <IconButton edge="end" aria-label="delete">
-                                                          <DeleteIcon />
+                                                      <IconButton edge="end"
+                                                                  aria-label="delete"
+                                                                  onClick={handleDeleteClick(rule.id,permission.id)}
+                                                                  disabled={deletingId === permission.id}
+
+                                                      >
+
+                                                          <DeleteIcon/>
                                                       </IconButton>
                                                   }>
                                             <ListItemText
@@ -147,6 +171,7 @@ const handleClose = () => {
                     id={rowIdAddPermissionsRule}
                     onClose={handleClose}
                     update={reloadGrid}
+                    userPermissions={permissionsRules}
                     user="rule"
                 />
             )}

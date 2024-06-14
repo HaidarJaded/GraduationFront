@@ -12,7 +12,7 @@ import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "../../utils";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
-import {users} from "../../Routes";
+import {users, usersServices} from "../../Routes";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -48,13 +48,13 @@ export function AddUser({...props}) {
     const [data, setData] = useState({
         email: "", name: "", last_name: "", rule_id: ruleId, password: "", password_confirmation: "",
     });
-    const formOptions = getValidationObject("email", "password","password_confirmation");
+    const formOptions = getValidationObject("email", "password","password_confirmation","name","last_name");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
     const onSubmit = async (user) => {
         const data = Object.assign(user, {rule_id: ruleId})
-        const response =  await users.addUser(data);
+        const response =  await usersServices.addUser(data);
         if (response?.status === 200) {
             Notify("colored", `${response?.message || 'Logged in success'}`, "success")
         }

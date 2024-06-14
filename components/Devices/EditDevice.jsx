@@ -20,7 +20,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export function EditDevice({...props}) {
     const {open} = props;
-    const [id, setId] = useState(props.id)
+    const [id, setId] = useState(props.id);
     const route = useRouter()
     const [data, setData] = useState();
     const {update} = props;
@@ -50,12 +50,12 @@ export function EditDevice({...props}) {
         let dataDevice = {}
         if (selectedInfo && selectedInfo !== data?.info)
             Object.assign(dataDevice, {"info": selectedInfo})
-        // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
-        //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
         console.log(selectedModel)
         console.log(data?.model)
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
+        if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
+            Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await deviceServices.updateDevice(id, dataDevice);
@@ -70,7 +70,7 @@ export function EditDevice({...props}) {
     }
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
+    const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
     const [selectedModel, setSelectedModel] = useState(data?.model);
     const [modelOptions, setModelOptions] = useState([]);
 
@@ -86,9 +86,9 @@ export function EditDevice({...props}) {
             case 'info' :
                 setSelectedInfo(event.target.value)
                 break;
-            // case 'fix_steps' :
-            //     setSelectedFixSteps(event.target.value)
-            //     break;
+            case 'cost_to_client':
+                setSelectedCostToClient(event.target.value)
+                break;
             case 'model':
                 setSelectedModel(event.target.value)
                 break;
@@ -143,18 +143,18 @@ export function EditDevice({...props}) {
 
                                 />
                             </Grid>
-                            {/*<Grid item xs={12} sm={6}>*/}
-                            {/*    <TextField*/}
-                            {/*        margin="normal"*/}
-                            {/*        onKeyUp={handleKeyUp}*/}
-                            {/*        name="fix_steps"*/}
-                            {/*        defaultValue={`${data?.fix_steps || ''}`}*/}
-                            {/*        fullWidth*/}
-                            {/*        id="fix_steps"*/}
-                            {/*        label="Fix Steps"*/}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="cost_to_client"
+                                    defaultValue={`${data?.cost_to_client || ''}`}
+                                    fullWidth
+                                    id="cost_to_client"
+                                    label="الكلفة"
 
-                            {/*    />*/}
-                            {/*</Grid>*/}
+                                />
+                            </Grid>
 
                             {/*<Grid item xs={12}>*/}
                             {/*    <FormControl fullWidth>*/}

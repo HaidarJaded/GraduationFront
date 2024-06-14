@@ -19,6 +19,8 @@ import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
+
+
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -67,7 +69,7 @@ function EditToolbar(props) {
 export function CompletedDevices() {
 
 
-    const [rowModesModel, setRowModesModel] = React.useState({});
+    //const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
     // ================================================
@@ -79,11 +81,11 @@ export function CompletedDevices() {
     };
 
     const [open, setOpen] = React.useState(false);
-    const [rowId, setRowId] = React.useState();
+    const [rowId, setRowId] = React.useState(null);
     const handleEditClick = (id) => () => {
+        console.log("this copnleted device",id)
         setOpen(true)
         setRowId(id)
-        console.log(id);
     };
 
     const handleDeleteClick = (id) => async () => {
@@ -92,7 +94,7 @@ export function CompletedDevices() {
             return;
         }
         setDeletingId(id);
-        if (await completedDevices.deleteCompletedDevice(id)) {
+        if (await completedDevicesServices.deleteCompletedDevice(id)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
             setRows(rows.filter((row) => row.id !== id));
@@ -102,21 +104,21 @@ export function CompletedDevices() {
         setDeletingId(null);
     };
 
-    const handleSaveClick = (id) => () => {
-        setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
-    };
+    // const handleSaveClick = (id) => () => {
+    //     setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
+    // };
 
-    const handleCancelClick = (id) => () => {
-        setRowModesModel({
-            ...rowModesModel,
-            [id]: {mode: GridRowModes.View, ignoreModifications: true},
-        });
-
-        const editedRow = rows.find((row) => row.id === id);
-        if (editedRow.isNew) {
-            setRows(rows.filter((row) => row.id !== id));
-        }
-    };
+    // const handleCancelClick = (id) => () => {
+    //     setRowModesModel({
+    //         ...rowModesModel,
+    //         [id]: {mode: GridRowModes.View, ignoreModifications: true},
+    //     });
+    //
+    //     const editedRow = rows.find((row) => row.id === id);
+    //     if (editedRow.isNew) {
+    //         setRows(rows.filter((row) => row.id !== id));
+    //     }
+    // };
 
     const handleClose = () => {
         setOpen(false);
@@ -414,6 +416,7 @@ export function CompletedDevices() {
                             update={reloadTable}
                         />
                     )}
+
                 </Box>
 
             )}
