@@ -18,6 +18,10 @@ import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {Notify} from "../../utils";
 import {EditService} from "../Services/EditService";
 import {EditProduct} from "./EditProduct";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import {AddUser} from "../Users";
+import {AddProduct} from "./AddProduct";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -37,9 +41,16 @@ export function ProductCard() {
     // const handleExpandClick = () => {
     //     setExpanded(!expanded);
     // };
+    const [rowIdAddProduct, setRowIdAddProduct] = React.useState(false);
+    const [openAddProduct, setOpenAddProduct] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
+
+    const handleCloseAddProduct = () => {
+        setOpenAddProduct(false);
+        setRowIdAddProduct(null)
+    };
     const handleEditClick = (id) => () => {
         setOpen(true)
         setRowId(id)
@@ -97,6 +108,15 @@ export function ProductCard() {
                 </Box>
             ):(
                 <Box>
+                    <Button sx={{ margin:2 ,padding: "13px", direction: "rtl"}} variant="contained"
+                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                            onClick={() => {
+                                setRowIdAddProduct(1)
+                                setOpenAddProduct(true);
+                            }}
+                    >
+                        إضافة منتج
+                    </Button>
                     <Grid container spacing={2}>
                         {products.map((product) => (
                             <Grid item xs={12} sm={6} md={6} lg={3} key={product.id}>
@@ -147,6 +167,13 @@ export function ProductCard() {
                             open={open}
                             onCloseDialog={handleClose}
                             id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
+                    {rowIdAddProduct && (
+                        <AddProduct
+                            open={openAddProduct}
+                            onClose={handleCloseAddProduct}
                             update={reloadTable}
                         />
                     )}

@@ -37,6 +37,12 @@ export function getValidationObject() {
                 result['last_name'] = Yup.string()
                     .required('last name is required');
                 break;
+            case "price":
+                result['price'] = Yup.string().matches(/^[0-9]+$/, 'price must contain only numbers').required('price is required');
+                break;
+            case "quantity":
+                result['quantity'] = Yup.string().matches(/^[0-9]+$/, 'quantity must contain only numbers and integer').required('quantity is required');
+                break;
         }
     }
 

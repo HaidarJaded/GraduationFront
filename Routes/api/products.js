@@ -53,11 +53,26 @@ const deleteProduct=async (id)=>{
         responseErrorHandlers(error?.response)
     }
 };
-
+const addProduct = async (product) => {
+    try {
+        return await axiosInstance
+            .post(`${BASE_URL}${PRODUCTS_URL}`, product)
+            .then(async (response) => {
+                const result = await response?.data;
+                return {
+                    data: result,
+                    status: response?.status,
+                };
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 
 export const servicesProducts = {
     getAllProducts,
     deleteProduct,
     getProduct,
     updateProduct,
+    addProduct
 };
