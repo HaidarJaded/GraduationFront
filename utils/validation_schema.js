@@ -37,6 +37,10 @@ export function getValidationObject() {
                 result['last_name'] = Yup.string()
                     .required('last name is required');
                 break;
+            case "cost_to_client":
+                result['cost_to_client'] = Yup.string()
+                    .required('last name is required');
+                break;
         }
     }
 

@@ -10,7 +10,7 @@ import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
@@ -20,7 +20,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export function EditCompletedDevice({...props}) {
-    console.log(props.id)
     const {open} = props;
     const [id, setId] = useState(props.id)
     const route = useRouter()
@@ -29,14 +28,13 @@ export function EditCompletedDevice({...props}) {
     const {update} = props;
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
-    const [selectedModel, setSelectedModel] = useState(data?.model);
+    const [selectedCostToClient, setSelectedCostToClient] = useState(data?.model);
     const [modelOptions, setModelOptions] = useState([]);
 
     const [info, setInfo] = useState('');
+    const [costToClient, setCostToClient] = useState('');
     const [model, setModel] = useState('');
 
-    // Update local state whenever data.info changes
     useEffect(() => {
         setInfo(data?.info || '');
 
@@ -44,6 +42,17 @@ export function EditCompletedDevice({...props}) {
 
     const handleInfoChange = (event) => {
         setInfo(event.target.value);
+    };
+
+
+    // Update local state whenever data.info changes
+    useEffect(() => {
+        setCostToClient(data?.cost_to_client || '');
+
+    }, [data?.cost_to_client]);
+
+    const handleCostToClientChange = (event) => {
+        setCostToClient(event.target.value);
     };
 
     useEffect(() => {
@@ -59,9 +68,10 @@ export function EditCompletedDevice({...props}) {
             'deliver_to_client': 0,
         };
         const response = await completedDevicesServices.getCompletedDevice(id, params);
-        setData(response);
-        console.log("kkkkkkkkkkkkk",response);
+        await setData(response);
+        console.log("kkkkkkksssskkkkkk",response);
     }, [id]);
+
 
     useEffect(()=>{
         setId(props.id);
@@ -69,16 +79,15 @@ export function EditCompletedDevice({...props}) {
 
     useEffect(() => {
         fetchAndSetDevice();
-    }, [id]);
+    }, [fetchAndSetDevice]);
 
     useEffect(() => {
         setSelectedInfo(data?.info);
-        setSelectedModel(data?.model);
-        // Update other dependent state as necessary
+        setSelectedCostToClient(data?.cost_to_client);
     }, [data]);
 
-console.log("this data",data);
-    const {register, handleSubmit, formState} = useForm();
+    const formOptions = getValidationObject("cost_to_client");
+    const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
 
@@ -86,12 +95,10 @@ console.log("this data",data);
         let dataDevice = {}
         if (selectedInfo && selectedInfo !== data?.info)
             Object.assign(dataDevice, {"info": selectedInfo})
-        // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
-        //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
-        console.log(selectedModel)
-        console.log(data?.model)
-        if (selectedModel && selectedModel !== data?.model)
-            Object.assign(dataDevice, {"model": selectedModel})
+
+        if (selectedCostToClient && setSelectedCostToClient !== data?.cost_to_client)
+            Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
+
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await completedDevicesServices.updateCompletedDevice(id, dataDevice);
@@ -104,7 +111,6 @@ console.log("this data",data);
 
         }
     }
-console.log(data.model)
 
 
 
@@ -120,8 +126,8 @@ console.log(data.model)
             case 'info' :
                 setSelectedInfo(event.target.value)
                 break;
-            case 'model':
-                setSelectedModel(event.target.value)
+            case 'cost_to_client':
+                setSelectedCostToClient(event.target.value)
                 break;
             default:
                 break;
@@ -152,6 +158,7 @@ console.log(data.model)
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     margin="normal"
+                                    onKeyUp={handleKeyUp}
                                     name="info"
                                     value={info}
                                     onChange={handleInfoChange}
@@ -166,11 +173,15 @@ console.log(data.model)
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
-                                    name="model"
-                                    defaultValue={`${data.model || ''}`}
+                                    name="cost_to_client"
+                                    value={costToClient}
+                                    onChange={handleCostToClientChange}
                                     fullWidth
-                                    id="model"
-                                    label="model"
+                                    id="cost_to_client"
+                                    label="الكلفة"
+                                    {...register('cost_to_client')}
+                                    helperText={errors.cost_to_client && errors.cost_to_client?.message || (data.cost_to_client?.length > 0 && data.cost_to_client[0])}
+                                    error={(errors.cost_to_client || data.cost_to_client?.length > 0) && true}
 
                                 />
                             </Grid>
