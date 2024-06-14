@@ -8,24 +8,30 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices, usersServices} from "../../Routes";
+import {usersServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
-//import {ModelsEnum} from "../../enums";
-//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function EditTechnician({...props}) {
+export function EditUser({...props}) {
     const {open} = props;
-    const [id, setId] = useState(props.id)
+    const [ruleName, setRuleName] = useState(props.ruleName)
+    const [ruleId, setRuleId] = useState(props.ruleId);
+    const [id, setId] = useState(props.id);
     const route = useRouter()
     const [data, setData] = useState();
     const {update} = props;
 
-    const fetchAndSetDevice = useCallback(async () => {
+    const [selectedName, setSelectedName] = useState(data?.name);
+    const [selectedLastName, setSelectedLastName] = useState(data?.last_name);
+    const [selectedEmail, setSelectedEmail] = useState(data?.email);
+    const [selectedPhone, setSelectedPhone] = useState(data?.phone);
+    const [selectedAddress, setSelectedAddress] = useState(data?.address);
+
+    const fetchAndSetUser = useCallback(async () => {
         const params = {
             'dir': 'desc',
         };
@@ -34,8 +40,8 @@ export function EditTechnician({...props}) {
     }, [id])
 
     useEffect(() => {
-        fetchAndSetDevice();
-    }, [fetchAndSetDevice]);
+        fetchAndSetUser();
+    }, [fetchAndSetUser]);
 
 
     const {register, handleSubmit, formState} = useForm();
@@ -44,15 +50,20 @@ export function EditTechnician({...props}) {
 
     const onSubmit = async () => {
         let dataUser = {}
+        if (selectedEmail && selectedEmail !== data?.email)
+            Object.assign(dataUser, {"email": selectedEmail})
         if (selectedName && selectedName !== data?.name)
             Object.assign(dataUser, {"name": selectedName})
         if (selectedLastName && selectedLastName !== data?.last_name)
             Object.assign(dataUser, {"last_name": selectedLastName})
-        // if (selectedModel && selectedModel !== data?.model)
-        //     Object.assign(dataUser, {"model": selectedModel})
+        if (selectedAddress && selectedAddress !== data?.address)
+            Object.assign(dataUser, {"address": selectedAddress})
+        if (selectedPhone && selectedPhone !== data?.phone)
+            Object.assign(dataUser, {"phone": selectedPhone})
         if (Object.keys(dataUser).length > 0) {
+            const data = Object.assign(dataUser, {rule_id: ruleId})
             try {
-                const response = await usersServices.updateUser(id, dataUser);
+                const response = await usersServices.updateUser(id, data);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -63,31 +74,25 @@ export function EditTechnician({...props}) {
         }
     }
 
-    const [selectedName, setSelectedName] = useState(data?.name);
-    const [selectedLastName, setSelectedLastName] = useState(data?.last_name);
-
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.name);
-   // const [selectedModel, setSelectedModel] = useState(data?.model);
-    const [modelOptions, setModelOptions] = useState([]);
-
-    // useEffect(() => {
-    //     const _ModelOptions = getEnum(ModelsEnum)
-    //     setModelOptions(_ModelOptions)
-    // }, [])
-
 
     function handleKeyUp(event) {
         let keyName = event.target.name;
         switch (keyName) {
+            case 'email' :
+                setSelectedEmail(event.target.value)
+                break;
             case 'name' :
                 setSelectedName(event.target.value)
                 break;
             case 'last_name' :
-                setSelectedLastName(event.target.value)
+                setSelectedLastName(event.target.value);
                 break;
-            // case 'model':
-            //     setSelectedModel(event.target.value)
-            //     break;
+            case 'phone':
+                setSelectedPhone(event.target.value)
+                break;
+            case 'address':
+                setSelectedAddress(event.target.value)
+                break;
             default:
                 break;
         }
@@ -109,11 +114,12 @@ export function EditTechnician({...props}) {
                         direction: "rtl",
                         color: '#20095e'
                     }
-                }>{"تعديل فني"}</DialogTitle>
+                }>{`  تعديل ${ruleName} `}</DialogTitle>
                 <DialogContent>
 
                     {data ? (
                         <Grid container maxWidth="lg" spacing={1}>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     margin="normal"
@@ -126,6 +132,7 @@ export function EditTechnician({...props}) {
                                     autoFocus
                                 />
                             </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     margin="normal"
@@ -135,21 +142,46 @@ export function EditTechnician({...props}) {
                                     fullWidth
                                     id="last_name"
                                     label="الكنية"
-                                    autoFocus
+
                                 />
                             </Grid>
-                            {/*<Grid item xs={12} sm={6}>*/}
-                            {/*    <TextField*/}
-                            {/*        margin="normal"*/}
-                            {/*        onKeyUp={handleKeyUp}*/}
-                            {/*        name="model"*/}
-                            {/*        defaultValue={`${data?.model || ''}`}*/}
-                            {/*        fullWidth*/}
-                            {/*        id="model"*/}
-                            {/*        label="model"*/}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="email"
+                                    defaultValue={`${data?.email || ''}`}
+                                    fullWidth
+                                    id="email"
+                                    label="email"
 
-                            {/*    />*/}
-                            {/*</Grid>*/}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="address"
+                                    defaultValue={`${data?.address || ''}`}
+                                    fullWidth
+                                    id="address"
+                                    label="العنوان"
+
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={12}>
+                            <TextField
+                                margin="normal"
+                                onKeyUp={handleKeyUp}
+                                name="phone"
+                                defaultValue={`${data?.phone || ''}`}
+                                fullWidth
+                                id="phone"
+                                label="الهاتف"
+
+                            />
+                        </Grid>
+
                         </Grid>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
@@ -162,8 +194,8 @@ export function EditTechnician({...props}) {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onCloseDialog}>Disagree</Button>
-                    <Button type={'submit'}>Agree</Button>
+                    <Button onClick={props?.onCloseDialog}>إلغاء</Button>
+                    <Button type={'submit'}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>

@@ -50,8 +50,6 @@ export function EditDevice({...props}) {
         let dataDevice = {}
         if (selectedInfo && selectedInfo !== data?.info)
             Object.assign(dataDevice, {"info": selectedInfo})
-        // if (selectedFixSteps && selectedFixSteps !== data?.fix_steps)
-        //     Object.assign(dataDevice, {"fix_steps": selectedFixSteps})
         console.log(selectedModel)
         console.log(data?.model)
         if (selectedModel && selectedModel !== data?.model)

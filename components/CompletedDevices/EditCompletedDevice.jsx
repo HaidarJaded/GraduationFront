@@ -10,8 +10,8 @@ import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
-import {getValidationObject, Notify} from "../../utils";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
+import {Notify} from "../../utils";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -86,8 +86,8 @@ export function EditCompletedDevice({...props}) {
         setSelectedCostToClient(data?.cost_to_client);
     }, [data]);
 
-    const formOptions = getValidationObject("cost_to_client");
-    const {register, handleSubmit, formState} = useForm(formOptions);
+
+    const {register, handleSubmit, formState} = useForm();
     const {errors} = formState;
 
 
@@ -113,11 +113,6 @@ export function EditCompletedDevice({...props}) {
     }
 
 
-
-    // useEffect(() => {
-    //     const _ModelOptions = getEnum(ModelsEnum)
-    //     setModelOptions(_ModelOptions)
-    // }, [])
 
 
     function handleKeyUp(event) {
@@ -179,9 +174,7 @@ export function EditCompletedDevice({...props}) {
                                     fullWidth
                                     id="cost_to_client"
                                     label="الكلفة"
-                                    {...register('cost_to_client')}
-                                    helperText={errors.cost_to_client && errors.cost_to_client?.message || (data.cost_to_client?.length > 0 && data.cost_to_client[0])}
-                                    error={(errors.cost_to_client || data.cost_to_client?.length > 0) && true}
+
 
                                 />
                             </Grid>

@@ -15,7 +15,7 @@ import {PermissionsTechnician} from "./PermissionsTechnician";
 import AddIcon from "@mui/icons-material/Add";
 import {AddUser} from "../Users";
 import LinearProgress from "@mui/material/LinearProgress";
-import {EditTechnician} from "./EditTechnician";
+import {EditUser} from "../Users/EditUser";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -76,6 +76,7 @@ export function TechniciansTable() {
         setRowId(null)
     };
     const handleEditClick = (id) => () => {
+        setRowIdAddTechnician(2);
         setOpen(true)
         setRowId(id)
     };
@@ -396,9 +397,11 @@ export function TechniciansTable() {
                  </Button>
              </Box>
              {rowId && (
-                 <EditTechnician
+                 <EditUser
                      open={open}
                      onCloseDialog={handleClose}
+                     ruleId={2}
+                     ruleName={'فني'}
                      id={rowId}
                      update={reloadTable}
                  />
