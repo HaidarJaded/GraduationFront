@@ -48,10 +48,8 @@ const updateService = async (id, params) => {
 const deleteService=async (id)=>{
   try {
       const response= await axiosInstance.delete(`${BASE_URL}${SERVICES_URL}/${id}`);
-      if (response.status==200) {
-          return true;
-      }
-      return false;
+      return response.status === 200;
+
   }  catch (error){
       responseErrorHandlers(error?.response)
   }

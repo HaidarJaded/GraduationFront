@@ -15,8 +15,7 @@ import {servicesServices} from "../../Routes/api/services";
 import LinearProgress from "@mui/material/LinearProgress";
 import {EditService} from "./EditService";
 import {Notify} from "../../utils";
-import {deviceServices} from "../../Routes";
-import {permissionsServices} from "../../Routes/api/permissions";
+
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -35,11 +34,11 @@ export function RecipeReviewCard() {
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
-    const [expanded, setExpanded] = React.useState(false);
+    // const [expanded, setExpanded] = React.useState(false);
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
+    // const handleExpandClick = () => {
+    //     setExpanded(!expanded);
+    // };
     const handleDeleteClick = (id) => async () => {
         setDeletingId(id);
         if (await servicesServices.deleteService(id)) {

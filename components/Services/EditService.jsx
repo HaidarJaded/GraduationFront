@@ -8,7 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
 import {servicesServices} from "../../Routes/api/services";
@@ -72,7 +71,6 @@ export function EditService({...props}) {
     const [selectedName, setSelectedName] = useState(data?.name);
     const [selectedPrice, setSelectedPrice] = useState(data?.price);
     const [selectedDeviceModel, setSelectedDeviceModel] = useState(data?.device_model);
-    const [modelOptions, setModelOptions] = useState([]);
 
     // useEffect(() => {
     //     const _ModelOptions = getEnum(ModelsEnum)
