@@ -54,6 +54,8 @@ export function EditDevice({...props}) {
         console.log(data?.model)
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
+        if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
+            Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await deviceServices.updateDevice(id, dataDevice);
@@ -68,7 +70,7 @@ export function EditDevice({...props}) {
     }
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
+    const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
     const [selectedModel, setSelectedModel] = useState(data?.model);
     const [modelOptions, setModelOptions] = useState([]);
 
@@ -84,9 +86,9 @@ export function EditDevice({...props}) {
             case 'info' :
                 setSelectedInfo(event.target.value)
                 break;
-            // case 'fix_steps' :
-            //     setSelectedFixSteps(event.target.value)
-            //     break;
+            case 'cost_to_client':
+                setSelectedCostToClient(event.target.value)
+                break;
             case 'model':
                 setSelectedModel(event.target.value)
                 break;
@@ -141,18 +143,18 @@ export function EditDevice({...props}) {
 
                                 />
                             </Grid>
-                            {/*<Grid item xs={12} sm={6}>*/}
-                            {/*    <TextField*/}
-                            {/*        margin="normal"*/}
-                            {/*        onKeyUp={handleKeyUp}*/}
-                            {/*        name="fix_steps"*/}
-                            {/*        defaultValue={`${data?.fix_steps || ''}`}*/}
-                            {/*        fullWidth*/}
-                            {/*        id="fix_steps"*/}
-                            {/*        label="Fix Steps"*/}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="cost_to_client"
+                                    defaultValue={`${data?.cost_to_client || ''}`}
+                                    fullWidth
+                                    id="cost_to_client"
+                                    label="الكلفة"
 
-                            {/*    />*/}
-                            {/*</Grid>*/}
+                                />
+                            </Grid>
 
                             {/*<Grid item xs={12}>*/}
                             {/*    <FormControl fullWidth>*/}

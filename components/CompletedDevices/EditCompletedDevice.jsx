@@ -28,7 +28,7 @@ export function EditCompletedDevice({...props}) {
     const {update} = props;
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    const [selectedCostToClient, setSelectedCostToClient] = useState(data?.model);
+    const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
     const [modelOptions, setModelOptions] = useState([]);
 
     const [info, setInfo] = useState('');
