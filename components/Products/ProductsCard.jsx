@@ -19,16 +19,16 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
 
-const ExpandMore = styled((props) => {
-    const {expand, ...other} = props;
-    return <IconButton {...other} />;
-})(({theme, expand}) => ({
-    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
-    }),
-}));
+// const ExpandMore = styled((props) => {
+//     const {expand, ...other} = props;
+//     return <IconButton {...other} />;
+// })(({theme, expand}) => ({
+//     transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+//     marginLeft: 'auto',
+//     transition: theme.transitions.create('transform', {
+//         duration: theme.transitions.duration.shortest,
+//     }),
+// }));
 const BootstrapButton = styled(Button)({
     boxShadow: 'none',
     textTransform: 'none',

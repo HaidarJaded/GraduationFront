@@ -12,19 +12,13 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
-
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
-import {Box, CircularProgress, DialogContentText, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, DialogContentText, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
-import Switch from "@mui/material/Switch";
 import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
-import IconButton from "@mui/material/IconButton";
-import {clientsServices} from "../../Routes/api/clients";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -54,26 +48,26 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
     },
 }));
 
-function EditToolbar(props) {
-    const {setRows, setRowModesModel} = props;
-
-    const handleClick = () => {
-        const id = randomId();
-        setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
-        }));
-    };
-
-    return (
-        <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
-                Add record
-            </Button>
-        </GridToolbarContainer>
-    );
-}
+// function EditToolbar(props) {
+//     const {setRows, setRowModesModel} = props;
+//
+//     const handleClick = () => {
+//         const id = randomId();
+//         setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
+//         setRowModesModel((oldModel) => ({
+//             ...oldModel,
+//             [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
+//         }));
+//     };
+//
+//     return (
+//         <GridToolbarContainer>
+//             <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
+//                 Add record
+//             </Button>
+//         </GridToolbarContainer>
+//     );
+// }
 
 export function Devices() {
     // const [rowModesModel, setRowModesModel] = React.useState({});
@@ -369,8 +363,8 @@ export function Devices() {
             deliver_to_client: device?.deliver_to_client,
         }));
 
-        setRows(rowsDevices); // Now `rowsDevices` is derived directly from the updated `devices`
-    }, [devices]); // This effect depends on `devices` and runs whenever `devices` changes
+        setRows(rowsDevices);
+    }, [devices]);
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
