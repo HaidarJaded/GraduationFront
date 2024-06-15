@@ -23,6 +23,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
+import {CustomizedInputBase} from "../Search";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -479,9 +480,9 @@ export function Devices() {
                 </Box>) : (
 
 
-                    <Box sx={{flexGrow: 1, width: 1}}>
+                    <Box sx={{flexGrow: 1, width: 1,display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
                         <DataGrid
-                            sx={{
+                            sx={{p: '2px 4px' ,m: '6px 13px',
                                 '&.MuiDataGrid-root': {
                                     minHeight: 'calc(100vh - 130px)',
                                     height: '100%',

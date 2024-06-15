@@ -6,13 +6,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {CircularProgress, Grid, TextField} from "@mui/material";
+import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices} from "../../Routes";
+import {deviceServices, usersServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {Notify} from "../../utils";
-//import {ModelsEnum} from "../../enums";
-//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+import {ModelsEnum} from "../../enums";
+import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+import {clientsServices} from "../../Routes/api/clients";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -34,6 +35,7 @@ export function EditDevice({...props}) {
             'deliver_to_client': 0,
         };
         const response = await deviceServices.getDevice(id, params);
+        console.log(response)
         await setData(response);
     }, [id])
 
@@ -52,6 +54,8 @@ export function EditDevice({...props}) {
             Object.assign(dataDevice, {"info": selectedInfo})
         console.log(selectedModel)
         console.log(data?.model)
+        if (selectedUserName && selectedUserName !== data?.user?.name)
+            Object.assign(dataDevice, {"user.name": selectedUserName})
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
         if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
@@ -71,13 +75,23 @@ export function EditDevice({...props}) {
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
     const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
+    const [selectedUserName, setSelectedUserName] = useState(data?.user?.id);
     const [selectedModel, setSelectedModel] = useState(data?.model);
     const [modelOptions, setModelOptions] = useState([]);
 
-    // useEffect(() => {
-    //     const _ModelOptions = getEnum(ModelsEnum)
-    //     setModelOptions(_ModelOptions)
-    // }, [])
+    const fetchAndSetModelOptions = useCallback(async () => {
+        const params = {
+            'rule*name': 'فني',
+            'all_data': 1,
+        };
+        const data = await usersServices?.getAll(params);
+        console.log("data?.body للفنيين",data?.body)
+        data ? setModelOptions(data?.body) : setModelOptions([]);
+    }, []);
+
+    useEffect(() => {
+        fetchAndSetModelOptions();
+    }, [fetchAndSetModelOptions]);
 
 
     function handleKeyUp(event) {
@@ -91,6 +105,9 @@ export function EditDevice({...props}) {
                 break;
             case 'model':
                 setSelectedModel(event.target.value)
+                break;
+            case 'userName':
+                setSelectedUserName(event.target.value)
                 break;
             default:
                 break;
@@ -155,41 +172,40 @@ export function EditDevice({...props}) {
 
                                 />
                             </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <InputLabel
+                                        id="userName">
+                                        userName
+                                    </InputLabel>
+                                    <Select
+                                        name={"userName"}
+                                        labelId="userName"
+                                        id="userName"
+                                        value={selectedUserName}
+                                        onChange={(event) => setSelectedUserName(event.target.value)}
+                                        label="userName"
+                                        MenuProps={{
+                                            sx: {
+                                                "&& .Mui-selected": {
+                                                    color: "var(--system-light-theme-color)",
+                                                    backgroundColor: "primary.main",
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        {modelOptions?.map((user) => (
+                                            <MenuItem
+                                                key={user.id}
+                                                value={user.id}
+                                            >
+                                                {`${user.name}  ${user.last_name}`}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
 
-                            {/*<Grid item xs={12}>*/}
-                            {/*    <FormControl fullWidth>*/}
-                            {/*        <InputLabel*/}
-                            {/*            id="model">*/}
-                            {/*            Model*/}
-                            {/*        </InputLabel>*/}
-                            {/*        <Select*/}
-                            {/*            name={"model"}*/}
-                            {/*            labelId="model"*/}
-                            {/*            id="model"*/}
-                            {/*            value={selectedModel}*/}
-                            {/*            onChange={(event) => setSelectedModel(event.target.value)}*/}
-                            {/*            label="Model"*/}
-                            {/*            MenuProps={{*/}
-                            {/*                sx: {*/}
-                            {/*                    "&& .Mui-selected": {*/}
-                            {/*                        color: "var(--system-light-theme-color)",*/}
-                            {/*                        backgroundColor: "primary.main",*/}
-                            {/*                    },*/}
-                            {/*                },*/}
-                            {/*            }}*/}
-                            {/*        >*/}
-                            {/*            {modelOptions?.map((model) => (*/}
-                            {/*                <MenuItem*/}
-                            {/*                    key={model.value}*/}
-                            {/*                    value={model.value}*/}
-                            {/*                >*/}
-                            {/*                    {model.title}*/}
-                            {/*                </MenuItem>*/}
-                            {/*            ))}*/}
-                            {/*        </Select>*/}
-
-                            {/*    </FormControl>*/}
-                            {/*</Grid>*/}
+                                </FormControl>
+                            </Grid>
                         </Grid>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
