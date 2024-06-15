@@ -188,20 +188,26 @@ export function Devices() {
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
         {
             field: 'deliver_to_client',
-            headerName: 'تسليم للعميل',
+            headerName: 'تسليم الجهاز للعميل',
             width: 150,
             renderCell: (params) => {
                 const isDisabled = params.row.deliver_to_client === 1;
                 return (
                     <GridActionsCellItem
                         key={params.id}
-                        icon={<CheckBoxRoundedIcon/>}
+                        icon={<Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <CheckBoxRoundedIcon />
+                            <Box component="span" sx={{ marginLeft: 1 }}>
+                               تسليم الجهاز
+                            </Box>
+                        </Box>}
                         label="deliver to client"
                         className="textPrimary"
                         onClick={() => handleOpenDialogDeliverToClient(params.id)}
                         color="inherit"
                         disabled={isDisabled}
                     />
+
                 )
             }
 
@@ -524,16 +530,16 @@ export function Devices() {
 
             <Dialog open={openDeliverToClientDialog} onClose={handleCloseDialogDeliverToClient}
                     aria-labelledby="alert-dialog-title">
-                <DialogTitle id="alert-dialog-title">{"Confirm Action"}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{"تأكيد تسليم جهاز"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to perform this action?
+                        هل أنت متأكد من انك تريد تسليم هذا الجهاز للعميل؟
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialogDeliverToClient}>Cancel</Button>
+                    <Button onClick={handleCloseDialogDeliverToClient}>إلغاء</Button>
                     <Button onClick={handleConfirmDeliverToClient} autoFocus>
-                        Confirm
+                        تسليم
                     </Button>
                 </DialogActions>
             </Dialog>
