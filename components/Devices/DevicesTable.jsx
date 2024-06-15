@@ -121,7 +121,7 @@ export function Devices() {
         {
             try
             {
-                const response =  await clientsServices.updateClients(currentId, { deliver_to_client: 1 });
+                const response =  await deviceServices.updateDevice(currentId, { deliver_to_client: 1 });
                 Notify("light", response.message, "success");
             }
             catch (error)
@@ -132,7 +132,7 @@ export function Devices() {
         };
         await updateData();
         setOpenDeliverToClientDialog(false);
-// fetchAndSetDevices();
+         fetchAndSetDevices();
     };
 
 
