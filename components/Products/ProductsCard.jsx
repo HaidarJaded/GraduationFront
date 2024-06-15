@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
+import {useCallback, useEffect, useState} from 'react';
+import {styled} from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -8,32 +9,61 @@ import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import {useCallback, useEffect, useState} from "react";
-import {Box, CircularProgress, Grid, Pagination, Select, Stack, Typography} from "@mui/material";
-import {servicesServices} from "../../Routes/api/services";
+import {Box, Grid, Pagination, Typography} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
-import {Heading} from "lucide-react";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {Notify} from "../../utils";
-import {EditService} from "../Services/EditService";
 import {EditProduct} from "./EditProduct";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import {AddUser} from "../Users";
 import {AddProduct} from "./AddProduct";
 
 const ExpandMore = styled((props) => {
-    const { expand, ...other } = props;
+    const {expand, ...other} = props;
     return <IconButton {...other} />;
-})(({ theme, expand }) => ({
+})(({theme, expand}) => ({
     transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
     marginLeft: 'auto',
     transition: theme.transitions.create('transform', {
         duration: theme.transitions.duration.shortest,
     }),
 }));
-
+const BootstrapButton = styled(Button)({
+    boxShadow: 'none',
+    textTransform: 'none',
+    fontSize: 16,
+    padding: '6px 12px',
+    border: '1px solid',
+    lineHeight: 1.5,
+    backgroundColor: 'rgba(250,220,70,0.89)',
+    borderColor: 'rgb(248,241,106)',
+    fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+    ].join(','),
+    '&:hover': {
+        backgroundColor: '#f3db84',
+        borderColor: '#f3db84',
+        boxShadow: 'none',
+    },
+    '&:active': {
+        boxShadow: 'none',
+        backgroundColor: '#f3db84',
+        borderColor: '#f3db84',
+    },
+    '&:focus': {
+        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+    },
+});
 
 export function ProductCard() {
     // const [expanded, setExpanded] = React.useState(false);
@@ -90,7 +120,7 @@ export function ProductCard() {
     }, [fetchAndSetProducts]);
     return (
         <>
-            {products.length===0?(
+            {products.length === 0 ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -99,30 +129,38 @@ export function ProductCard() {
                     height: '100vh',
                     width: '100%',
                 }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
                         Loading...
                     </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
                     </Box>
                 </Box>
-            ):(
-                <Box>
-                    <Button sx={{ margin:2 ,padding: "13px", direction: "rtl"}} variant="contained"
-                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                            onClick={() => {
-                                setRowIdAddProduct(1)
-                                setOpenAddProduct(true);
-                            }}
-                    >
-                        إضافة منتج
-                    </Button>
-                    <Grid container spacing={2}>
+            ) : (
+                <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                    <BootstrapButton sx={{marginX: 6, marginTop: 2, direction: "rtl"}} variant="contained" disableRipple
+                                     endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                                     onClick={() => {
+                                         setRowIdAddProduct(1)
+                                         setOpenAddProduct(true);
+                                     }}>
+                        <Typography variant="h6" sx={{fontWeight: 'bold'}}>
+                            إضافة منتج
+                        </Typography>
+                    </BootstrapButton>
+                    <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container>
                         {products.map((product) => (
-                            <Grid item xs={12} sm={6} md={6} lg={3} key={product.id}>
-                                <Card sx={{ maxWidth: 295, minWidth: 295, marginX:2,marginY:2 , borderRadius: "20px" }}>
+                            <Grid item key={product.id} sx={{marginY: 3, marginX: '3px'}}>
+                                <Card xs={12} sm={6} md={12} lg={3} sx={{
+                                    maxWidth: 300, minWidth: 300, marginX: {
+                                        xs: 0,
+                                        sm: 0,
+                                        md: 1,
+                                        lg: 0,
+                                    }, borderRadius: "20px"
+                                }}>
                                     <CardMedia
-                                        sx={{ marginY: 2, borderRadius: "20px" }}
+                                        sx={{marginY: 2, borderRadius: "20px"}}
                                         component="img"
                                         height="225"
                                         image="/assets/images/svg/logo-black.svg"
@@ -130,14 +168,16 @@ export function ProductCard() {
                                     />
                                     <CardHeader
                                         avatar={
-                                            <Avatar sx={{ bgcolor: '#50439ccc', padding: 3 }} aria-label="recipe">
+                                            <Avatar sx={{bgcolor: '#50439ccc', padding: 3}} aria-label="recipe">
                                                 MYP
                                             </Avatar>
                                         }
-                                        title={`${product.name} منتج `}
+                                        title={<Typography variant="h6">
+                                            {`منتج ${product.name}`}
+                                        </Typography>}
                                         subheader={product.created_at}
                                     />
-                                    <CardContent sx={{ direction: "rtl" }}>
+                                    <CardContent sx={{direction: "rtl"}}>
                                         <Typography variant="body1" color="text.primary">
                                             {`السعر: ${product.price}`}
                                         </Typography>
@@ -146,13 +186,13 @@ export function ProductCard() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
-                                        <IconButton aria-label="edit" sx={{ color: "#f02828" }}>
+                                        <IconButton aria-label="edit" sx={{color: "#ec6060"}}>
                                             <FavoriteIcon
-                                                onClick={handleEditClick(product.id) }/>
+                                                onClick={handleEditClick(product.id)}/>
                                         </IconButton>
                                         <IconButton aria-label="edit">
                                             <DeleteIcon
-                                                onClick={handleDeleteClick(product.id) }
+                                                onClick={handleDeleteClick(product.id)}
                                                 disabled={deletingId === product.id}/>
                                         </IconButton>
                                     </CardActions>
@@ -177,7 +217,7 @@ export function ProductCard() {
                             update={reloadTable}
                         />
                     )}
-                    <Pagination count={10} hidePrevButton hideNextButton />
+                    <Pagination count={10} hidePrevButton hideNextButton/>
                 </Box>
             )}
         </>
