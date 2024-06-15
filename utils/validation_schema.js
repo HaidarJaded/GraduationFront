@@ -38,10 +38,15 @@ export function getValidationObject() {
                     .required('last name is required');
                 break;
             case "price":
-                result['price'] = Yup.string().matches(/^[0-9]+$/, 'price must contain only numbers').required('price is required');
+                result['price'] = Yup.string()
+                    .matches(/^\d+(\.\d+)?$/, 'price must contain only numbers and can be a decimal')
+                    .required('price is required')
                 break;
             case "quantity":
-                result['quantity'] = Yup.string().matches(/^[0-9]+$/, 'quantity must contain only numbers and integer').required('quantity is required');
+                result['quantity'] = Yup.number()
+                    .typeError('quantity must be a number')
+                    .integer('quantity must be an integer')
+                    .required('quantity is required');
                 break;
         }
     }

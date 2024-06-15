@@ -10,6 +10,7 @@ import {
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
@@ -17,12 +18,17 @@ import CancelIcon from '@mui/icons-material/Close';
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
-import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, CircularProgress, DialogContentText, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
-import { Notify } from '../../utils';
+import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
 import IconButton from "@mui/material/IconButton";
+import {clientsServices} from "../../Routes/api/clients";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import Dialog from "@mui/material/Dialog";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -49,7 +55,7 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
 }));
 
 function EditToolbar(props) {
-    const { setRows, setRowModesModel } = props;
+    const {setRows, setRowModesModel} = props;
 
     const handleClick = () => {
         const id = randomId();
@@ -70,7 +76,7 @@ function EditToolbar(props) {
 }
 
 export function Devices() {
-   // const [rowModesModel, setRowModesModel] = React.useState({});
+    // const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
     //=============================================================
@@ -93,6 +99,29 @@ export function Devices() {
         setOpen(true)
         setRowId(id)
     };
+    // const handleDeliverToClientClick = (id) => () => {
+    //     console.log(id)
+    //     // fetchAndSetDevices()
+    // };
+    const [openDeliverToClientDialog, setOpenDeliverToClientDialog] = useState(false);
+    const [currentId, setCurrentId] = useState(null);
+
+    const handleOpenDialogDeliverToClient = (id) => {
+        setCurrentId(id);
+        setOpenDeliverToClientDialog(true);
+    };
+
+    const handleCloseDialogDeliverToClient = () => {
+        setOpenDeliverToClientDialog(false);
+    };
+
+    const handleConfirmDeliverToClient = () => {
+        console.log(currentId);
+        setOpenDeliverToClientDialog(false);
+// Optionally, fetch and set devices here if needed.
+// fetchAndSetDevices();
+    };
+
 
     // const handleSaveClick = (id) => () => {
     //     setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
@@ -132,7 +161,13 @@ export function Devices() {
     //         setRows(rows.filter((row) => row.id !== id));
     //     }
     // };
+    const SwitchComponent = (params) => {
+        return (
+            <Switch
+            />
+        );
 
+    }
 //=============================================================
     const columns = [
 
@@ -145,6 +180,27 @@ export function Devices() {
         {field: 'userName', headerName: 'اسم فني الصيانة', width: 200},
         {field: 'status', headerName: 'حالة الجهاز', width: 160},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
+        {
+            field: 'deliver_to_client',
+            headerName: 'تسليم للعميل',
+            width: 150,
+            renderCell: (params) => {
+                const isDisabled = params.row.deliver_to_client === 1;
+                return (
+                    <GridActionsCellItem
+                        key={params.id}
+                        icon={<CheckBoxRoundedIcon/>}
+                        label="deliver to client"
+                        className="textPrimary"
+                        onClick={() => handleOpenDialogDeliverToClient(params.id)}
+                        color="inherit"
+                        disabled={isDisabled}
+                    />
+                )
+            }
+
+
+        },
         {
             field: 'actions',
             type: 'actions',
@@ -191,7 +247,7 @@ export function Devices() {
                         onClick={handleDeleteClick(id)}
                         color="inherit"
                         disabled={deletingId === id}
-                    />
+                    />,
                 ];
             },
         },
@@ -208,7 +264,7 @@ export function Devices() {
 
 //fetch data and pagination process
 
-    const fetchAndSetDevices= useCallback(async ()=>{
+    const fetchAndSetDevices = useCallback(async () => {
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -222,11 +278,11 @@ export function Devices() {
         const data = await deviceServices.getAll(params);
         setPagination(data?.pagination);
         setDevices(data?.body);
-    },[pageSize, currentPage]);
+    }, [pageSize, currentPage]);
 
     useEffect(() => {
         fetchAndSetDevices();
-    }, [fetchAndSetDevices,route, pageSize, currentPage]);
+    }, [fetchAndSetDevices, route, pageSize, currentPage]);
 
 
     const reloadTable = async update => {
@@ -276,12 +332,12 @@ export function Devices() {
                             d="M149.121 33.292l-6.83 2.65a1 1 0 0 1-1.317-1.23l1.937-6.207c-2.589-2.944-4.109-6.534-4.109-10.408C138.802 8.102 148.92 0 161.402 0 173.881 0 184 8.102 184 18.097c0 9.995-10.118 18.097-22.599 18.097-4.528 0-8.744-1.066-12.28-2.902z"
                         />
                         <g className="ant-empty-img-4" transform="translate(149.65 15.383)">
-                            <ellipse cx="20.654" cy="3.167" rx="2.849" ry="2.815" />
-                            <path d="M5.698 5.63H0L2.898.704zM9.259.704h4.985V5.63H9.259z" />
+                            <ellipse cx="20.654" cy="3.167" rx="2.849" ry="2.815"/>
+                            <path d="M5.698 5.63H0L2.898.704zM9.259.704h4.985V5.63H9.259z"/>
                         </g>
                     </g>
                 </svg>
-                <Box sx={{ mt: 1 }}>No Data</Box>
+                <Box sx={{mt: 1}}>No Data</Box>
             </StyledGridOverlay>
         );
     }
@@ -298,6 +354,7 @@ export function Devices() {
             userName: device?.user?.name,
             status: device?.status,
             date_receipt: device?.date_receipt,
+            deliver_to_client: device?.deliver_to_client,
         }));
 
         setRows(rowsDevices); // Now `rowsDevices` is derived directly from the updated `devices`
@@ -323,7 +380,7 @@ export function Devices() {
         const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
 
         return (
-            <Stack direction="row" sx={{ width: 1, px: 1 }} alignItems="center" spacing={2}>
+            <Stack direction="row" sx={{width: 1, px: 1}} alignItems="center" spacing={2}>
                 <Box sx={{
                     flexGrow:
                         '1',
@@ -337,7 +394,7 @@ export function Devices() {
                         height: '30px',
                         borderRadius: '10px',
                     }} value={pageSize || 50} onChange={handlePageSizeChange} displayEmpty
-                        inputProps={{ 'aria-label': 'Page size' }}>
+                            inputProps={{'aria-label': 'Page size'}}>
                         <MenuItem value={5}>5</MenuItem>
                         <MenuItem value={10}>10</MenuItem>
                         <MenuItem value={20}>20</MenuItem>
@@ -393,70 +450,87 @@ export function Devices() {
 
     function range(start, end) {
 
-        return Array.from({ length: end - start + 2 }, (_, i) => start + i);
+        return Array.from({length: end - start + 2}, (_, i) => start + i);
     }
 
     return (
         <>
-            {devices.length===0 ?
-                 (  <Box sx={{
-                     display: 'flex',
-                     flexDirection: 'column',
-                     justifyContent: 'center',
-                     alignItems: 'center',
-                     height: '100vh',
-                     width: '100%',
-                 }}>
-                     <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
-                         Loading...
-                     </Typography>
-                     <Box sx={{ width: '50%' }}>
-                         <LinearProgress />
-                     </Box>
-                 </Box>):(
+            {devices.length === 0 ?
+                (<Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
+                        Loading...
+                    </Typography>
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
+                    </Box>
+                </Box>) : (
 
 
-                    <Box sx={{ flexGrow: 1, width: 1 }}>
-                    <DataGrid
-                        sx={{
-                            '&.MuiDataGrid-root': {
-                                minHeight: 'calc(100vh - 130px)',
-                                height: '100%',
-                                maxWidth: "calc(100vw - 80px)",
-                            },
-                            '& .MuiDataGrid-main': {
-                                maxHeight: 'calc(100vh - 180px)'
-                            }
-                        }}
-                        rows={rows}
-                        columns={columns}
-                        loading={rows.length === 0}
-                        // checkboxSelection
-                        // rowModesModel={rowModesModel}
-                        // onRowModesModelChange={handleRowModesModelChange}
-                        // onRowEditStop={handleRowEditStop}
-                        // processRowUpdate={processRowUpdate}
-                        // slots={{
-                        //     toolbar: EditToolbar,
-                        // }}
-                        // slotProps={{
-                        //     toolbar: {setRows, setRowModesModel},
-                        // }}
-                        components={{
-                            noRowsOverlay: CustomNoRowsOverlay,
-                            Pagination: CustomPagination,
-                        }}
+                    <Box sx={{flexGrow: 1, width: 1}}>
+                        <DataGrid
+                            sx={{
+                                '&.MuiDataGrid-root': {
+                                    minHeight: 'calc(100vh - 130px)',
+                                    height: '100%',
+                                    maxWidth: "calc(100vw - 80px)",
+                                },
+                                '& .MuiDataGrid-main': {
+                                    maxHeight: 'calc(100vh - 180px)'
+                                }
+                            }}
+                            rows={rows}
+                            columns={columns}
+                            loading={rows.length === 0}
+                            // checkboxSelection
+                            // rowModesModel={rowModesModel}
+                            // onRowModesModelChange={handleRowModesModelChange}
+                            // onRowEditStop={handleRowEditStop}
+                            // processRowUpdate={processRowUpdate}
+                            // slots={{
+                            //     toolbar: EditToolbar,
+                            // }}
+                            // slotProps={{
+                            //     toolbar: {setRows, setRowModesModel},
+                            // }}
+                            components={{
+                                noRowsOverlay: CustomNoRowsOverlay,
+                                Pagination: CustomPagination,
+                            }}
 
-                    />
-                    {rowId && (
-                        <EditDevice
-                            open={open}
-                            onCloseDialog={handleClose}
-                            id={rowId}
-                            update={reloadTable}
                         />
-                    )}
-                </Box>)}
+                        {rowId && (
+                            <EditDevice
+                                open={open}
+                                onCloseDialog={handleClose}
+                                id={rowId}
+                                update={reloadTable}
+                            />
+                        )}
+                    </Box>)}
+
+
+            <Dialog open={openDeliverToClientDialog} onClose={handleCloseDialogDeliverToClient}
+                    aria-labelledby="alert-dialog-title">
+                <DialogTitle id="alert-dialog-title">{"Confirm Action"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to perform this action?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialogDeliverToClient}>Cancel</Button>
+                    <Button onClick={handleConfirmDeliverToClient} autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
 
     );
