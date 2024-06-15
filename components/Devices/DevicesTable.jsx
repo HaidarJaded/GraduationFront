@@ -115,10 +115,23 @@ export function Devices() {
         setOpenDeliverToClientDialog(false);
     };
 
-    const handleConfirmDeliverToClient = () => {
+    const handleConfirmDeliverToClient =async () => {
         console.log(currentId);
+        const updateData = async () =>
+        {
+            try
+            {
+                const response =  await clientsServices.updateClients(currentId, { deliver_to_client: 1 });
+                Notify("light", response.message, "success");
+            }
+            catch (error)
+            {
+                console.log(error)
+            }
+
+        };
+        await updateData();
         setOpenDeliverToClientDialog(false);
-// Optionally, fetch and set devices here if needed.
 // fetchAndSetDevices();
     };
 
@@ -161,13 +174,6 @@ export function Devices() {
     //         setRows(rows.filter((row) => row.id !== id));
     //     }
     // };
-    const SwitchComponent = (params) => {
-        return (
-            <Switch
-            />
-        );
-
-    }
 //=============================================================
     const columns = [
 
