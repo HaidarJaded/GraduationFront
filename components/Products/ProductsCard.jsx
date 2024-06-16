@@ -9,7 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import {Box, Grid, Pagination, Typography} from "@mui/material";
+import {Box, Grid, MenuItem, Pagination, Select, Stack, Typography} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
@@ -76,7 +76,10 @@ export function ProductCard() {
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
-
+    const [pagination, setPagination] = useState({});
+    const [rowCount, setRowCount] = useState(pagination?.total)
+    const [pageSize, setPageSize] = useState(pagination?.per_page)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const handleCloseAddProduct = () => {
         setOpenAddProduct(false);
         setRowIdAddProduct(null)
@@ -106,18 +109,120 @@ export function ProductCard() {
     const fetchAndSetProducts = useCallback(async () => {
         const params = {
             "dir": "[asc,desc]",
-            "page": "1",
-            "per_page": "10",
+            'page': currentPage,
+            'per_page': pageSize,
         };
         const data = await servicesProducts.getAllProducts(params);
+        setPagination(data?.pagination);
         data ? setProducts(data?.body) : setProducts([]);
-    }, []);
+    }, [pageSize, currentPage]);
 
 
     useEffect(() => {
         fetchAndSetProducts();
         console.log(products)
-    }, [fetchAndSetProducts]);
+    }, [fetchAndSetProducts,pageSize, currentPage]);
+
+    useEffect(() => {
+        setRowCount(pagination?.total)
+        setPageSize(pagination?.per_page)
+        setCurrentPage(pagination?.current_page)
+
+    }, [pagination])
+
+    function CustomPagination() {
+        const handlePageSizeChange = (event) => {
+            setPageSize(Number(event.target.value));
+            setCurrentPage(1)
+        };
+        const pageCount = Math.ceil(rowCount / pageSize);
+
+
+        const firstItemIndex = (currentPage - 1) * pageSize + 1;
+        const lastItemIndex = Math.min(currentPage * pageSize, rowCount);
+
+
+        const startPages = range(1, Math.min(pageCount, 2));
+        const endPages = range(Math.max(pageCount - 1, 2), pageCount);
+        const middlePages = currentPage > 1 && currentPage < pageCount - 2
+            ? [currentPage, currentPage + 1, currentPage + 2]
+            : [2, 3];
+        const paginationRanges = [...new Set([...startPages, ...middlePages, ...endPages])].sort((a, b) => a - b);
+        const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
+
+        return (
+            <Stack direction="row" sx={{width: 1, px: 1,marginTop:3,bgcolor:"#b9a9a985"}} alignItems="center" spacing={2}>
+                <Box sx={{
+                    flexGrow:
+                        '1',
+                    display: "flex",
+                    gap: 1,
+                    alignItems: "center"
+                }}>
+                    <Select sx={{
+                        paddingTop: '0',
+                        paddingBottom: '0',
+                        height: '30px',
+                        borderRadius: '10px',
+                    }} value={pageSize || 50} onChange={handlePageSizeChange} displayEmpty
+                            inputProps={{'aria-label': 'Page size'}}>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={50}>50</MenuItem>
+                        <MenuItem value={100}>100</MenuItem>
+                    </Select>
+                    <Typography sx={{
+                        color:
+                            '#8A9099'
+
+                    }}>
+                        {isAllSelected
+                            ? `Showing ${rowCount} of ${rowCount}`
+                            : `Showing ${firstItemIndex} - ${lastItemIndex} of ${rowCount}`}
+                    </Typography>
+                </Box>
+
+
+                {validPaginationRanges.map((page, index) => (
+                    <Button
+                        sx={{
+                            background:
+                                'rgba(243,243,243,0)',
+                            maxWidth: '25px',
+                            minWidth: '25px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: ' 25px',
+                            borderRadius: '50%',
+                            color: '#475467',
+
+                            "&:hover": {
+
+                                background: 'rgba(255,255,255,0.56)',
+                            }, "&.Mui-disabled": {
+                                color: "#182230",
+                                opacity: "1",
+                                background: '#f3f3f3',
+                            },
+                        }}
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        disabled={page === currentPage}
+                        variant={'text'}
+                    >
+                        {paginationRanges[index + 1] < page ? `...` : page}
+                    </Button>
+                ))}
+            </Stack>
+        );
+    }
+    const isAllSelected = pageSize >= rowCount;
+    function range(start, end) {
+
+        return Array.from({length: end - start + 2}, (_, i) => start + i);
+    }
     return (
         <>
             {products.length === 0 ? (
@@ -202,6 +307,7 @@ export function ProductCard() {
                         ))}
 
                     </Grid>
+                    <CustomPagination/>
                     {rowId && (
                         <EditProduct
                             open={open}
@@ -217,7 +323,6 @@ export function ProductCard() {
                             update={reloadTable}
                         />
                     )}
-                    <Pagination count={10} hidePrevButton hideNextButton/>
                 </Box>
             )}
         </>

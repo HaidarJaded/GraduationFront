@@ -21,7 +21,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export function EditDevice({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id);
-    const route = useRouter()
     const [data, setData] = useState();
     const {update} = props;
 

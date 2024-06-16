@@ -53,6 +53,12 @@ export function getValidationObject() {
                     .matches(/^\d+(\.\d+)?$/, 'cost must contain only numbers and can be a decimal')
 
                 break;
+            case "time_required":
+                result['time_required'] = Yup.string()
+                    .matches(/^\d+days\s\d+hours$/, 'Time required must be in the format like "2days[space]4hours"')
+
+                break;
+
         }
     }
 
