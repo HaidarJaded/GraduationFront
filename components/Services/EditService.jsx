@@ -36,7 +36,7 @@ export function EditService({...props}) {
     }, [fetchAndSetService]);
 
 
-    const formOptions = getValidationObject("time_required");
+    const formOptions = getValidationObject("price","time_required");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
@@ -153,10 +153,12 @@ export function EditService({...props}) {
                                     fullWidth
                                     id="price"
                                     label="السعر"
-
+                                    {...register('price')}
+                                    helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
+                                    error={(errors.price || data.price?.length > 0) && true}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={12}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
@@ -165,6 +167,10 @@ export function EditService({...props}) {
                                     fullWidth
                                     id="time_required"
                                     label="الوقت المطلوب"
+                                    {...register('time_required')}
+                                    helperText={errors.time_required ? errors.time_required.message : ''}
+                                    error={!!errors.time_required}
+
                                 />
                             </Grid>
                         </Grid>

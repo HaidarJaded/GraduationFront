@@ -54,9 +54,8 @@ export function getValidationObject() {
 
                 break;
             case "time_required":
-                result['time_required'] =  Yup.string()
-                    .matches(/^\d+\sdays\s\d+\shour$/, "Time required must be in the format: 'number days number hour'")
-                    .nullable()
+                result['time_required'] = Yup.string()
+                    .matches(/^\d+days\s\d+hours$/, 'Time required must be in the format like "2days[space]4hours"')
 
                 break;
 
