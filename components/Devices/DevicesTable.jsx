@@ -71,11 +71,11 @@ export function Devices() {
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
     //=============================================================
-    const handleRowEditStop = (params, event) => {
-        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-        }
-    };
+    // const handleRowEditStop = (params, event) => {
+    //     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+    //         event.defaultMuiPrevented = true;
+    //     }
+    // };
 
     // for edit
     const [open, setOpen] = React.useState(false);

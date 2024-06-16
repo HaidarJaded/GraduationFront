@@ -8,7 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
 import {getValidationObject, Notify} from "../../utils";
@@ -22,18 +21,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export function EditCompletedDevice({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id)
-    const route = useRouter()
     const [data, setData] = useState({});
     const dataRef = useRef(data);
     const {update} = props;
 
     const [selectedInfo, setSelectedInfo] = useState(data?.info);
     const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
-    const [modelOptions, setModelOptions] = useState([]);
 
     const [info, setInfo] = useState('');
     const [costToClient, setCostToClient] = useState('');
-    const [model, setModel] = useState('');
 
     const formOptions = getValidationObject("cost_to_client");
     const { register, handleSubmit, formState } = useForm(formOptions);
@@ -48,8 +44,6 @@ export function EditCompletedDevice({...props}) {
         setInfo(event.target.value);
     };
 
-
-    // Update local state whenever data.info changes
     useEffect(() => {
         setCostToClient(data?.cost_to_client || '');
     }, [data?.cost_to_client]);
@@ -62,7 +56,7 @@ export function EditCompletedDevice({...props}) {
     };
 
     useEffect(() => {
-        dataRef.current = data; // Update ref every time data changes
+        dataRef.current = data;
     }, [data]);
 
     const fetchAndSetDevice = useCallback(async () => {
@@ -75,7 +69,6 @@ export function EditCompletedDevice({...props}) {
         };
         const response = await completedDevicesServices.getCompletedDevice(id, params);
         await setData(response);
-        console.log("kkkkkkksssskkkkkk",response);
     }, [id]);
 
 
