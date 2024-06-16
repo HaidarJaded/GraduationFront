@@ -359,6 +359,7 @@ export function Devices() {
             code: device?.code,
             clientName: device?.client?.name,
             userName: device?.user?.name,
+            userId: device?.user?.id,
             status: device?.status,
             date_receipt: device?.date_receipt,
             deliver_to_client: device?.deliver_to_client,

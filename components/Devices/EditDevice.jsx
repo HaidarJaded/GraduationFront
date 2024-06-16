@@ -54,8 +54,8 @@ export function EditDevice({...props}) {
             Object.assign(dataDevice, {"info": selectedInfo})
         console.log(selectedModel)
         console.log(data?.model)
-        if (selectedUserName && selectedUserName !== data?.user?.name)
-            Object.assign(dataDevice, {"user.name": selectedUserName})
+        if (selectedUserName && selectedUserName !== data?.user?.id)
+            Object.assign(dataDevice, {"user_id": selectedUserName})
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
         if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
@@ -135,7 +135,7 @@ export function EditDevice({...props}) {
 
                     {data ? (
                         <Grid container maxWidth="lg" spacing={1}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sx={{maxWidth:1}}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
@@ -143,12 +143,11 @@ export function EditDevice({...props}) {
                                     defaultValue={`${data?.info || ''}`}
                                     fullWidth
                                     id="info"
-                                    label="Info"
+                                    label="معلومات الجهاز"
                                     autoFocus
                                 />
                             </Grid>
-
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
@@ -160,7 +159,7 @@ export function EditDevice({...props}) {
 
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
@@ -172,11 +171,11 @@ export function EditDevice({...props}) {
 
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} sx={{marginTop:1}}>
                                 <FormControl fullWidth>
                                     <InputLabel
                                         id="userName">
-                                        userName
+                                        اسم الفني المسؤول عن الجهاز
                                     </InputLabel>
                                     <Select
                                         name={"userName"}
@@ -184,7 +183,7 @@ export function EditDevice({...props}) {
                                         id="userName"
                                         value={selectedUserName}
                                         onChange={(event) => setSelectedUserName(event.target.value)}
-                                        label="userName"
+                                        label="اسم الفني المسؤول عن الجهاز"
                                         MenuProps={{
                                             sx: {
                                                 "&& .Mui-selected": {
@@ -218,8 +217,8 @@ export function EditDevice({...props}) {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onCloseDialog}>Disagree</Button>
-                    <Button type={'submit'}>Agree</Button>
+                    <Button onClick={props?.onCloseDialog}>إلغاء</Button>
+                    <Button type={'submit'}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>
