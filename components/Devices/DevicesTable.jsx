@@ -433,7 +433,7 @@ export function Devices() {
 
                             "&:hover": {
 
-                                background: 'rgba(255,255,255,0.56)',
+                                background: 'rgba(248,4,4,0.56)',
                             }, "&.Mui-disabled": {
                                 color: "#182230",
                                 opacity: "1",
