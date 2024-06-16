@@ -4,11 +4,8 @@ import {
     DataGrid,
     GridActionsCellItem,
     GridRowEditStopReasons,
-    GridRowModes,
-    GridToolbarContainer
 } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -23,7 +20,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
-import {CustomizedInputBase} from "../Search";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
