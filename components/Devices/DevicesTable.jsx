@@ -23,6 +23,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
+import {CustomizedInputBase} from "../Search";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -358,6 +359,7 @@ export function Devices() {
             code: device?.code,
             clientName: device?.client?.name,
             userName: device?.user?.name,
+            userId: device?.user?.id,
             status: device?.status,
             date_receipt: device?.date_receipt,
             deliver_to_client: device?.deliver_to_client,
@@ -461,7 +463,7 @@ export function Devices() {
 
     return (
         <>
-            {devices.length === 0 ?
+            {devices?.length === 0 ?
                 (<Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -479,9 +481,9 @@ export function Devices() {
                 </Box>) : (
 
 
-                    <Box sx={{flexGrow: 1, width: 1}}>
+                    <Box sx={{flexGrow: 1, width: 1,display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
                         <DataGrid
-                            sx={{
+                            sx={{p: '2px 4px' ,m: '6px 13px',
                                 '&.MuiDataGrid-root': {
                                     minHeight: 'calc(100vh - 130px)',
                                     height: '100%',
@@ -493,7 +495,7 @@ export function Devices() {
                             }}
                             rows={rows}
                             columns={columns}
-                            loading={rows.length === 0}
+                            loading={rows?.length === 0}
                             // checkboxSelection
                             // rowModesModel={rowModesModel}
                             // onRowModesModelChange={handleRowModesModelChange}

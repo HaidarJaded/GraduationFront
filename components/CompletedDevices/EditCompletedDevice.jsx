@@ -11,7 +11,7 @@ import {useForm} from "react-hook-form";
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
@@ -35,6 +35,10 @@ export function EditCompletedDevice({...props}) {
     const [costToClient, setCostToClient] = useState('');
     const [model, setModel] = useState('');
 
+    const formOptions = getValidationObject("cost_to_client");
+    const { register, handleSubmit, formState } = useForm(formOptions);
+    const { errors } = formState;
+
     useEffect(() => {
         setInfo(data?.info || '');
 
@@ -48,11 +52,13 @@ export function EditCompletedDevice({...props}) {
     // Update local state whenever data.info changes
     useEffect(() => {
         setCostToClient(data?.cost_to_client || '');
-
     }, [data?.cost_to_client]);
 
     const handleCostToClientChange = (event) => {
-        setCostToClient(event.target.value);
+        const value = event.target.value;
+        if (/^\d*\.?\d*$/.test(value)) {
+            setCostToClient(value);
+        }
     };
 
     useEffect(() => {
@@ -87,8 +93,6 @@ export function EditCompletedDevice({...props}) {
     }, [data]);
 
 
-    const {register, handleSubmit, formState} = useForm();
-    const {errors} = formState;
 
 
     const onSubmit = async () => {
@@ -174,8 +178,6 @@ export function EditCompletedDevice({...props}) {
                                     fullWidth
                                     id="cost_to_client"
                                     label="الكلفة"
-
-
                                 />
                             </Grid>
                         </Grid>
