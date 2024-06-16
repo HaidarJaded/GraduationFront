@@ -112,7 +112,7 @@ export function RecipeReviewCard() {
         const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
 
         return (
-            <Stack direction="row" sx={{width: 1, px: 1}} alignItems="center" spacing={2}>
+            <Stack direction="row" sx={{width: 1, px: 1,marginTop:3,bgcolor:"#b9a9a985"}} alignItems="center" spacing={2}>
                 <Box sx={{
                     flexGrow:
                         '1',
