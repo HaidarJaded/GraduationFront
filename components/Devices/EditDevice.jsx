@@ -10,7 +10,7 @@ import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextF
 import {useForm} from "react-hook-form";
 import {deviceServices, usersServices} from "../../Routes";
 import {useRouter} from "next/router";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
 import {ModelsEnum} from "../../enums";
 import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 import {clientsServices} from "../../Routes/api/clients";
@@ -44,7 +44,8 @@ export function EditDevice({...props}) {
     }, [fetchAndSetDevice]);
 
 
-    const {register, handleSubmit, formState} = useForm();
+    const formOptions = getValidationObject("cost_to_client");
+    const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
 
@@ -168,7 +169,9 @@ export function EditDevice({...props}) {
                                     fullWidth
                                     id="cost_to_client"
                                     label="الكلفة"
-
+                                    {...register('cost_to_client')}
+                                    helperText={errors.cost_to_client && errors.cost_to_client?.message || (data.cost_to_client?.length > 0 && data.cost_to_client[0])}
+                                    error={(errors.cost_to_client || data.cost_to_client?.length > 0) && true}
                                 />
                             </Grid>
                             <Grid item xs={12} sx={{marginTop:1}}>

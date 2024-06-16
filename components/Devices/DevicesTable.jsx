@@ -463,7 +463,7 @@ export function Devices() {
 
     return (
         <>
-            {devices.length === 0 ?
+            {devices?.length === 0 ?
                 (<Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -495,7 +495,7 @@ export function Devices() {
                             }}
                             rows={rows}
                             columns={columns}
-                            loading={rows.length === 0}
+                            loading={rows?.length === 0}
                             // checkboxSelection
                             // rowModesModel={rowModesModel}
                             // onRowModesModelChange={handleRowModesModelChange}
