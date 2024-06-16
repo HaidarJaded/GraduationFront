@@ -9,7 +9,7 @@ import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/router";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
 import {servicesServices} from "../../Routes/api/services";
 //import {ModelsEnum} from "../../enums";
 //import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
@@ -36,9 +36,9 @@ export function EditService({...props}) {
     }, [fetchAndSetService]);
 
 
-    const {register, handleSubmit, formState} = useForm();
+    const formOptions = getValidationObject("time_required");
+    const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
-
 
     const onSubmit = async () => {
         let dataService = {}
@@ -165,7 +165,6 @@ export function EditService({...props}) {
                                     fullWidth
                                     id="time_required"
                                     label="الوقت المطلوب"
-
                                 />
                             </Grid>
                         </Grid>
