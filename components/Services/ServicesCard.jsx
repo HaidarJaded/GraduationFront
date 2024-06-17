@@ -241,7 +241,7 @@ export function RecipeReviewCard() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
-                                        <IconButton aria-label="edit" sx={{ color: "#f02828" }}>
+                                        <IconButton aria-label="edit"  sx={{color: "#ec6060"}}>
                                             <FavoriteIcon
                                                 onClick={handleEditClick(service.id) }/>
                                         </IconButton>

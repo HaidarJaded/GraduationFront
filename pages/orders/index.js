@@ -1,19 +1,18 @@
 import {useRouter} from "next/router";
 import {useEffect} from "react";
 import Cookies from "js-cookie";
-import {AccordionNotices} from "../../components";
+import {RecipeReviewCard} from "../../components/Services";
+import {OrderCard} from "../../components/Orders";
 
-export default function orders(){
-    const router= useRouter();
-   useEffect(()=>{
-       if (!Cookies.get('auth_token')){
-           router.push('/auth/login');
-       }
-   },[router]);
+export default function TechniciansPage() {
+    const router = useRouter();
 
-   return(
-       <>
-           <AccordionNotices/>
-       </>
-   )
+    useEffect(() => {
+        if (!Cookies.get("auth-token")) {
+            router.push("/auth/login");
+        }
+    }, [router]);
+    return (
+        <OrderCard/>
+    );
 }
