@@ -1,86 +1,50 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
+import {useCallback, useEffect, useState} from 'react';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import {useCallback, useEffect, useState} from "react";
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import {Box, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
-import {servicesServices} from "../../Routes/api/services";
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import {ordersServices} from "../../Routes/api/orders";
 import LinearProgress from "@mui/material/LinearProgress";
-import {EditService} from "./EditService";
-import {Notify} from "../../utils";
-import Button from "@mui/material/Button";
+import {Grid, MenuItem, Select, Stack} from "@mui/material";
+import {OrdersDialog} from "./OrdersDialog";
+import IconButton from "@mui/material/IconButton";
+import BorderColorTwoToneIcon from '@mui/icons-material/BorderColorTwoTone';
+import {EditOrder} from "./EditOrder";
 
-
-const ExpandMore = styled((props) => {
-    const { expand, ...other } = props;
-    return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
-    }),
-}));
-
-
-export function RecipeReviewCard() {
-
-    const [open, setOpen] = React.useState(false);
+export function OrderCard() {
+    const [orders, setOrders] = useState([]);
+    const [ordersDevices, setOrdersDevices] = useState([]);
+    const [ordersProducts, setOrdersProducts] = useState([]);
+    const [devices, setDevices] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [openEdit, setOpenEdit] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
-    const [deletingId, setDeletingId] = useState(null);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
-    // const [expanded, setExpanded] = React.useState(false);
 
-    // const handleExpandClick = () => {
-    //     setExpanded(!expanded);
-    // };
-    const handleDeleteClick = (id) => async () => {
-        setDeletingId(id);
-        if (await servicesServices.deleteService(id)) {
-            Notify("colored",
-                "تم الحذف بنجاح", "success");
-        }
-        setDeletingId(null);
-        reloadTable("update")
-    };
-    const handleClose = () => {
-        setOpen(false);
-        setRowId(null)
-    };
-    const handleEditClick = (id) => () => {
-        setOpen(true)
-        setRowId(id)
-    };
-    const reloadTable = async update => {
-        fetchAndSetServices()
-    };
-    const [services, setServices] = useState([]);
-    const fetchAndSetServices = useCallback(async () => {
+    const fetchAndSetOrders = useCallback(async () => {
         const params = {
-            "dir": "[asc,desc]",
+            'with': 'devices,products,devices_orders,products_orders,user',
+            'orderBy': 'date',
+            "dir": "desc",
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await servicesServices.getAllServices(params);
-        data ? setServices(data?.body) : setServices([]);
+        const data = await ordersServices.getAllOrders(params);
+        data ? setOrders(data?.body) : setOrders([]);
         setPagination(data?.pagination);
+        console.log(data);
     }, [pageSize, currentPage]);
-
-
     useEffect(() => {
-        fetchAndSetServices();
-        console.log(services)
-    }, [fetchAndSetServices,pageSize, currentPage]);
+        fetchAndSetOrders();
+        console.log(orders)
+    }, [fetchAndSetOrders, pageSize, currentPage]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
@@ -88,6 +52,22 @@ export function RecipeReviewCard() {
         setCurrentPage(pagination?.current_page)
 
     }, [pagination])
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+    const handleEditClick = (id) => () => {
+        setOpenEdit(true)
+        setRowId(id)
+        console.log("opeem")
+    };
+    const handleCloseEdit = () => {
+        setOpenEdit(false);
+        setRowId(null)
+    };
+    const reloadTable = async update => {
+        fetchAndSetOrders()
+    };
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -109,7 +89,8 @@ export function RecipeReviewCard() {
         const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
 
         return (
-            <Stack direction="row" sx={{width: 1, px: 1,marginTop:3,bgcolor:"#b9a9a985"}} alignItems="center" spacing={2}>
+            <Stack direction="row" sx={{width: 1, px: 1, marginTop: 3, bgcolor: "#b9a9a985"}} alignItems="center"
+                   spacing={2}>
                 <Box sx={{
                     flexGrow:
                         '1',
@@ -142,7 +123,7 @@ export function RecipeReviewCard() {
                 </Box>
 
 
-                {validPaginationRanges.map((page, index) => (
+                {validPaginationRanges?.map((page, index) => (
                     <Button
                         sx={{
                             background:
@@ -176,7 +157,9 @@ export function RecipeReviewCard() {
             </Stack>
         );
     }
+
     const isAllSelected = pageSize >= rowCount;
+
     function range(start, end) {
 
         return Array.from({length: end - start + 2}, (_, i) => start + i);
@@ -184,7 +167,7 @@ export function RecipeReviewCard() {
 
     return (
         <>
-            {services.length===0?(
+            {orders.length === 0 ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -193,18 +176,19 @@ export function RecipeReviewCard() {
                     height: '100vh',
                     width: '100%',
                 }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
                         Loading...
                     </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
                     </Box>
                 </Box>
-            ):(
+            ) : (
                 <Box>
-                    <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container spacing={2}>
-                        {services.map((service) => (
-                            <Grid item key={service.id} sx={{marginY: 3, marginX: '3px'}}>
+                    <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container
+                          spacing={2}>
+                        {orders?.map((orderUser) => (
+                            <Grid item key={orderUser.id} sx={{marginY: 3, marginX: '3px'}}>
                                 <Card xs={12} sm={6} md={12} lg={3} sx={{
                                     maxWidth: 300, minWidth: 300, marginX: {
                                         xs: 0,
@@ -213,59 +197,61 @@ export function RecipeReviewCard() {
                                         lg: 0,
                                     }, borderRadius: "20px"
                                 }}>
-                                    <CardMedia
-                                        sx={{ marginY: 2, borderRadius: "20px" }}
-                                        component="img"
-                                        height="225"
-                                        image="/assets/images/svg/logo-black.svg"
-                                        alt="Service Image"
-                                    />
-                                    <CardHeader
-                                        avatar={
-                                            <Avatar sx={{ bgcolor: '#50439ccc', padding: 3 }} aria-label="recipe">
-                                                MYP
-                                            </Avatar>
-                                        }
-                                        title={` خدمة ${service.name}`}
-                                        subheader={service.created_at}
-                                    />
-                                    <CardContent sx={{ direction: "rtl" }}>
-                                        <Typography variant="body1" color="text.secondary">
-                                            {`السعر: ${service.price}`}
+                                    <CardContent sx={{padding:3}}>
+                                        <Typography variant="h5" component="div" sx={{
+                                            color: "#3f0a77",
+                                            fontSize: 26,
+                                            marginBottom: 2
+                                        }}>
+                                            {orderUser.description}
                                         </Typography>
-                                        <Typography variant="body1" color="text.secondary">
-                                            {`الوقت: ${service.time_required}`}
+                                        <Typography variant="body2" sx={{marginY: 1, paddingY:1}}>
+                                            {`تاريخ الطلب : ${orderUser.date} `}
+
+                                        </Typography>
+                                        <Typography variant="body2">
+                                           {` ${orderUser?.user?.name} :عامل التوصيل `}
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
-                                        <IconButton aria-label="edit"  sx={{color: "#ec6060"}}>
-                                            <FavoriteIcon
-                                                onClick={handleEditClick(service.id) }/>
-                                        </IconButton>
-                                        <IconButton aria-label="delete">
-                                            <DeleteIcon
-                                                onClick={handleDeleteClick(service.id) }
-                                                disabled={deletingId === service.id}/>
+                                        <Button size="small" onClick={() => {
+                                            setDevices(orderUser.devices);
+                                            setProducts(orderUser.products);
+                                            setOrdersProducts(orderUser.products_orders);
+                                            setOrdersDevices(orderUser.devices_orders);
+                                            setOpenDialog(true);
+                                        }}>عرض تفاصيل الطلب</Button>
+                                        <IconButton aria-label="edit"  sx={{color: "#690b9d"}}>
+
+                                            <BorderColorTwoToneIcon   onClick={handleEditClick(orderUser.id) } />
                                         </IconButton>
                                     </CardActions>
                                 </Card>
 
                             </Grid>
                         ))}
-
                     </Grid>
+
                     {rowId && (
-                        <EditService
-                            open={open}
-                            onCloseDialog={handleClose}
+                        <EditOrder
+                            open={openEdit}
+                            onCloseDialog={handleCloseEdit}
                             id={rowId}
                             update={reloadTable}
                         />
                     )}
                     <CustomPagination/>
-
                 </Box>
             )}
+            <OrdersDialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                Devices={devices}
+                Products={products}
+                OrdersProducts={ordersProducts}
+                OrdersDevices={ordersDevices}
+            />
         </>
+
     );
 }

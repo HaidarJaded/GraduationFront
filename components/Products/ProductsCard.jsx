@@ -225,24 +225,7 @@ export function ProductCard() {
     }
     return (
         <>
-            {products.length === 0 ? (
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100vh',
-                    width: '100%',
-                }}>
-                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
-                        Loading...
-                    </Typography>
-                    <Box sx={{width: '50%'}}>
-                        <LinearProgress/>
-                    </Box>
-                </Box>
-            ) : (
-                <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
                     <BootstrapButton sx={{marginX: 6, marginTop: 2, direction: "rtl"}} variant="contained" disableRipple
                                      endIcon={<AddIcon sx={{marginRight: 2}}/>}
                                      onClick={() => {
@@ -253,6 +236,21 @@ export function ProductCard() {
                             إضافة منتج
                         </Typography>
                     </BootstrapButton>
+                {products.length === 0 ? (  <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '50vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
+                        Loading...
+                    </Typography>
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
+                    </Box>
+                </Box>) : (
                     <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container>
                         {products.map((product) => (
                             <Grid item key={product.id} sx={{marginY: 3, marginX: '3px'}}>
@@ -278,7 +276,7 @@ export function ProductCard() {
                                             </Avatar>
                                         }
                                         title={<Typography variant="h6">
-                                            {`منتج ${product.name}`}
+                                            {`${product.name}`}
                                         </Typography>}
                                         subheader={product.created_at}
                                     />
@@ -305,9 +303,11 @@ export function ProductCard() {
 
                             </Grid>
                         ))}
-
+                        <CustomPagination/>
                     </Grid>
-                    <CustomPagination/>
+
+                    )}
+
                     {rowId && (
                         <EditProduct
                             open={open}
@@ -324,7 +324,7 @@ export function ProductCard() {
                         />
                     )}
                 </Box>
-            )}
+
         </>
     );
 }

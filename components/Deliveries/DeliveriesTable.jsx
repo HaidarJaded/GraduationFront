@@ -315,22 +315,22 @@ export function DeliveriesTable() {
 
     return (
         <>
-            {deliveries.length===0?(<Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                width: '100%',
-            }}>
-                <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
-                    Loading...
-                </Typography>
-                <Box sx={{ width: '50%' }}>
-                    <LinearProgress />
-                </Box>
-            </Box>):( <Box sx={{flexGrow: 1, width: 1}}>
-
+             <Box sx={{flexGrow: 1, width: 1}}>
+                 {deliveries.length===0?(<Box sx={{
+                     display: 'flex',
+                     flexDirection: 'column',
+                     justifyContent: 'center',
+                     alignItems: 'center',
+                     height: '50vh',
+                     width: '100%',
+                 }}>
+                     <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                         Loading...
+                     </Typography>
+                     <Box sx={{ width: '50%' }}>
+                         <LinearProgress />
+                     </Box>
+                 </Box>):(
                 <DataGrid
                     sx={{
                         '&.MuiDataGrid-root': {
@@ -350,8 +350,8 @@ export function DeliveriesTable() {
                         Pagination: CustomPagination,
                     }}
 
-                />
-                <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
+                />)}
+                <Box sx={{marginRight: 5, direction: "rtl"}}>
                     <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
                             endIcon={<AddIcon sx={{marginRight: 2}}/>}
                             onClick={() => {
@@ -383,7 +383,7 @@ export function DeliveriesTable() {
                     />
                 )}
 
-            </Box>)}
+            </Box>
         </>
 
     );
