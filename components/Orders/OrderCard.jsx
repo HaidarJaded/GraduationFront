@@ -13,6 +13,7 @@ import {OrdersDialog} from "./OrdersDialog";
 import IconButton from "@mui/material/IconButton";
 import BorderColorTwoToneIcon from '@mui/icons-material/BorderColorTwoTone';
 import {EditService} from "../Services/EditService";
+import {EditOrder} from "./EditOrder";
 
 const bull = (
     <Box
@@ -241,7 +242,7 @@ export function OrderCard() {
                     </Grid>
 
                     {rowId && (
-                        <EditService
+                        <EditOrder
                             open={openEdit}
                             onCloseDialog={handleCloseEdit}
                             id={rowId}
