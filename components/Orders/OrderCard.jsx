@@ -69,6 +69,7 @@ export function OrderCard() {
     const handleEditClick = (id) => () => {
         setOpenEdit(true)
         setRowId(id)
+        console.log("opeem")
     };
     const handleCloseEdit = () => {
         setOpenEdit(false);
@@ -219,7 +220,7 @@ export function OrderCard() {
 
                                         </Typography>
                                         <Typography variant="body2">
-                                           {` ${orderUser.user.name} :عامل التوصيل `}
+                                           {` ${orderUser?.user?.name} :عامل التوصيل `}
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
@@ -232,7 +233,7 @@ export function OrderCard() {
                                         }}>عرض تفاصيل الطلب</Button>
                                         <IconButton aria-label="edit"  sx={{color: "#690b9d"}}>
 
-                                            <BorderColorTwoToneIcon   onClick={handleEditClick(orderUser.user_id) } />
+                                            <BorderColorTwoToneIcon   onClick={handleEditClick(orderUser.id) } />
                                         </IconButton>
                                     </CardActions>
                                 </Card>

@@ -6,15 +6,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {deviceServices, usersServices} from "../../Routes";
-import {useRouter} from "next/router";
+import {usersServices} from "../../Routes";
 import {Notify} from "../../utils";
-import {clientsServices} from "../../Routes/api/clients";
-//import {ModelsEnum} from "../../enums";
-//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
-
+import {ordersServices} from "../../Routes/api/orders";
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -25,12 +21,14 @@ export function EditOrder({...props}) {
     const [data, setData] = useState();
     const {update} = props;
 
-    const [selectedDeliveryName, setSelectedDeliveryName] = useState(id);
+    const [selectedDeliveryName, setSelectedDeliveryName] = useState(data?.user_id);
     const fetchAndSetDelivery = useCallback(async () => {
         const params = {
             'dir': 'desc',
+            'with': 'user',
         };
-        const response = await usersServices.getUser(id, params);
+        const response = await ordersServices.getOrder(id, params);
+        console.log("this response of order",response)
         await setData(response);
     }, [id])
 
@@ -45,12 +43,12 @@ export function EditOrder({...props}) {
 
     const onSubmit = async () => {
         let dataDelivery = {}
-        if (selectedDeliveryName && selectedDeliveryName !== data?.id)
+        if (selectedDeliveryName && selectedDeliveryName !== data?.user_id)
             Object.assign(dataDelivery, {"user_id": selectedDeliveryName})
 
         if (Object.keys(dataDelivery).length > 0) {
             try {
-                const response = await usersServices.updateUser(id, dataDelivery);
+                const response = await ordersServices.updateOrder(id, dataDelivery);
                 Notify("light", response.message, "success")
                 props.onCloseDialog()
                 update('update');
@@ -61,7 +59,6 @@ export function EditOrder({...props}) {
         }
     }
 
-    const [selectedModel, setSelectedModel] = useState(data?.model);
     const [modelOptions, setModelOptions] = useState([]);
 
     const fetchAndSetModelOptions = useCallback(async () => {
@@ -78,17 +75,6 @@ export function EditOrder({...props}) {
     useEffect(() => {
         fetchAndSetModelOptions();
     }, [fetchAndSetModelOptions]);
-
-    function handleKeyUp(event) {
-        let keyName = event.target.name;
-        switch (keyName) {
-            case 'userName' :
-                setSelectedDeliveryName(event.target.value);
-                break;
-            default:
-                break;
-        }
-    }
 
     return (
         <>
@@ -115,13 +101,13 @@ export function EditOrder({...props}) {
                             <Grid item xs={12} sx={{marginTop:1}}>
                                 <FormControl fullWidth>
                                     <InputLabel
-                                        id="userName">
+                                        id="user_id">
                                         عامل التوصيل المسؤول عن الطلب
                                     </InputLabel>
                                     <Select
-                                        name={"userName"}
-                                        labelId="userName"
-                                        id="userName"
+                                        name={"user_id"}
+                                        labelId="user_id"
+                                        id="user_id"
                                         value={selectedDeliveryName}
                                         onChange={(event) => setSelectedDeliveryName(event.target.value)}
                                         label="عامل التوصيل المسؤول عن الطلب"

@@ -21,7 +21,31 @@ const getAllOrders = async (params) => {
         responseErrorHandlers(error?.response);
     }
 };
+const getOrder = async (id, params) => {
+    try {
+        return await axiosInstance
+            .get(`${BASE_URL}${ORDERS_URL}/${id}`, {params})
+            .then(async (response) => {
+                return await response?.data?.body;
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
+const updateOrder = async (id, params) => {
+    try {
+        return await axiosInstance.put(`${BASE_URL}${ORDERS_URL}/${id}`, params).then(
+            async response => {
+                return response?.data
 
+            }
+        );
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 export const ordersServices = {
-    getAllOrders
+    getAllOrders,
+    getOrder,
+    updateOrder
 };

@@ -162,9 +162,6 @@ export function OrdersDialog({...props}) {
                     <Grid container spacing={2} columns={14} sx={{direction: "rtl"}}>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
                             <Box sx={{
-                                display: 'flex', // هذا يجعل الأيقونة على اليسار والنص على اليمين
-                                alignItems: 'center',
-                                justifyContent: 'space-between',// لمحاذاة العناصر عموديًا
                                 backgroundColor: "rgba(219,206,206,0.19)",
                                 padding: 3,
                                 borderRadius: "5%",
@@ -180,6 +177,7 @@ export function OrdersDialog({...props}) {
                                 </Typography>
 
                             </Box>
+                            <Item>
                             <Grid container spacing={2} sx={{
                                 marginTop: 2,
                                 display: {
@@ -207,7 +205,7 @@ export function OrdersDialog({...props}) {
                                     </Grid>
                                 ))}
                             </Grid>
-
+                            </Item>
                         </Grid>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
                             <Box sx={{
