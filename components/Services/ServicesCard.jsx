@@ -44,9 +44,6 @@ export function RecipeReviewCard() {
     // const handleExpandClick = () => {
     //     setExpanded(!expanded);
     // };
-
-
-
     const handleDeleteClick = (id) => async () => {
         setDeletingId(id);
         if (await servicesServices.deleteService(id)) {
@@ -245,7 +242,7 @@ export function RecipeReviewCard() {
                                             <FavoriteIcon
                                                 onClick={handleEditClick(service.id) }/>
                                         </IconButton>
-                                        <IconButton aria-label="edit">
+                                        <IconButton aria-label="delete">
                                             <DeleteIcon
                                                 onClick={handleDeleteClick(service.id) }
                                                 disabled={deletingId === service.id}/>
@@ -265,26 +262,6 @@ export function RecipeReviewCard() {
                             update={reloadTable}
                         />
                     )}
-                    {/*<Box sx={{bgcolor:'rgba(163,126,132,0.25)',*/}
-                    {/*    display: 'flex',*/}
-                    {/*    flexWrap: 'wrap',*/}
-                    {/*    justifyContent:' space-evenly',*/}
-                    {/*    flexDirection: 'row',*/}
-                    {/*    alignItems: 'center',*/}
-                    {/*    width:'100%',*/}
-                    {/*    borderRadius: '30px',*/}
-                    {/*}}*/}
-                    {/*>*/}
-                    {/*    <TablePagination*/}
-                    {/*        component="div"*/}
-                    {/*        count={100}*/}
-                    {/*        page={page}*/}
-                    {/*        onPageChange={handleChangePage}*/}
-                    {/*        rowsPerPage={rowsPerPage}*/}
-                    {/*        onRowsPerPageChange={handleChangeRowsPerPage}*/}
-                    {/*    />*/}
-                    {/*    <Pagination count={10} hidePrevButton hideNextButton />*/}
-                    {/*</Box>*/}
                     <CustomPagination/>
 
                 </Box>

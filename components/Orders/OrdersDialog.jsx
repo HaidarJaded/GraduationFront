@@ -9,24 +9,27 @@ import CloseIcon from "@mui/icons-material/Close";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import {styled} from "@mui/material/styles";
+import {styled, useTheme} from "@mui/material/styles";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 const Item = styled(Paper)(({theme}) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : 'fff',
+    backgroundColor: theme.palette.mode === 'dark' ? '#b5cae3' : 'rgba(192,177,220,0.08)',
     ...theme.typography.body2,
-    padding: theme.spacing(1),
+    paddingRight: 7,
+    paddingLeft: 7,
     textAlign: 'end',
     color: theme.palette.text.secondary,
     fontSize: "33px",
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
 }));
 
 export function OrdersDialog({...props}) {
+    const theme = useTheme();
     const {open} = props;
     const {Devices} = props;
     const {Products} = props;
@@ -52,8 +55,6 @@ export function OrdersDialog({...props}) {
             order_type: order ? order.order_type : "ffs"  // Corrected to use the right property name
         };
     });
-// console.log("Migeerad",Merge)
-    const device = {id: 1028, model: 'hu', imei: '889937746384934', code: 'NwodbD', client_id: 52}
     const DeviceCard = ({device}) => (
         <Card sx={{
             maxWidth: 300,
@@ -179,13 +180,33 @@ export function OrdersDialog({...props}) {
                                 </Typography>
 
                             </Box>
-                            <Item>
+                            <Grid container spacing={2} sx={{
+                                marginTop: 2,
+                                display: {
+                                    xs: "flex",
+                                    md: "flex",
+                                },
+                                flexDirection:{
+                                    xs: "column",
+                                    md: "column",
+                                    lg: "row",
+                                    sm: "row"
+                                },
+                                flexWrap:{
+                                    xs: "wrap",
+                                    md: "wrap",
+                                },
+                                alignContent:{
+                                    xs: "center",
+                                    md: "center",
+                                }
+                            }}>
                                 {MergeProduct.map(product => (
-                                    <Grid item key={product.id} sx={{marginY: 3, marginX: '3px'}}>
+                                    <Grid item key={product.id} item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
                                         <ProductCard product={product}/>
                                     </Grid>
                                 ))}
-                            </Item>
+                            </Grid>
 
                         </Grid>
                         <Grid item xs={12} md={6} sx={{margin: 3}}>
@@ -201,30 +222,35 @@ export function OrdersDialog({...props}) {
                                     طلبات الأجهزة
                                 </Typography>
                             </Box>
-
-                            <Grid container spacing={2} sx={{ marginTop: 2 }}>
-
-                                    <Grid item xs={6} md={12} lg={6} sm={6} sx={{marginY: 1}}>
-                                        <DeviceCard device={device} />
+                           <Item>
+                            <Grid container spacing={2} sx={{
+                                marginTop: 2,
+                                display: {
+                                    xs: "flex",
+                                    md: "flex",
+                                },
+                                flexDirection:{
+                                    xs: "column",
+                                    md: "column",
+                                    lg: "row",
+                                    sm: "row"
+                                },
+                                flexWrap:{
+                                    xs: "wrap",
+                                    md: "wrap",
+                                },
+                                alignContent:{
+                                    xs: "center",
+                                    md: "center",
+                                }
+                            }}>
+                                {Merge.map(device => (
+                                    <Grid item key={device.id}  item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
+                                        <DeviceCard device={device}/>
                                     </Grid>
-                                <Grid item xs={12} md={12}  lg={6} sm={6}  sx={{marginY: 1,marginX:{
-                                    sm:"3px",
-                                    lg:"0px"
-                                    },bgcolor:{
-                                            xs:"red",
-                                            md:"blue",
-                                            lg:"black",
-                                            sm:"pink"}
-                                        }}>
-                                    <DeviceCard device={device} />
-                                </Grid>
-                                <Grid item xs={6} md={12}   lg={6} sm={6} sx={{marginY: 1}}>
-                                    <DeviceCard device={device} />
-                                </Grid>
-                                <Grid item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
-                                    <DeviceCard device={device} />
-                                </Grid>
+                                ))}
                             </Grid>
+                           </Item>
                         </Grid>
 
                     </Grid>
