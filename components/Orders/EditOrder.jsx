@@ -37,8 +37,6 @@ export function EditOrder({...props}) {
         fetchAndSetDelivery()
     }, [fetchAndSetDelivery])
 
-    const {register, handleSubmit, formState} = useForm();
-    const {errors} = formState;
 
 
     const onSubmit = async () => {

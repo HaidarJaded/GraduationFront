@@ -29,7 +29,6 @@ const Item = styled(Paper)(({theme}) => ({
 }));
 
 export function OrdersDialog({...props}) {
-    const theme = useTheme();
     const {open} = props;
     const {Devices} = props;
     const {Products} = props;
@@ -39,20 +38,20 @@ export function OrdersDialog({...props}) {
     console.log("OrdersDevices", OrdersDevices);
 
     let Merge = Devices.map(device => {
-        // Find the corresponding order for this device
+
         let order = OrdersDevices.find(order => order.device_id === device.id);
         console.log(order)
         return {
-            ...device,  // Spread the device properties
-            order_type: order ? order.order_type : "ffs"  // Corrected to use the right property name
+            ...device,
+            order_type: order ? order.order_type : "null"
         };
     });
     let MergeProduct = Products.map(product => {
         let order = OrdersProducts.find(order => order.product_id === product.id);
         console.log(order)
         return {
-            ...product,  // Spread the device properties
-            order_type: order ? order.order_type : "ffs"  // Corrected to use the right property name
+            ...product,
+            order_type: order ? order.order_type : "null"
         };
     });
     const DeviceCard = ({device}) => (
@@ -200,7 +199,7 @@ export function OrdersDialog({...props}) {
                                 }
                             }}>
                                 {MergeProduct.map(product => (
-                                    <Grid item key={product.id} item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
+                                    <Grid key={product.id} item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
                                         <ProductCard product={product}/>
                                     </Grid>
                                 ))}
@@ -243,7 +242,7 @@ export function OrdersDialog({...props}) {
                                 }
                             }}>
                                 {Merge.map(device => (
-                                    <Grid item key={device.id}  item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
+                                    <Grid  key={device.id} item xs={12} md={12} lg={6} sm={6} sx={{marginY: 1}}>
                                         <DeviceCard device={device}/>
                                     </Grid>
                                 ))}

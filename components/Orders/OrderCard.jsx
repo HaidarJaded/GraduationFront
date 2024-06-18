@@ -12,17 +12,7 @@ import {Grid, MenuItem, Select, Stack} from "@mui/material";
 import {OrdersDialog} from "./OrdersDialog";
 import IconButton from "@mui/material/IconButton";
 import BorderColorTwoToneIcon from '@mui/icons-material/BorderColorTwoTone';
-import {EditService} from "../Services/EditService";
 import {EditOrder} from "./EditOrder";
-
-const bull = (
-    <Box
-        component="span"
-        sx={{display: 'inline-block', mx: '2px', transform: 'scale(0.8)'}}
-    >
-        •
-    </Box>
-);
 
 export function OrderCard() {
     const [orders, setOrders] = useState([]);
