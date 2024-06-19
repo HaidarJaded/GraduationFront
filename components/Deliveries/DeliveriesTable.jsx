@@ -146,10 +146,9 @@ export function DeliveriesTable() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const route = useRouter()
     const fetchAndSetUsers = useCallback(async () => {
-        setLoading(true);  // Ensure loading state is reset on re-fetching
+        setLoading(true);
         setError(null);
         const params = {
-            // 'with': 'fs',
             'rule*name': 'عامل توصيل',
             'page': currentPage,
             'per_page': pageSize,
@@ -342,7 +341,7 @@ export function DeliveriesTable() {
 
     return (
         <>
-            < >
+            <>
                 <Box sx={{
                     m: 2,
                     display: 'flex',
@@ -421,20 +420,7 @@ export function DeliveriesTable() {
                             {error}
                         </Typography>
                     </Box>
-                ) : deliveries.length === 0 ? (
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '80vh',
-                        width: '100%',
-                    }}>
-                        <Typography variant="h5" sx={{color: "#1b0986eb", fontWeight: "bold"}}>
-                            No data
-                        </Typography>
-                    </Box>
-                ) : (
+                ) :(
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',

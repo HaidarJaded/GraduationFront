@@ -3,7 +3,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import {users, usersServices} from "../../Routes";
 import {EditDevice} from "../Devices";
-import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {useRouter} from "next/router";
 import EditIcon from "@mui/icons-material/Edit";
@@ -16,6 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import {AddUser} from "../Users";
 import LinearProgress from "@mui/material/LinearProgress";
 import {EditUser} from "../Users/EditUser";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -57,12 +58,8 @@ export function TechniciansTable() {
     const [rowNameAddTechnician, setRowNameAddTechnician] = React.useState(null);
 
     const [deletingId, setDeletingId] = useState(null);
-
-    //  function handleClickOpenPermissions(id) {
-    //     console.log(';;;;;;;')
-    //     setOpenPermissionsTechnician(true);
-    //     setRowIdPermissionsTechnician(id);
-    // }
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const handleCloseAddTechnician = () => {
         setOpenAddTechnician(false);
         setRowIdAddTechnician(null)
@@ -159,15 +156,23 @@ export function TechniciansTable() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
 
     const fetchAndSetTechnicians = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'rule*name': 'فني',
             'withCount': 'devices',
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await usersServices.getAll(params);
-        setPagination(data?.pagination);
+        const response = await usersServices.getAll(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setTechnicians(data?.body) : setTechnicians([]);
+        setPagination(data?.pagination);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
     }, [currentPage, pageSize]);
     const route = useRouter()
 
@@ -249,7 +254,7 @@ export function TechniciansTable() {
             address: user.address,
         }));
 
-        setRows(rowsTechnicians); // Now `rowsDevices` is derived directly from the updated `devices`
+        setRows(rowsTechnicians);
     }, [technicians]);
 
     function CustomPagination() {
@@ -348,86 +353,122 @@ export function TechniciansTable() {
 
     return (
      <>
-         <Box sx={{flexGrow: 1, width: 1}}>
-             {technicians.length===0?  (<Box sx={{
-                 display: 'flex',
-                 flexDirection: 'column',
-                 justifyContent: 'center',
-                 alignItems: 'center',
-                 height: '50vh',
-                 width: '100%',
-             }}>
-                 <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
-                     Loading...
-                 </Typography>
-                 <Box sx={{ width: '50%' }}>
-                     <LinearProgress />
-                 </Box>
-             </Box>):(
-             <DataGrid
-                 sx={{
-                     '&.MuiDataGrid-root': {
-                         minHeight: 'calc(100vh - 130px)',
-                         height: '100%',
-                         maxWidth: "calc(100vw - 100px)",
-                     },
-                     '& .MuiDataGrid-main': {
-                         maxHeight: 'calc(100vh - 180px)'
-                     }
-                 }}
-                 rows={rows}
-                 columns={columns}
-                 loading={rows.length === 0}
-                 components={{
-                     noRowsOverlay: CustomNoRowsOverlay,
-                     Pagination: CustomPagination,
-                 }}
+        <>
+            <Box sx={{
+                m: 2,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'end',
+                alignItems: 'center',
+            }}>
 
-             />)}
+                <Box sx={{
+                    minWidth: '300px',
+                    display: 'flex',
+                    gap: 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    {/*{(bufferedSearchKey !== '') && (<>*/}
+                    {/*        <ClearIcon onClick={(event) => {*/}
+                    {/*            setBufferedSearchKey('');*/}
+                    {/*        }}/>*/}
+                    {/*    </>*/}
+                    {/*)}*/}
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="email"
+                        label="Search"
+                        name="search"
+                        autoComplete="search"
+                        // value={bufferedSearchKey}
+                        // onChange={(event) => {
+                        //     setBufferedSearchKey(event.target.value);
+                        // }}
+                    />
 
 
+                </Box>
+                <Box>
+                    <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                            onClick={() => {
+                                setRowIdAddTechnician(2)
+                                setRowNameAddTechnician('فني ');
+                                setOpenAddTechnician(true);
+                            }}
+                    >
+                        إضافة فني
+                    </Button>
+                </Box>
+            </Box>
+            <Box sx={{flexGrow: 1, width: 1}}>
+                {technicians?.length===0?  (<Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '50vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                        Loading...
+                    </Typography>
+                    <Box sx={{ width: '50%' }}>
+                        <LinearProgress />
+                    </Box>
+                </Box>):(
+                    <DataGrid
+                        sx={{
+                            '&.MuiDataGrid-root': {
+                                minHeight: 'calc(100vh - 130px)',
+                                height: '100%',
+                                maxWidth: "calc(100vw - 100px)",
+                            },
+                            '& .MuiDataGrid-main': {
+                                maxHeight: 'calc(100vh - 180px)'
+                            }
+                        }}
+                        rows={rows}
+                        columns={columns}
+                        loading={rows?.length === 0}
+                        components={{
+                            noRowsOverlay: CustomNoRowsOverlay,
+                            Pagination: CustomPagination,
+                        }}
 
+                    />)}
 
-             <Box sx={{marginRight: 5,marginTop:1, direction: "rtl"}}>
-                 <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
-                         endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                         onClick={() => {
-                             setRowIdAddTechnician(2)
-                             setRowNameAddTechnician('فني ');
-                             setOpenAddTechnician(true);
-                         }}
-                 >
-                     إضافة فني
-                 </Button>
-             </Box>
-             {rowId && (
-                 <EditUser
-                     open={open}
-                     onCloseDialog={handleClose}
-                     ruleId={2}
-                     ruleName={'فني'}
-                     id={rowId}
-                     update={reloadTable}
-                 />
-             )}
+                {rowId && (
+                    <EditUser
+                        open={open}
+                        onCloseDialog={handleClose}
+                        ruleId={2}
+                        ruleName={'فني'}
+                        id={rowId}
+                        update={reloadTable}
+                    />
+                )}
 
-             {rowIdPermissionsTechnician && (
-                 <PermissionsTechnician
-                     open={openPermissionsTechnician}
-                     id={rowIdPermissionsTechnician}
-                     onClose={handleClosePermissionsTechnician}
-                 />
-             )}
-             {rowIdAddTechnician && (
-                 <AddUser
-                     open={openAddTechnician}
-                     ruleId={rowIdAddTechnician}
-                     ruleName={rowNameAddTechnician}
-                     onClose={handleCloseAddTechnician}
-                     update={reloadTable}
-                 />
-             )}
-         </Box>
+                {rowIdPermissionsTechnician && (
+                    <PermissionsTechnician
+                        open={openPermissionsTechnician}
+                        id={rowIdPermissionsTechnician}
+                        onClose={handleClosePermissionsTechnician}
+                    />
+                )}
+                {rowIdAddTechnician && (
+                    <AddUser
+                        open={openAddTechnician}
+                        ruleId={rowIdAddTechnician}
+                        ruleName={rowNameAddTechnician}
+                        onClose={handleCloseAddTechnician}
+                        update={reloadTable}
+                    />
+                )}
+            </Box>
+        </>
      </>
 
     );
