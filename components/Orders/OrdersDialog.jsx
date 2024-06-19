@@ -133,8 +133,8 @@ export function OrdersDialog({...props}) {
                     marginTop: 3,
                     padding: 1
                 }}>
-                    {/*If there is an order_type*/}
-                    {`نوع الطلب : ${product.order_type}`}
+
+                    {`نوع الطلب : تسليم للعميل`}
                 </Typography>
             </CardContent>
         </Card>
