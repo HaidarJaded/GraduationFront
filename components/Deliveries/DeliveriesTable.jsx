@@ -1,18 +1,18 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import {deviceServices, users, usersServices} from "../../Routes";
+import {usersServices} from "../../Routes";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
-import {EditDevice} from "../Devices";
-import { Notify } from '../../utils';
+import {Notify} from '../../utils';
 import {styled} from "@mui/material/styles";
 import {AddUser, EditUser} from "../Users";
 import AddIcon from "@mui/icons-material/Add";
 import LinearProgress from "@mui/material/LinearProgress";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -40,6 +40,18 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
 
 export function DeliveriesTable() {
 
+    // SEARCH
+    const [searchKey, setSearchKey] = React.useState('');
+    const [bufferedSearchKey, setBufferedSearchKey] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchKey(bufferedSearchKey);
+        }, 1500);  // Delay for 1.5 seconds
+
+        return () => clearTimeout(timer);
+    }, [bufferedSearchKey]);
+
     //get users from Api
     const [open, setOpen] = React.useState(false);
     const [openAddDeliveries, setOpenAddDeliveries] = React.useState(false);
@@ -50,6 +62,11 @@ export function DeliveriesTable() {
     const [rowNameAddDeliveries, setRowNameAddDeliveries] = React.useState(null);
 
     const [deletingId, setDeletingId] = useState(null);
+
+    //Data loading Processing
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const handleCloseAddTechnician = () => {
         setOpenAddDeliveries(false);
         setRowIdAddDeliveries(null)
@@ -82,14 +99,14 @@ export function DeliveriesTable() {
 
     const columns = [
 
-        { field: 'rowNumber', headerName: '#', width: 0.1, },
-        { field: 'name', headerName: 'الاسم', width: 130 },
-        { field: 'last_name', headerName: 'الكنية', width: 130 },
+        {field: 'rowNumber', headerName: '#', width: 0.1,},
+        {field: 'name', headerName: 'الاسم', width: 130},
+        {field: 'last_name', headerName: 'الكنية', width: 130},
         {field: 'at_work', headerName: 'حالة العمل', width: 130},
-        { field: 'email', headerName: 'البريد الالكتروني', width: 170 },
-        { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
-        { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
-        { field: 'address', headerName: 'العنوان', width: 170 },
+        {field: 'email', headerName: 'البريد الالكتروني', width: 170},
+        {field: 'phone', headerName: 'رقم الهاتف', width: 170},
+        {field: 'created_at', headerName: 'تاريخ التسجيل', width: 160},
+        {field: 'address', headerName: 'العنوان', width: 170},
         {
             field: 'actions',
             type: 'actions',
@@ -128,23 +145,31 @@ export function DeliveriesTable() {
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const route = useRouter()
-
-    const  fetchAndSetUsers = useCallback(async()=>{
+    const fetchAndSetUsers = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'rule*name': 'عامل توصيل',
             'page': currentPage,
             'per_page': pageSize,
-
+            'search': searchKey,
         };
-        const data = await usersServices.getAll(params);
+        const response = await usersServices.getAll(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setDeliveries(data?.body) : setDeliveries([]);
         setPagination(data?.pagination);
-    },[pageSize, currentPage]);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
+    }, [pageSize, currentPage, searchKey]);
 
 
     useEffect(() => {
         fetchAndSetUsers();
-    }, [fetchAndSetUsers,route, pageSize, currentPage]);
+    }, [fetchAndSetUsers, route, pageSize, currentPage, searchKey]);
+
     const reloadTable = async update => {
         fetchAndSetUsers()
     };
@@ -205,7 +230,7 @@ export function DeliveriesTable() {
     const isAllSelected = pageSize >= rowCount;
 
     useEffect(() => {
-        const rowsDeliveries =  deliveries?.map((user, index) => ({
+        const rowsDeliveries = deliveries?.map((user, index) => ({
             id: user.id,
             rowNumber: index + 1,
             name: user.name,
@@ -219,6 +244,7 @@ export function DeliveriesTable() {
 
         setRows(rowsDeliveries); // Now `rowsDevices` is derived directly from the updated `devices`
     }, [deliveries]);
+
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -315,54 +341,119 @@ export function DeliveriesTable() {
 
     return (
         <>
-             <Box sx={{flexGrow: 1, width: 1}}>
-                 {deliveries.length===0?(<Box sx={{
-                     display: 'flex',
-                     flexDirection: 'column',
-                     justifyContent: 'center',
-                     alignItems: 'center',
-                     height: '80vh',
-                     width: '100%',
-                 }}>
-                     <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
-                         Loading...
-                     </Typography>
-                     <Box sx={{ width: '50%' }}>
-                         <LinearProgress />
-                     </Box>
-                 </Box>):(
-                <DataGrid
-                    sx={{
-                        '&.MuiDataGrid-root': {
-                            minHeight: 'calc(100vh - 130px)',
-                            height: '100%',
-                            maxWidth: "calc(100vw - 100px)",
-                        },
-                        '& .MuiDataGrid-main': {
-                            maxHeight: 'calc(100vh - 180px)'
-                        }
-                    }}
-                    rows={rows}
-                    columns={columns}
-                    loading={rows.length === 0}
-                    components={{
-                        noRowsOverlay: CustomNoRowsOverlay,
-                        Pagination: CustomPagination,
-                    }}
+            <>
+                <Box sx={{
+                    m: 2,
+                    display: 'flex',
+                    gap: 2,
+                    justifyContent: 'end',
+                    alignItems: 'center',
+                }}>
 
-                />)}
-                <Box sx={{marginRight: 5, direction: "rtl"}}>
-                    <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
-                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                            onClick={() => {
-                                setRowIdAddDeliveries(4)
-                                setRowNameAddDeliveries('عامل توصيل ');
-                                setOpenAddDeliveries(true);
+                    <Box sx={{
+                        minWidth: '300px',
+                        display: 'flex',
+                        gap: 2,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        {(bufferedSearchKey !== '') && (<>
+                                <ClearIcon onClick={(event) => {
+                                    setBufferedSearchKey('');
+                                }}/>
+                            </>
+                        )}
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="email"
+                            label="Search"
+                            name="search"
+                            autoComplete="search"
+                            value={bufferedSearchKey}
+                            onChange={(event) => {
+                                setBufferedSearchKey(event.target.value);
                             }}
-                    >
-                        إضافة عامل توصيل
-                    </Button>
+                        />
+
+
+                    </Box>
+                    <Box>
+                        <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                                endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                                onClick={() => {
+                                    setRowIdAddDeliveries(4);
+                                    setRowNameAddDeliveries('عامل توصيل ');
+                                    setOpenAddDeliveries(true);
+                                }}
+                        >
+                            إضافة عامل توصيل
+                        </Button>
+                    </Box>
                 </Box>
+                {/*//=========ssssssssssssssssssssssssssssssss==========*/}
+                {loading ? (
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '80vh',
+                        width: '100%',
+                    }}>
+                        <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
+                            Loading...
+                        </Typography>
+                        <Box sx={{width: '50%'}}>
+                            <LinearProgress/>
+                        </Box>
+                    </Box>
+                ) : error ? (
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '80vh',
+                        width: '100%',
+                    }}>
+                        <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                            {error}
+                        </Typography>
+                    </Box>
+                ) :(
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        // height: '100vh',
+                        width: '100%',
+                    }}>
+                        <DataGrid
+                            sx={{
+                                '&.MuiDataGrid-root': {
+                                    minHeight: 'calc(100vh - 130px)',
+                                    height: '100%',
+                                    maxWidth: "calc(100vw - 100px)",
+                                    width: '100%',
+                                },
+                                '& .MuiDataGrid-main': {
+                                    maxHeight: 'calc(100vh - 200px)'
+                                }
+                            }}
+                            rows={rows}
+                            columns={columns}
+                            loading={false}
+                            components={{
+                                noRowsOverlay: CustomNoRowsOverlay,
+                                Pagination: CustomPagination,
+                            }}
+                        />
+                    </Box>
+
+                )}
+
                 {rowId && (
                     <EditUser
                         open={open}
@@ -382,9 +473,7 @@ export function DeliveriesTable() {
                         update={reloadTable}
                     />
                 )}
-
-            </Box>
+            </>
         </>
-
     );
 }

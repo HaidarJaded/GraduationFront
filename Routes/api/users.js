@@ -14,10 +14,17 @@ const getAll = async (params) => {
         return await axiosInstance
             .get(`${BASE_URL}${USERS_URL}`, {params})
             .then(async (response) => {
-                return await response?.data;
+                return {
+                    data: await response?.data,
+                    status: await response?.status,
+                };
             });
     } catch (error) {
         responseErrorHandlers(error?.response);
+        return {
+            data: await error?.response?.data,
+            status: await error?.status,
+        };
     }
 };
 const addUser = async (user) => {
@@ -40,10 +47,8 @@ const addUser = async (user) => {
 const deleteUser = async (id) => {
     try {
         const response = await axiosInstance.delete(`${BASE_URL}${USERS_URL}/${id}`);
-        if (response.status == 200) {
-            return true;
-        }
-        return false;
+        return response.status === 200;
+
     } catch (error) {
         responseErrorHandlers(error?.response);
     }

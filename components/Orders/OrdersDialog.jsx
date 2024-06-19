@@ -9,7 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import {styled, useTheme} from "@mui/material/styles";
+import {styled} from "@mui/material/styles";
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
