@@ -1,8 +1,7 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
-import {users, usersServices} from "../../Routes";
-import {EditDevice} from "../Devices";
+import {usersServices} from "../../Routes";
 import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {useRouter} from "next/router";
@@ -46,6 +45,16 @@ export function TechniciansTable() {
     const [rows, setRows] = React.useState([]);
 
 //=============================================================
+    const [searchKey, setSearchKey] = React.useState('');
+    const [bufferedSearchKey, setBufferedSearchKey] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchKey(bufferedSearchKey);
+        }, 1500);  // Delay for 1.5 seconds
+
+        return () => clearTimeout(timer);
+    }, [bufferedSearchKey]);
 
     // for edit
     const [open, setOpen] = React.useState(false);
@@ -163,6 +172,7 @@ export function TechniciansTable() {
             'withCount': 'devices',
             'page': currentPage,
             'per_page': pageSize,
+            'search': searchKey,
         };
         const response = await usersServices.getAll(params);
         const data = await response?.data;
@@ -173,12 +183,12 @@ export function TechniciansTable() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [currentPage, pageSize]);
+    }, [currentPage, pageSize,searchKey]);
     const route = useRouter()
 
     useEffect(() => {
         fetchAndSetTechnicians();
-    }, [fetchAndSetTechnicians, route, pageSize, currentPage]);
+    }, [fetchAndSetTechnicians, route, pageSize, currentPage,searchKey]);
 
 
     const reloadTable = async update => {
@@ -352,124 +362,150 @@ export function TechniciansTable() {
     }
 
     return (
-     <>
         <>
-            <Box sx={{
-                m: 2,
-                display: 'flex',
-                gap: 2,
-                justifyContent: 'end',
-                alignItems: 'center',
-            }}>
-
+            <>
                 <Box sx={{
-                    minWidth: '300px',
+                    m: 2,
                     display: 'flex',
                     gap: 2,
-                    justifyContent: 'center',
+                    justifyContent: 'end',
                     alignItems: 'center',
                 }}>
-                    {/*{(bufferedSearchKey !== '') && (<>*/}
-                    {/*        <ClearIcon onClick={(event) => {*/}
-                    {/*            setBufferedSearchKey('');*/}
-                    {/*        }}/>*/}
-                    {/*    </>*/}
-                    {/*)}*/}
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        id="email"
-                        label="Search"
-                        name="search"
-                        autoComplete="search"
-                        // value={bufferedSearchKey}
-                        // onChange={(event) => {
-                        //     setBufferedSearchKey(event.target.value);
-                        // }}
-                    />
 
-
-                </Box>
-                <Box>
-                    <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
-                            endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                            onClick={() => {
-                                setRowIdAddTechnician(2)
-                                setRowNameAddTechnician('فني ');
-                                setOpenAddTechnician(true);
+                    <Box sx={{
+                        minWidth: '300px',
+                        display: 'flex',
+                        gap: 2,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        {(bufferedSearchKey !== '') && (<>
+                                <ClearIcon onClick={(event) => {
+                                    setBufferedSearchKey('');
+                                }}/>
+                            </>
+                        )}
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="Search"
+                            label="Search"
+                            name="search"
+                            autoComplete="search"
+                            value={bufferedSearchKey}
+                            onChange={(event) => {
+                                setBufferedSearchKey(event.target.value);
                             }}
-                    >
-                        إضافة فني
-                    </Button>
-                </Box>
-            </Box>
-            <Box sx={{flexGrow: 1, width: 1}}>
-                {technicians?.length===0?  (<Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '50vh',
-                    width: '100%',
-                }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
-                        Loading...
-                    </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                        />
+
+
                     </Box>
-                </Box>):(
-                    <DataGrid
-                        sx={{
-                            '&.MuiDataGrid-root': {
-                                minHeight: 'calc(100vh - 130px)',
-                                height: '100%',
-                                maxWidth: "calc(100vw - 100px)",
-                            },
-                            '& .MuiDataGrid-main': {
-                                maxHeight: 'calc(100vh - 180px)'
-                            }
-                        }}
-                        rows={rows}
-                        columns={columns}
-                        loading={rows?.length === 0}
-                        components={{
-                            noRowsOverlay: CustomNoRowsOverlay,
-                            Pagination: CustomPagination,
-                        }}
+                    <Box>
+                        <Button sx={{padding: "13px", direction: "rtl"}} variant="contained"
+                                endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                                onClick={() => {
+                                    setRowIdAddTechnician(2)
+                                    setRowNameAddTechnician('فني ');
+                                    setOpenAddTechnician(true);
+                                }}
+                        >
+                            إضافة فني
+                        </Button>
+                    </Box>
+                </Box>
+                {/*//=========ssssssssssssssssssssssssssssssss==========*/}
 
-                    />)}
+                {loading ? (
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '80vh',
+                        width: '100%',
+                    }}>
+                        <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
+                            Loading...
+                        </Typography>
+                        <Box sx={{width: '50%'}}>
+                            <LinearProgress/>
+                        </Box>
+                    </Box>
+                ) : error ? (
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '80vh',
+                        width: '100%',
+                    }}>
+                        <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                            {error}
+                        </Typography>
+                    </Box>
+                ) :(
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        // height: '100vh',
+                        width: '100%',
+                    }}>
+                        <DataGrid
+                            sx={{
+                                '&.MuiDataGrid-root': {
+                                    minHeight: 'calc(100vh - 130px)',
+                                    height: '100%',
+                                    maxWidth: "calc(100vw - 100px)",
+                                    width: '100%',
+                                },
+                                '& .MuiDataGrid-main': {
+                                    maxHeight: 'calc(100vh - 200px)'
+                                }
+                            }}
+                            rows={rows}
+                            columns={columns}
+                            loading={false}
+                            components={{
+                                noRowsOverlay: CustomNoRowsOverlay,
+                                Pagination: CustomPagination,
+                            }}
+                        />
+                    </Box>
 
-                {rowId && (
-                    <EditUser
-                        open={open}
-                        onCloseDialog={handleClose}
-                        ruleId={2}
-                        ruleName={'فني'}
-                        id={rowId}
-                        update={reloadTable}
-                    />
                 )}
 
-                {rowIdPermissionsTechnician && (
-                    <PermissionsTechnician
-                        open={openPermissionsTechnician}
-                        id={rowIdPermissionsTechnician}
-                        onClose={handleClosePermissionsTechnician}
-                    />
-                )}
-                {rowIdAddTechnician && (
-                    <AddUser
-                        open={openAddTechnician}
-                        ruleId={rowIdAddTechnician}
-                        ruleName={rowNameAddTechnician}
-                        onClose={handleCloseAddTechnician}
-                        update={reloadTable}
-                    />
-                )}
-            </Box>
+                    {rowId && (
+                        <EditUser
+                            open={open}
+                            onCloseDialog={handleClose}
+                            ruleId={2}
+                            ruleName={'فني'}
+                            id={rowId}
+                            update={reloadTable}
+                        />
+                    )}
+
+                    {rowIdPermissionsTechnician && (
+                        <PermissionsTechnician
+                            open={openPermissionsTechnician}
+                            id={rowIdPermissionsTechnician}
+                            onClose={handleClosePermissionsTechnician}
+                        />
+                    )}
+                    {rowIdAddTechnician && (
+                        <AddUser
+                            open={openAddTechnician}
+                            ruleId={rowIdAddTechnician}
+                            ruleName={rowNameAddTechnician}
+                            onClose={handleCloseAddTechnician}
+                            update={reloadTable}
+                        />
+                    )}
+            </>
         </>
-     </>
 
     );
 }
