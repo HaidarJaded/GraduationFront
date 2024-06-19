@@ -39,8 +39,7 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
     },
 }));
 
-function EditToolbar(props) {
-    const {setRows, setRowModesModel} = props;
+
 
     const handleClick = () => {
         const id = randomId();
