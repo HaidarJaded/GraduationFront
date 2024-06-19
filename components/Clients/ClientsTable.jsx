@@ -5,7 +5,7 @@ import {clientsServices} from '../../Routes/api/clients';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {Box, CircularProgress, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {EditClient} from "./EditClient";
 import Switch from '@mui/material/Switch';
@@ -14,6 +14,7 @@ import {styled} from "@mui/material/styles";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import {PermissionsClient} from "./PermissionsClient";
 import LinearProgress from "@mui/material/LinearProgress";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -49,11 +50,24 @@ export function ClientsTable() {
     const [rowIdPermissionsClient, setRowIdPermissionsClient] = React.useState(null);
     const [openPermissionsClient, setOpenPermissionsClient] = React.useState(false);
     const [deletingId, setDeletingId] = useState(null);
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchKey, setSearchKey] = React.useState('');
+    const [bufferedSearchKey, setBufferedSearchKey] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchKey(bufferedSearchKey);
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [bufferedSearchKey]);
     const handleClose = () => {
         setOpen(false);
         setRowId(null)
     };
-    
+
     const handleEditClick = (id) => () => {
         console.log(id);
         setOpen(true)
@@ -79,7 +93,7 @@ export function ClientsTable() {
         setDeletingId(null);
     };
 
-   //لتعيين قيمة
+    //لتعيين قيمة
     const [clients, setClients] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
@@ -88,20 +102,29 @@ export function ClientsTable() {
 
 
     const fetchAndSetClients = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'page': currentPage,
             'per_page': pageSize,
+            'search': searchKey,
         };
-        const data = await clientsServices?.getAll(params);
-        setPagination(data?.pagination);
+        const response = await clientsServices.getAll(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setClients(data?.body) : setClients([]);
-    }, [currentPage, pageSize]);
+        setPagination(data?.pagination);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
+    }, [currentPage, pageSize, searchKey]);
 
     const route = useRouter()
 
     useEffect(() => {
         fetchAndSetClients();
-    }, [fetchAndSetClients,route, pageSize, currentPage]);
+    }, [fetchAndSetClients, route, pageSize, currentPage, searchKey]);
 
     const reloadTable = async update => {
         fetchAndSetClients()
@@ -114,54 +137,50 @@ export function ClientsTable() {
     }, [pagination]);
 
 
-    const SwitchComponent = (params)=>{
+    const SwitchComponent = (params) => {
 
-         const userId =  params.params.id;
+        const userId = params.params.id;
 
         const [checked, setChecked] = React.useState(params.params.row.account_active === 1);
 
-        const handleChange =async (event) => {
+        const handleChange = async (event) => {
 
-            const newActiveState = checked ? 0 : 1 ;
+            const newActiveState = checked ? 0 : 1;
             console.log(newActiveState);
             setChecked(!checked)
 
-            const updateData = async () =>
-            {
-                try
-                {
-                    const response =  await clientsServices.updateClients(userId, { account_active: newActiveState });
+            const updateData = async () => {
+                try {
+                    const response = await clientsServices.updateClients(userId, {account_active: newActiveState});
                     Notify("light", response.message, "success");
-                } 
-                catch (error)
-                {
-                     console.log(error)
+                } catch (error) {
+                    console.log(error)
                 }
 
-             };
-           await updateData();
+            };
+            await updateData();
         };
         return (
-                    <Switch
-                        checked={checked}
-                        onChange={handleChange}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                    />
-                );
+            <Switch
+                checked={checked}
+                onChange={handleChange}
+                inputProps={{'aria-label': 'controlled'}}
+            />
+        );
 
     }
     const columns = [
 
-        { field: 'rowNumber', headerName: '#', width: 0.1, },
-        { field: 'name', headerName: 'الاسم', width: 130 },
-        { field: 'last_name', headerName: 'الكنية', width: 130 },
-        { field: 'email', headerName: 'البريد الالكتروني', width: 130 },
-        { field: 'national_id', headerName: 'الرقم الوطني', width: 170 },
-        { field: 'phone', headerName: 'رقم الهاتف', width: 170 },
-        { field: 'created_at', headerName: 'تاريخ التسجيل', width: 160 },
-        { field: 'address', headerName: 'العنوان', width: 200 },
-        { field: 'center_name', headerName: 'اسم المركز', width: 150 },
-        { field: 'devices_count', headerName: 'عدد الاجهزة', width: 130 },
+        {field: 'rowNumber', headerName: '#', width: 0.1,},
+        {field: 'name', headerName: 'الاسم', width: 130},
+        {field: 'last_name', headerName: 'الكنية', width: 130},
+        {field: 'email', headerName: 'البريد الالكتروني', width: 130},
+        {field: 'national_id', headerName: 'الرقم الوطني', width: 170},
+        {field: 'phone', headerName: 'رقم الهاتف', width: 170},
+        {field: 'created_at', headerName: 'تاريخ التسجيل', width: 160},
+        {field: 'address', headerName: 'العنوان', width: 200},
+        {field: 'center_name', headerName: 'اسم المركز', width: 150},
+        {field: 'devices_count', headerName: 'عدد الاجهزة', width: 130},
         {
             field: 'account_active',
             headerName: 'تفعيل الحساب',
@@ -198,7 +217,7 @@ export function ClientsTable() {
                         icon={<AdminPanelSettingsIcon/>}
                         label="Show Permissions"
                         className="textPrimary"
-                        onClick={()=>{
+                        onClick={() => {
                             setRowIdPermissionsClient(id)
                             setOpenPermissionsClient(true)
                         }}
@@ -255,9 +274,10 @@ export function ClientsTable() {
             </StyledGridOverlay>
         );
     }
+
     const isAllSelected = pageSize >= rowCount;
     useEffect(() => {
-        const clientsWithNumbers = clients.map((client, index) => ({
+        const clientsWithNumbers = clients?.map((client, index) => ({
 
             id: client.id,
             rowNumber: index + 1,
@@ -270,15 +290,17 @@ export function ClientsTable() {
             address: client.address,
             center_name: client.center_name,
             devices_count: client.devices_count,
-            account_active:client.account_active
+            account_active: client.account_active
         }));
 
         setRows(clientsWithNumbers); // Now `rowsDevices` is derived directly from the updated `devices`
     }, [clients]);
+
     function range(start, end) {
 
         return Array.from({length: end - start + 2}, (_, i) => start + i);
     }
+
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -370,64 +392,128 @@ export function ClientsTable() {
 
     return (
         <>
-            {clients.length===0?(
+            <Box sx={{
+                m: 2,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'end',
+                alignItems: 'center',
+            }}>
+
+                <Box sx={{
+                    minWidth: '300px',
+                    display: 'flex',
+                    gap: 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    {(bufferedSearchKey !== '') && (<>
+                            <ClearIcon onClick={(event) => {
+                                setBufferedSearchKey('');
+                            }}/>
+                        </>
+                    )}
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="email"
+                        label="Search"
+                        name="search"
+                        autoComplete="search"
+                        value={bufferedSearchKey}
+                        onChange={(event) => {
+                            setBufferedSearchKey(event.target.value);
+                        }}
+                    />
+                </Box>
+            </Box>
+            {loading ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
                         Loading...
                     </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
                     </Box>
                 </Box>
-            ):(
-                <Box sx={{flexGrow: 1, width: 1}}>
-
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    // height: '100vh',
+                    width: '100%',
+                }}>
                     <DataGrid
                         sx={{
                             '&.MuiDataGrid-root': {
                                 minHeight: 'calc(100vh - 130px)',
                                 height: '100%',
                                 maxWidth: "calc(100vw - 100px)",
+                                width: '100%',
                             },
                             '& .MuiDataGrid-main': {
-                                maxHeight: 'calc(100vh - 180px)'
+                                maxHeight: 'calc(100vh - 200px)'
                             }
                         }}
                         rows={rows}
                         columns={columns}
-                        loading={rows.length === 0}
+                        loading={false}
+                        // checkboxSelection
+                        // rowModesModel={rowModesModel}
+                        // onRowModesModelChange={handleRowModesModelChange}
+                        // onRowEditStop={handleRowEditStop}
+                        // processRowUpdate={processRowUpdate}
+                        // slots={{
+                        //     toolbar: EditToolbar,
+                        // }}
+                        // slotProps={{
+                        //     toolbar: {setRows, setRowModesModel},
+                        // }}
                         components={{
                             noRowsOverlay: CustomNoRowsOverlay,
                             Pagination: CustomPagination,
                         }}
-
                     />
-                    {rowId && (
-                        <EditClient
-                            open={open}
-                            onCloseDialog={handleClose}
-                            id={rowId}
-                            update={reloadTable}
-                        />
-                    )}
-                    {rowIdPermissionsClient && (
-                        <PermissionsClient
-                            open={openPermissionsClient}
-                            id={rowIdPermissionsClient}
-                            onClose={handleClosePermissionsClient}
-                        />
-                    )}
                 </Box>
+
             )}
-
-
+            {rowId && (
+                <EditClient
+                    open={open}
+                    onCloseDialog={handleClose}
+                    id={rowId}
+                    update={reloadTable}
+                />
+            )}
+            {rowIdPermissionsClient && (
+                <PermissionsClient
+                    open={openPermissionsClient}
+                    id={rowIdPermissionsClient}
+                    onClose={handleClosePermissionsClient}
+                />
+            )}
         </>
 
     );

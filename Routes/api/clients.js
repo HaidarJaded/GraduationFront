@@ -14,10 +14,17 @@ const getAll = async (params) => {
         return await axiosInstance
             .get(`${BASE_URL}${CLIENTS_URL}`, {params})
             .then(async (response) => {
-                return await response?.data;
+                return {
+                    data: await response?.data,
+                    status: await response?.status,
+                };
             });
     } catch (error) {
         responseErrorHandlers(error?.response);
+        return {
+            data: await error?.response?.data,
+            status: await error?.status,
+        };
     }
 };
 const getClient = async (id,params) => {
@@ -47,10 +54,8 @@ const updateClients = async (id, params) => {
 const deleteClient = async (id) => {
     try {
         const response = await axiosInstance.delete(`${BASE_URL}${CLIENTS_URL}/${id}`);
-        if (response.status == 200) {
-            return true;
-        }
-        return false;
+        return response.status === 200;
+
     } catch (error) {
         responseErrorHandlers(error?.response);
     }

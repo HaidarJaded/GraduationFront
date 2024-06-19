@@ -1,8 +1,6 @@
 import getConfig from "next/config";
-
 import {responseErrorHandlers} from "../../wrappers";
 import axiosInstance from "../../utils/auth/axiosInstance";
-import {deviceServices} from "./devices";
 
 const {publicRuntimeConfig} = getConfig();
 
@@ -11,11 +9,20 @@ const BASE_URL = `${publicRuntimeConfig.apiUrl}`;
 
 const getAll = async (params) => {
     try {
-        return await axiosInstance.get(`${BASE_URL}${COMPLETED_DEVICES_URL}`,{params}).then(async response => {
-            return await response?.data
-        });
+        return await axiosInstance
+            .get(`${BASE_URL}${COMPLETED_DEVICES_URL}`, {params})
+            .then(async (response) => {
+                return {
+                    data: await response?.data,
+                    status: await response?.status,
+                };
+            });
     } catch (error) {
-        responseErrorHandlers(error?.response)
+        responseErrorHandlers(error?.response);
+        return {
+            data: await error?.response?.data,
+            status: await error?.status,
+        };
     }
 };
 const updateCompletedDevice = async (id,params) => {

@@ -1,16 +1,10 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
-import {
-    DataGrid,
-    GridActionsCellItem,
-    GridRowEditStopReasons,
-    GridRowModes,
-    GridToolbarContainer
-} from '@mui/x-data-grid';
+import {DataGrid, GridActionsCellItem, GridRowModes, GridToolbarContainer} from '@mui/x-data-grid';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {Box, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
@@ -18,7 +12,7 @@ import {EditCompletedDevice} from "./EditCompletedDevice";
 import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
-
+import ClearIcon from "@mui/icons-material/Clear";
 
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
@@ -45,45 +39,31 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
     },
 }));
 
-function EditToolbar(props) {
-    const {setRows, setRowModesModel} = props;
-
-    const handleClick = () => {
-        const id = randomId();
-        setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
-        }));
-    };
-
-    return (
-        <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
-                Add record
-            </Button>
-        </GridToolbarContainer>
-    );
-}
-
 export function CompletedDevices() {
 
 
     //const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
-    // ================================================
 
-    const handleRowEditStop = (params, event) => {
-        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-        }
-    };
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchKey, setSearchKey] = React.useState('');
+    const [bufferedSearchKey, setBufferedSearchKey] = useState('');
+    // ================================================
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchKey(bufferedSearchKey);
+        }, 1500);  // Delay for 1.5 seconds
+
+        return () => clearTimeout(timer);
+    }, [bufferedSearchKey]);
+
 
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const handleEditClick = (id) => () => {
-        console.log("this copnleted device",id)
+        console.log("this copnleted device", id)
         setOpen(true)
         setRowId(id)
     };
@@ -179,18 +159,26 @@ export function CompletedDevices() {
     const route = useRouter();
 
     const fetchAndSetCompletedDevices = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'repaired_in_center': 1,
             'orderBy': 'date_delivery',
             'dir': 'desc',
             'page': currentPage,
             'per_page': pageSize,
+            'search': searchKey
         };
-        const data = await completedDevicesServices.getAll(params);
-        // setCompletedDevices(data)
-        setPagination(data?.pagination);
+        const response = await completedDevicesServices.getAll(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setCompletedDevices(data?.body) : setCompletedDevices([]);
-    }, [currentPage, pageSize]);
+        setPagination(data?.pagination);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
+    }, [currentPage, pageSize, searchKey]);
 
     const reloadTable = async update => {
         fetchAndSetCompletedDevices()
@@ -198,7 +186,7 @@ export function CompletedDevices() {
 
     useEffect(() => {
         fetchAndSetCompletedDevices();
-    }, [fetchAndSetCompletedDevices, route, pageSize, currentPage]);
+    }, [fetchAndSetCompletedDevices, route, pageSize, currentPage, searchKey]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
@@ -370,55 +358,110 @@ export function CompletedDevices() {
     return (
 
         <>
-            {completedDevices.length===0 ?(
+            <Box sx={{
+                m: 2,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'end',
+                alignItems: 'center',
+            }}>
+
+                <Box sx={{
+                    minWidth: '300px',
+                    display: 'flex',
+                    gap: 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    {(bufferedSearchKey !== '') && (<>
+                            <ClearIcon onClick={(event) => {
+                                setBufferedSearchKey('');
+                            }}/>
+                        </>
+                    )}
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="email"
+                        label="Search"
+                        name="search"
+                        autoComplete="search"
+                        value={bufferedSearchKey}
+                        onChange={(event) => {
+                            setBufferedSearchKey(event.target.value);
+                        }}
+                    />
+                </Box>
+            </Box>
+
+            {loading ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
                         Loading...
                     </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
                     </Box>
                 </Box>
-            ):(
-                <Box sx={{flexGrow: 1, width: 1, p: 0}}>
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    // height: '100vh',
+                    width: '100%',
+                }}>
                     <DataGrid
                         sx={{
                             '&.MuiDataGrid-root': {
                                 minHeight: 'calc(100vh - 130px)',
                                 height: '100%',
                                 maxWidth: "calc(100vw - 100px)",
+                                width: '100%',
                             },
                             '& .MuiDataGrid-main': {
-                                maxHeight: 'calc(100vh - 180px)'
+                                maxHeight: 'calc(100vh - 200px)'
                             }
                         }}
                         rows={rows}
                         columns={columns}
-                        loading={rows.length === 0}
+                        loading={false}
                         components={{
                             noRowsOverlay: CustomNoRowsOverlay,
                             Pagination: CustomPagination,
                         }}
                     />
-
-                    {rowId && (
-                        <EditCompletedDevice
-                            open={open}
-                            onCloseDialog={handleClose}
-                            id={rowId}
-                            update={reloadTable}
-                        />
-                    )}
-
                 </Box>
 
+            )}
+            {rowId && (
+                <EditCompletedDevice
+                    open={open}
+                    onCloseDialog={handleClose}
+                    id={rowId}
+                    update={reloadTable}
+                />
             )}
         </>
     );
