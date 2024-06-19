@@ -42,9 +42,12 @@ export function responseErrorHandlers(response) {
             handleClientError("Not Found");
             break;
         case 422:
-            Object.keys(response?.data?.errors).forEach((key) => {
-                Notify("colored", `${response?.data?.errors[key][0]}`, "error");
-            });
+            console.log(response?.data)
+            // Object.keys(response?.data?.errors).forEach((key) => {
+            //     Notify("colored", `${response?.data?.errors[key][0]}`, "error");
+            // });
+            Notify("colored", `${response?.data.message}`, "error");
+
             break;
         case 500:
         case 501:

@@ -8,10 +8,10 @@ import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import {deviceServices} from "../../Routes";
+import {deviceServices, usersServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
-import {Box, DialogContentText, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, DialogContentText, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
@@ -19,6 +19,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
+import ClearIcon from "@mui/icons-material/Clear";
+import AddIcon from "@mui/icons-material/Add";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -66,15 +68,20 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
 // }
 
 export function Devices() {
-    // const [rowModesModel, setRowModesModel] = React.useState({});
     const [rows, setRows] = React.useState([]);
     const [deletingId, setDeletingId] = useState(null);
-    //=============================================================
-    // const handleRowEditStop = (params, event) => {
-    //     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-    //         event.defaultMuiPrevented = true;
-    //     }
-    // };
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchKey, setSearchKey] = React.useState('');
+    const [bufferedSearchKey, setBufferedSearchKey] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setSearchKey(bufferedSearchKey);
+        }, 1500);  // Delay for 1.5 seconds
+
+        return () => clearTimeout(timer);
+    }, [bufferedSearchKey]);
 
     // for edit
     const [open, setOpen] = React.useState(false);
@@ -89,10 +96,7 @@ export function Devices() {
         setOpen(true)
         setRowId(id)
     };
-    // const handleDeliverToClientClick = (id) => () => {
-    //     console.log(id)
-    //     // fetchAndSetDevices()
-    // };
+
     const [openDeliverToClientDialog, setOpenDeliverToClientDialog] = useState(false);
     const [currentId, setCurrentId] = useState(null);
 
@@ -122,10 +126,6 @@ export function Devices() {
     };
 
 
-    // const handleSaveClick = (id) => () => {
-    //     setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
-    // };
-
     const handleDeleteClick = (id) => async () => {
         const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nلا يمكن التراجع عن هذه الخطوة.");
         if (!confirmed) {
@@ -149,17 +149,6 @@ export function Devices() {
         setDeletingId(null);
     };
 
-    // const handleCancelClick = (id) => () => {
-    //     setRowModesModel({
-    //         ...rowModesModel,
-    //         [id]: {mode: GridRowModes.View, ignoreModifications: true},
-    //     });
-    //
-    //     const editedRow = rows.find((row) => row.id === id);
-    //     if (editedRow.isNew) {
-    //         setRows(rows.filter((row) => row.id !== id));
-    //     }
-    // };
 //=============================================================
     const columns = [
 
@@ -206,28 +195,6 @@ export function Devices() {
             width: 150,
             cellClassName: 'actions',
             getActions: ({id}) => {
-                // const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-                // if (isInEditMode) {
-                //     return [
-                //         <GridActionsCellItem
-                //             icon={<SaveIcon/>}
-                //             label="Save"
-                //             sx={{
-                //                 color: 'primary.main',
-                //             }}
-                //             onClick={handleSaveClick(id)}
-                //         />,
-                //         <GridActionsCellItem
-                //             icon={<CancelIcon/>}
-                //             label="Cancel"
-                //             className="textPrimary"
-                //             onClick={handleCancelClick(id)}
-                //             color="inherit"
-                //         />,
-                //     ];
-                // }
-
                 return [
                     <GridActionsCellItem
                         key={id}
@@ -263,6 +230,8 @@ export function Devices() {
 //fetch data and pagination process
 
     const fetchAndSetDevices = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -271,16 +240,23 @@ export function Devices() {
             'deliver_to_client': 0,
             'page': currentPage,
             'per_page': pageSize,
+            'search':searchKey
 
         };
-        const data = await deviceServices.getAll(params);
+        const response = await deviceServices.getAll(params);
+        const data = await response?.data;
+        const status = await response?.status;
+        data ? setDevices(data?.body) : setDevices([]);
         setPagination(data?.pagination);
-        setDevices(data?.body);
-    }, [pageSize, currentPage]);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
+    }, [pageSize, currentPage,searchKey]);
 
     useEffect(() => {
         fetchAndSetDevices();
-    }, [fetchAndSetDevices, route, pageSize, currentPage]);
+    }, [fetchAndSetDevices, route, pageSize, currentPage,searchKey]);
 
 
     const reloadTable = async update => {
@@ -455,13 +431,48 @@ export function Devices() {
 
     return (
         <>
-            {devices?.length === 0 ?
-                (<Box sx={{
+            <Box sx={{
+                m: 2,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'end',
+                alignItems: 'center',
+            }}>
+
+                <Box sx={{
+                    minWidth: '300px',
+                    display: 'flex',
+                    gap: 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    {(bufferedSearchKey !== '') && (<>
+                            <ClearIcon onClick={(event) => {
+                                setBufferedSearchKey('');
+                            }}/>
+                        </>
+                    )}
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="email"
+                        label="Search"
+                        name="search"
+                        autoComplete="search"
+                        value={bufferedSearchKey}
+                        onChange={(event) => {
+                            setBufferedSearchKey(event.target.value);
+                        }}
+                    />
+                </Box>
+            </Box>
+            {loading ? (
+                <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
                     <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
@@ -470,42 +481,63 @@ export function Devices() {
                     <Box sx={{width: '50%'}}>
                         <LinearProgress/>
                     </Box>
-                </Box>) : (
+                </Box>
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) :(
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    // height: '100vh',
+                    width: '100%',
+                }}>
+                    <DataGrid
+                        sx={{
+                            '&.MuiDataGrid-root': {
+                                minHeight: 'calc(100vh - 130px)',
+                                height: '100%',
+                                maxWidth: "calc(100vw - 100px)",
+                                width: '100%',
+                            },
+                            '& .MuiDataGrid-main': {
+                                maxHeight: 'calc(100vh - 200px)'
+                            }
+                        }}
+                        rows={rows}
+                        columns={columns}
+                        loading={false}
+                        // checkboxSelection
+                        // rowModesModel={rowModesModel}
+                        // onRowModesModelChange={handleRowModesModelChange}
+                        // onRowEditStop={handleRowEditStop}
+                        // processRowUpdate={processRowUpdate}
+                        // slots={{
+                        //     toolbar: EditToolbar,
+                        // }}
+                        // slotProps={{
+                        //     toolbar: {setRows, setRowModesModel},
+                        // }}
+                        components={{
+                            noRowsOverlay: CustomNoRowsOverlay,
+                            Pagination: CustomPagination,
+                        }}
+                    />
+                </Box>
 
-
-                    <Box sx={{flexGrow: 1, width: 1, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <DataGrid
-                            sx={{
-                                p: '2px 4px', m: '6px 13px',
-                                '&.MuiDataGrid-root': {
-                                    minHeight: 'calc(100vh - 130px)',
-                                    height: '100%',
-                                    maxWidth: "calc(100vw - 80px)",
-                                },
-                                '& .MuiDataGrid-main': {
-                                    maxHeight: 'calc(100vh - 180px)'
-                                }
-                            }}
-                            rows={rows}
-                            columns={columns}
-                            loading={rows?.length === 0}
-                            // checkboxSelection
-                            // rowModesModel={rowModesModel}
-                            // onRowModesModelChange={handleRowModesModelChange}
-                            // onRowEditStop={handleRowEditStop}
-                            // processRowUpdate={processRowUpdate}
-                            // slots={{
-                            //     toolbar: EditToolbar,
-                            // }}
-                            // slotProps={{
-                            //     toolbar: {setRows, setRowModesModel},
-                            // }}
-                            components={{
-                                noRowsOverlay: CustomNoRowsOverlay,
-                                Pagination: CustomPagination,
-                            }}
-
-                        />
+            )}
                         {rowId && (
                             <EditDevice
                                 open={open}
@@ -514,9 +546,6 @@ export function Devices() {
                                 update={reloadTable}
                             />
                         )}
-                    </Box>)}
-
-
             <Dialog open={openDeliverToClientDialog} onClose={handleCloseDialogDeliverToClient}
                     aria-labelledby="alert-dialog-title">
                 <DialogTitle id="alert-dialog-title">{"تأكيد تسليم جهاز"}</DialogTitle>

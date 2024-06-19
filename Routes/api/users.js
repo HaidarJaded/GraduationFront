@@ -20,6 +20,7 @@ const getAll = async (params) => {
                 };
             });
     } catch (error) {
+        console.log(error)
         responseErrorHandlers(error?.response);
         return {
             data: await error?.response?.data,
