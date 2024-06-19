@@ -1,14 +1,11 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
-import {
-    DataGrid,
-    GridActionsCellItem,
-} from '@mui/x-data-grid';
+import {DataGrid, GridActionsCellItem,} from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckBoxRoundedIcon from '@mui/icons-material/CheckBoxRounded';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import {deviceServices, usersServices} from "../../Routes";
+import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
 import {Box, DialogContentText, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
@@ -20,7 +17,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
 import ClearIcon from "@mui/icons-material/Clear";
-import AddIcon from "@mui/icons-material/Add";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -78,7 +74,7 @@ export function Devices() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setSearchKey(bufferedSearchKey);
-        }, 1500);  // Delay for 1.5 seconds
+        }, 1500);
 
         return () => clearTimeout(timer);
     }, [bufferedSearchKey]);
@@ -240,7 +236,7 @@ export function Devices() {
             'deliver_to_client': 0,
             'page': currentPage,
             'per_page': pageSize,
-            'search':searchKey
+            'search': searchKey
 
         };
         const response = await deviceServices.getAll(params);
@@ -252,11 +248,11 @@ export function Devices() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [pageSize, currentPage,searchKey]);
+    }, [pageSize, currentPage, searchKey]);
 
     useEffect(() => {
         fetchAndSetDevices();
-    }, [fetchAndSetDevices, route, pageSize, currentPage,searchKey]);
+    }, [fetchAndSetDevices, route, pageSize, currentPage, searchKey]);
 
 
     const reloadTable = async update => {
@@ -495,7 +491,7 @@ export function Devices() {
                         {error}
                     </Typography>
                 </Box>
-            ) :(
+            ) : (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -538,14 +534,14 @@ export function Devices() {
                 </Box>
 
             )}
-                        {rowId && (
-                            <EditDevice
-                                open={open}
-                                onCloseDialog={handleClose}
-                                id={rowId}
-                                update={reloadTable}
-                            />
-                        )}
+            {rowId && (
+                <EditDevice
+                    open={open}
+                    onCloseDialog={handleClose}
+                    id={rowId}
+                    update={reloadTable}
+                />
+            )}
             <Dialog open={openDeliverToClientDialog} onClose={handleCloseDialogDeliverToClient}
                     aria-labelledby="alert-dialog-title">
                 <DialogTitle id="alert-dialog-title">{"تأكيد تسليم جهاز"}</DialogTitle>
