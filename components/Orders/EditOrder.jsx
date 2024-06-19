@@ -63,11 +63,10 @@ export function EditOrder({...props}) {
     const fetchAndSetModelOptions = useCallback(async () => {
         const params = {
             'rule*name': 'عامل توصيل',
-            // "at_work":1,
             'all_data': 1,
         };
-        const data = await usersServices?.getAll(params);
-        console.log("data?.body عامل توصيل",data?.body)
+        const response = await usersServices.getAll(params);
+        const data = await response?.data;
         data ? setModelOptions(data?.body) : setModelOptions([]);
     }, []);
 
