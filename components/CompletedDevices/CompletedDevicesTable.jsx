@@ -39,26 +39,6 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
     },
 }));
 
-
-
-    const handleClick = () => {
-        const id = randomId();
-        setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
-        setRowModesModel((oldModel) => ({
-            ...oldModel,
-            [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
-        }));
-    };
-
-    return (
-        <GridToolbarContainer>
-            <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
-                Add record
-            </Button>
-        </GridToolbarContainer>
-    );
-}
-
 export function CompletedDevices() {
 
 
