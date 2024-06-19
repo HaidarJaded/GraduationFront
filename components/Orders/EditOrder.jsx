@@ -38,7 +38,8 @@ export function EditOrder({...props}) {
     }, [fetchAndSetDelivery])
 
 
-
+    const {register, handleSubmit, formState} = useForm();
+    const {errors} = formState;
     const onSubmit = async () => {
         let dataDelivery = {}
         if (selectedDeliveryName && selectedDeliveryName !== data?.user_id)

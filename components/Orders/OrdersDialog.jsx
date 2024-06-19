@@ -110,19 +110,19 @@ export function OrdersDialog({...props}) {
                     color: "#3f0a77",
                     fontSize: 26,
                 }}>
-                    {/*{`Device: ${device.model}`}*/}
+                    {` ${product.name} :Product`}
                 </Typography>
                 <Typography variant="body2" sx={{
                     color: "#442d5d",
                     fontSize: 14, marginY: 1, paddingY: 0
                 }}>
-                    {`Code: ${device.code}`}
+                    {`Price: ${product.price}`}
                 </Typography>
                 <Typography variant="body2" sx={{
                     color: "#442d5d",
                     fontSize: 14, marginY: 1, paddingY: 0
                 }}>
-                    {/*{`IMEI: ${device.imei}`}*/}
+                    {`Quantity: ${product.quantity}`}
                 </Typography>
                 <Typography variant="body2" sx={{
                     color: "#442d5d",
@@ -133,7 +133,8 @@ export function OrdersDialog({...props}) {
                     marginTop: 3,
                     padding: 1
                 }}>
-                    {/*{`نوع الطلب : ${device.order_type}`}*/}
+
+                    {`نوع الطلب : تسليم للعميل`}
                 </Typography>
             </CardContent>
         </Card>

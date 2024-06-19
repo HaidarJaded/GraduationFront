@@ -321,7 +321,7 @@ export function DeliveriesTable() {
                      flexDirection: 'column',
                      justifyContent: 'center',
                      alignItems: 'center',
-                     height: '50vh',
+                     height: '80vh',
                      width: '100%',
                  }}>
                      <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
