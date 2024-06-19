@@ -106,24 +106,20 @@ export function Devices() {
         setOpenDeliverToClientDialog(false);
     };
 
-    const handleConfirmDeliverToClient =async () => {
+    const handleConfirmDeliverToClient = async () => {
         console.log(currentId);
-        const updateData = async () =>
-        {
-            try
-            {
-                const response =  await deviceServices.updateDevice(currentId, { deliver_to_client: 1 });
+        const updateData = async () => {
+            try {
+                const response = await deviceServices.updateDevice(currentId, {deliver_to_client: 1});
                 Notify("light", response.message, "success");
-            }
-            catch (error)
-            {
+            } catch (error) {
                 console.log(error)
             }
 
         };
         await updateData();
         setOpenDeliverToClientDialog(false);
-         fetchAndSetDevices();
+        fetchAndSetDevices();
     };
 
 
@@ -186,10 +182,10 @@ export function Devices() {
                 return (
                     <GridActionsCellItem
                         key={params.id}
-                        icon={<Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <CheckBoxRoundedIcon />
-                            <Box component="span" sx={{ marginLeft: 1 }}>
-                               تسليم الجهاز
+                        icon={<Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <CheckBoxRoundedIcon/>
+                            <Box component="span" sx={{marginLeft: 1}}>
+                                تسليم الجهاز
                             </Box>
                         </Box>}
                         label="deliver to client"
@@ -363,6 +359,7 @@ export function Devices() {
 
         setRows(rowsDevices);
     }, [devices]);
+
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -477,9 +474,10 @@ export function Devices() {
                 </Box>) : (
 
 
-                    <Box sx={{flexGrow: 1, width: 1,display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+                    <Box sx={{flexGrow: 1, width: 1, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                         <DataGrid
-                            sx={{p: '2px 4px' ,m: '6px 13px',
+                            sx={{
+                                p: '2px 4px', m: '6px 13px',
                                 '&.MuiDataGrid-root': {
                                     minHeight: 'calc(100vh - 130px)',
                                     height: '100%',

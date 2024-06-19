@@ -14,10 +14,17 @@ const getAll = async (params) => {
         return await axiosInstance
             .get(`${BASE_URL}${USERS_URL}`, {params})
             .then(async (response) => {
-                return await response?.data;
+                return {
+                    data: await response?.data,
+                    status: await response?.status,
+                };
             });
     } catch (error) {
         responseErrorHandlers(error?.response);
+        return {
+            data: await error?.response?.data,
+            status: await error?.status,
+        };
     }
 };
 const addUser = async (user) => {
