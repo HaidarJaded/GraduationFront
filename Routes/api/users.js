@@ -47,10 +47,8 @@ const addUser = async (user) => {
 const deleteUser = async (id) => {
     try {
         const response = await axiosInstance.delete(`${BASE_URL}${USERS_URL}/${id}`);
-        if (response.status == 200) {
-            return true;
-        }
-        return false;
+        return response.status === 200;
+
     } catch (error) {
         responseErrorHandlers(error?.response);
     }

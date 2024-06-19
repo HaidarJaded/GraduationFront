@@ -3,7 +3,6 @@ import {useCallback, useEffect, useState} from 'react';
 import {
     DataGrid,
     GridActionsCellItem,
-    GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';

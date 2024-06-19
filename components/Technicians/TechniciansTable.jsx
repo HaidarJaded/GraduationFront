@@ -14,7 +14,7 @@ import {PermissionsTechnician} from "./PermissionsTechnician";
 import AddIcon from "@mui/icons-material/Add";
 import {AddUser} from "../Users";
 import LinearProgress from "@mui/material/LinearProgress";
-import {EditUser} from "../Users/EditUser";
+import {EditUser} from "../Users";
 import ClearIcon from "@mui/icons-material/Clear";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
