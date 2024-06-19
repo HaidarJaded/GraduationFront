@@ -519,6 +519,17 @@ export function Devices() {
                         rows={rows}
                         columns={columns}
                         loading={false}
+                        // checkboxSelection
+                        // rowModesModel={rowModesModel}
+                        // onRowModesModelChange={handleRowModesModelChange}
+                        // onRowEditStop={handleRowEditStop}
+                        // processRowUpdate={processRowUpdate}
+                        // slots={{
+                        //     toolbar: EditToolbar,
+                        // }}
+                        // slotProps={{
+                        //     toolbar: {setRows, setRowModesModel},
+                        // }}
                         components={{
                             noRowsOverlay: CustomNoRowsOverlay,
                             Pagination: CustomPagination,
