@@ -108,12 +108,12 @@ export function TechniciansTable() {
         {field: 'rowNumber', headerName: '#', width: 0.1,},
         {field: 'name', headerName: 'الاسم', width: 130},
         {field: 'last_name', headerName: 'الكنية', width: 130},
-        {field: 'at_work', headerName: 'حالة العمل', width: 130},
-        {field: 'devices_count', headerName: 'الاجهزة المسؤول عنها', width: 150},
+        {field: 'at_work', headerName: 'حالة العمل', width: 100},
+        {field: 'devices_count', headerName: 'الاجهزة المسؤول عنها', width: 130},
         {field: 'email', headerName: 'البريد الالكتروني', width: 170},
         {field: 'phone', headerName: 'رقم الهاتف', width: 170},
         {field: 'created_at', headerName: 'تاريخ التسجيل', width: 160},
-        {field: 'address', headerName: 'العنوان', width: 170},
+        {field: 'address', headerName: 'العنوان', width: 150},
 
         {
             field: 'actions',
