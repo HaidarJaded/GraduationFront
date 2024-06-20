@@ -148,8 +148,8 @@ export function Devices() {
 //=============================================================
     const columns = [
 
-        // {field: 'rowNumber', headerName: '#', width: 70},
-        {field: 'id', headerName: 'ID', width: 70},
+        {field: 'rowNumber', headerName: '#', width: 70},
+        // {field: 'id', headerName: 'ID', width: 70},
         {field: 'model', headerName: 'Model', width: 130},
         {field: 'imei', headerName: 'Imei', width: 170},
         {field: 'code', headerName: 'Code', width: 170},

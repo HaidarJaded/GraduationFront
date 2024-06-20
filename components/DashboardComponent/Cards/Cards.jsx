@@ -5,7 +5,6 @@ import BuildIcon from '@mui/icons-material/Build';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import PieChartRoundedIcon from '@mui/icons-material/PieChartRounded';
 import HourglassDisabledRoundedIcon from '@mui/icons-material/HourglassDisabledRounded';
-import {json} from "react-router-dom";
 
 
 export function Cards({data}) {

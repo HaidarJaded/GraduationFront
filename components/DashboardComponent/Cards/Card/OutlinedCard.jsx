@@ -1,9 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
@@ -27,17 +25,13 @@ const CardComponent = ({ name,number,children }) => {
                     {name}
                 </Typography>
 
-                <Typography sx={{fontSize: 26,fontWeight: 'bold'}} variant="body2">
-
+                <Typography sx={{fontSize: 22,fontWeight: 'bold'}} variant="body2">
                 <IconButton aria-label="icon" >
                     <Icon sx={{fontSize: '0.5rem',height: '3em',width: '4em',color:'#694096'}}>{children}</Icon>
                 </IconButton>
                     {number}
                 </Typography>
             </CardContent>
-            <CardActions>
-                <Button size="small" sx={{color:'#6d40dc',height: '1.5em'}}><KeyboardBackspaceIcon sx={{height: '2rem',width: '2em'}}/></Button>
-            </CardActions>
         </React.Fragment>
     );
 };
