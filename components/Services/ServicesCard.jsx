@@ -16,6 +16,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import {EditService} from "./EditService";
 import {Notify} from "../../utils";
 import Button from "@mui/material/Button";
+import {deviceServices} from "../../Routes";
 
 
 const ExpandMore = styled((props) => {
@@ -39,6 +40,8 @@ export function RecipeReviewCard() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     // const [expanded, setExpanded] = React.useState(false);
 
     // const handleExpandClick = () => {
@@ -66,14 +69,22 @@ export function RecipeReviewCard() {
     };
     const [services, setServices] = useState([]);
     const fetchAndSetServices = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             "dir": "[asc,desc]",
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await servicesServices.getAllServices(params);
+        const response = await servicesServices.getAllServices(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setServices(data?.body) : setServices([]);
         setPagination(data?.pagination);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
     }, [pageSize, currentPage]);
 
 
@@ -184,23 +195,36 @@ export function RecipeReviewCard() {
 
     return (
         <>
-            {services.length===0?(
+            {loading ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
                         Loading...
                     </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
                     </Box>
                 </Box>
-            ):(
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : (
                 <Box>
                     <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container spacing={2}>
                         {services.map((service) => (
@@ -254,6 +278,9 @@ export function RecipeReviewCard() {
                         ))}
 
                     </Grid>
+                </Box>
+
+            )}
                     {rowId && (
                         <EditService
                             open={open}
@@ -264,8 +291,7 @@ export function RecipeReviewCard() {
                     )}
                     <CustomPagination/>
 
-                </Box>
-            )}
+
         </>
     );
 }

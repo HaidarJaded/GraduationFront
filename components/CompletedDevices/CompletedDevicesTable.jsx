@@ -163,6 +163,7 @@ export function CompletedDevices() {
         setError(null);
         const params = {
             'repaired_in_center': 1,
+            'date_receipt!':'',
             'orderBy': 'date_delivery',
             'dir': 'desc',
             'page': currentPage,

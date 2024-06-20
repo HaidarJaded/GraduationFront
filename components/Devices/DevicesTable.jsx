@@ -232,6 +232,7 @@ export function Devices() {
             'repaired_in_center': 1,
             'with': 'client,user',
             'orderBy': 'date_receipt',
+            'date_receipt!':'',
             'dir': 'desc',
             'deliver_to_client': 0,
             'page': currentPage,
