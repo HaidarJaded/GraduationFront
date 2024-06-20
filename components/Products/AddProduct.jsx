@@ -115,7 +115,7 @@ export function AddProduct({...props}) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onClose}>Disagree</Button>
+                    <Button onClick={props?.onClose}>إلغاء</Button>
                     <Button type='submit'>إضافة</Button>
                 </DialogActions>
             </Dialog>

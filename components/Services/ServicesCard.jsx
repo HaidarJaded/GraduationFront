@@ -90,7 +90,6 @@ export function RecipeReviewCard() {
 
     useEffect(() => {
         fetchAndSetServices();
-        console.log(services)
     }, [fetchAndSetServices,pageSize, currentPage]);
 
     useEffect(() => {

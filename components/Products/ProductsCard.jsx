@@ -9,7 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import {Box, Grid, MenuItem, Pagination, Select, Stack, Typography} from "@mui/material";
+import {Box, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
@@ -19,16 +19,6 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
 
-// const ExpandMore = styled((props) => {
-//     const {expand, ...other} = props;
-//     return <IconButton {...other} />;
-// })(({theme, expand}) => ({
-//     transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-//     marginLeft: 'auto',
-//     transition: theme.transitions.create('transform', {
-//         duration: theme.transitions.duration.shortest,
-//     }),
-// }));
 const BootstrapButton = styled(Button)({
     boxShadow: 'none',
     textTransform: 'none',
@@ -66,11 +56,8 @@ const BootstrapButton = styled(Button)({
 });
 
 export function ProductCard() {
-    // const [expanded, setExpanded] = React.useState(false);
-    //
-    // const handleExpandClick = () => {
-    //     setExpanded(!expanded);
-    // };
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [rowIdAddProduct, setRowIdAddProduct] = React.useState(false);
     const [openAddProduct, setOpenAddProduct] = React.useState(false);
     const [open, setOpen] = React.useState(false);
@@ -107,21 +94,28 @@ export function ProductCard() {
 
     const [products, setProducts] = useState([]);
     const fetchAndSetProducts = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             "dir": "[asc,desc]",
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await servicesProducts.getAllProducts(params);
-        setPagination(data?.pagination);
+        const response = await servicesProducts.getAllProducts(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setProducts(data?.body) : setProducts([]);
+        setPagination(data?.pagination);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
     }, [pageSize, currentPage]);
 
 
     useEffect(() => {
         fetchAndSetProducts();
-        console.log(products)
-    }, [fetchAndSetProducts,pageSize, currentPage]);
+    }, [fetchAndSetProducts, pageSize, currentPage]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
@@ -151,7 +145,8 @@ export function ProductCard() {
         const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
 
         return (
-            <Stack direction="row" sx={{width: 1, px: 1,marginTop:3,bgcolor:"#b9a9a985"}} alignItems="center" spacing={2}>
+            <Stack direction="row" sx={{width: 1, px: 1, marginTop: 3, bgcolor: "#b9a9a985"}} alignItems="center"
+                   spacing={2}>
                 <Box sx={{
                     flexGrow:
                         '1',
@@ -218,15 +213,25 @@ export function ProductCard() {
             </Stack>
         );
     }
+
     const isAllSelected = pageSize >= rowCount;
+
     function range(start, end) {
 
         return Array.from({length: end - start + 2}, (_, i) => start + i);
     }
+
     return (
         <>
-            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
-                    <BootstrapButton sx={{marginX: 6, marginTop: 2, direction: "rtl"}} variant="contained" disableRipple
+            <Box sx={{
+                m: 2,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'end',
+                alignItems: 'center',
+            }}>
+                <Box>
+                    <BootstrapButton sx={{marginX: 2, direction: "rtl"}} variant="contained" disableRipple
                                      endIcon={<AddIcon sx={{marginRight: 2}}/>}
                                      onClick={() => {
                                          setRowIdAddProduct(1)
@@ -236,12 +241,16 @@ export function ProductCard() {
                             إضافة منتج
                         </Typography>
                     </BootstrapButton>
-                {products.length === 0 ? (  <Box sx={{
+                </Box>
+            </Box>
+
+            {loading ? (
+                <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '50vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
                     <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
@@ -250,7 +259,22 @@ export function ProductCard() {
                     <Box sx={{width: '50%'}}>
                         <LinearProgress/>
                     </Box>
-                </Box>) : (
+                </Box>
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : (
+                <Box>
                     <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container>
                         {products.map((product) => (
                             <Grid item key={product.id} sx={{marginY: 3, marginX: '3px'}}>
@@ -305,25 +329,24 @@ export function ProductCard() {
                         ))}
                         <CustomPagination/>
                     </Grid>
-
-                    )}
-
-                    {rowId && (
-                        <EditProduct
-                            open={open}
-                            onCloseDialog={handleClose}
-                            id={rowId}
-                            update={reloadTable}
-                        />
-                    )}
-                    {rowIdAddProduct && (
-                        <AddProduct
-                            open={openAddProduct}
-                            onClose={handleCloseAddProduct}
-                            update={reloadTable}
-                        />
-                    )}
                 </Box>
+            )}
+
+            {rowId && (
+                <EditProduct
+                    open={open}
+                    onCloseDialog={handleClose}
+                    id={rowId}
+                    update={reloadTable}
+                />
+            )}
+            {rowIdAddProduct && (
+                <AddProduct
+                    open={openAddProduct}
+                    onClose={handleCloseAddProduct}
+                    update={reloadTable}
+                />
+            )}
 
         </>
     );

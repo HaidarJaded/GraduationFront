@@ -55,7 +55,7 @@ export function AllRulesGrid() {
 
     useEffect(() => {
         fetchAndSetRules();
-    }, []);
+    }, [fetchAndSetRules]);
 
 
 const handleClose = () => {

@@ -33,7 +33,7 @@ export function AllPermissions({...props}) {
         const data = await permissionsServices.getAllPermissions(params);
         const allPermissions = data?.body.filter(permission => !props.userPermissions.some(userPermission => userPermission.id === permission.id));
         data ? setAllPermissions(allPermissions) : setAllPermissions([]);
-    }, [])
+    }, [props.userPermissions])
 
     useEffect(() => {
         fetchAndSetPermissions();

@@ -69,11 +69,11 @@ export function PermissionsTechnician({...props}) {
             console.log("new test")
 
         }
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         fetchAndSetPermissions();
-    }, []);
+    }, [fetchAndSetPermissions]);
     const handleClose = () => {
         setOpenAddPermissionsTechnician(false);
         setRowIdAddPermissionsTechnician(null);
@@ -246,6 +246,7 @@ export function PermissionsTechnician({...props}) {
                                                                 //     }
                                                                 // ></ListItem>
                                                                     <ListItemText
+                                                                        key={index}
                                                                         sx={{ textAlign: "start", margin: 0 }}
                                                                         primary={<React.Fragment>
                                                                             <Typography sx={{
