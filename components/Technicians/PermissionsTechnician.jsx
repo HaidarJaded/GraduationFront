@@ -47,7 +47,6 @@ export function PermissionsTechnician({...props}) {
 
 
     const [permissionsTechnician, setPermissionsTechnician] = useState([]);
-    const [permissionsTechnicianRows, setPermissionsTechnicianRows] = useState([]);
     const [permissionsRuleTechnician, setPermissionsRuleTechnician] = useState([]);
     const [permissions, setPermissions] = useState([]);
     const [ruleTechnician, setRuleTechnician] = useState({});
