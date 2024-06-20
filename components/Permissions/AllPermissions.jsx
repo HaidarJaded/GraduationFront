@@ -22,7 +22,6 @@ export function AllPermissions({...props}) {
     const user = props.user
     const {open} = props;
     const [id, setId] = useState(props.id)
-    const route = useRouter()
     const [data, setData] = useState();
     const {update} = props;
 
@@ -33,7 +32,7 @@ export function AllPermissions({...props}) {
         const data = await permissionsServices.getAllPermissions(params);
         const allPermissions = data?.body.filter(permission => !props.userPermissions.some(userPermission => userPermission.id === permission.id));
         data ? setAllPermissions(allPermissions) : setAllPermissions([]);
-    }, [])
+    }, [props.userPermissions])
 
     useEffect(() => {
         fetchAndSetPermissions();
@@ -117,12 +116,6 @@ export function AllPermissions({...props}) {
 
 
     };
-
-    const [selectedInfo, setSelectedInfo] = useState(data?.info);
-    //const [selectedFixSteps, setSelectedFixSteps] = useState(data?.info);
-    const [selectedModel, setSelectedModel] = useState(data?.model);
-
-
     return (
         <>
             {allPermissions.length===0?(

@@ -58,6 +58,16 @@ export function getValidationObject() {
                     .matches(/^\d+days\s\d+hours$/, 'Time required must be in the format like "2days[space]4hours"')
 
                 break;
+            case "start_work":
+                result['start_work'] =Yup.string()
+                    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Start work time must be in the format HH:mm')
+
+                break;
+            case "end_work":
+                result['end_work'] =Yup.string()
+                    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'End work time must be in the format HH:mm')
+
+                break;
 
         }
     }

@@ -148,8 +148,8 @@ export function Devices() {
 //=============================================================
     const columns = [
 
-        // {field: 'rowNumber', headerName: '#', width: 70},
-        {field: 'id', headerName: 'ID', width: 70},
+        {field: 'rowNumber', headerName: '#', width: 70},
+        // {field: 'id', headerName: 'ID', width: 70},
         {field: 'model', headerName: 'Model', width: 130},
         {field: 'imei', headerName: 'Imei', width: 170},
         {field: 'code', headerName: 'Code', width: 170},
@@ -232,6 +232,7 @@ export function Devices() {
             'repaired_in_center': 1,
             'with': 'client,user',
             'orderBy': 'date_receipt',
+            'date_receipt!':'',
             'dir': 'desc',
             'deliver_to_client': 0,
             'page': currentPage,

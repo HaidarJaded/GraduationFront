@@ -1,8 +1,5 @@
 
 import { createTheme } from '@mui/material/styles';
-import { Button, Typography } from '@mui/material';
-
-
 
 const theme = createTheme({
     breakpoints: {

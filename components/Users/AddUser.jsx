@@ -108,7 +108,6 @@ export function AddUser({...props}) {
                                 label="name "
                                 name="name"
                                 autoComplete="email"
-                                autoFocus
                                  {...register('name')}
                                 helperText={errors.name && errors.name?.message || (data.name?.length > 0 && data.name[0])}
                                 error={(errors.name || data.name?.length > 0) && true}
@@ -123,7 +122,6 @@ export function AddUser({...props}) {
                                 label="Last name "
                                 name="last_name"
                                 autoComplete="last_name"
-                                autoFocus
                                  {...register('last_name')}
                                 helperText={errors.last_name && errors.last_name?.message || (data.last_name?.length > 0 && data.last_name[0])}
                                 error={(errors.last_name || data.last_name?.length > 0) && true}
@@ -189,7 +187,7 @@ export function AddUser({...props}) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onClose}>Disagree</Button>
+                    <Button onClick={props?.onClose}>إلغاء</Button>
                     <Button type='submit'>إضافة</Button>
                 </DialogActions>
             </Dialog>

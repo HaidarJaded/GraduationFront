@@ -66,11 +66,11 @@ export function PermissionsClient({...props}) {
 
         }
         console.log(data ? data.body : []);
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         fetchAndSetPermissions();
-    }, []);
+    }, [fetchAndSetPermissions]);
 
     const handleClose = () => {
         setOpenAddPermissionsClient(false);
@@ -255,6 +255,7 @@ export function PermissionsClient({...props}) {
                                                             //     }
                                                             // ></ListItem>
                                                             <ListItemText
+                                                                key={index}
                                                                 sx={{ textAlign: "start", margin: 0 }}
                                                                 primary={<React.Fragment>
                                                                     <Typography sx={{

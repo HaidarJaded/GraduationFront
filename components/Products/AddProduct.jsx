@@ -10,12 +10,7 @@ import {Box, InputAdornment, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "../../utils";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
-import IconButton from "@mui/material/IconButton";
-import {users, usersServices} from "../../Routes";
 import {servicesProducts} from "../../Routes/api/products";
-//import {ModelsEnum} from "../../enums";
-//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -24,7 +19,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export function AddProduct({...props}) {
     const {open} = props;
     const {update} = props;
-    const route = useRouter()
 
     const [data, setData] = useState({
         price: "", name: "", quantity: ""
@@ -115,7 +109,7 @@ export function AddProduct({...props}) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onClose}>Disagree</Button>
+                    <Button onClick={props?.onClose}>إلغاء</Button>
                     <Button type='submit'>إضافة</Button>
                 </DialogActions>
             </Dialog>

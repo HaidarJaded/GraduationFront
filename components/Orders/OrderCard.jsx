@@ -43,7 +43,6 @@ export function OrderCard() {
     }, [pageSize, currentPage]);
     useEffect(() => {
         fetchAndSetOrders();
-        console.log(orders)
     }, [fetchAndSetOrders, pageSize, currentPage]);
 
     useEffect(() => {
