@@ -56,7 +56,8 @@ export function AddUser({...props}) {
         const data = Object.assign(user, {rule_id: ruleId})
         const response =  await usersServices.addUser(data);
         if (response?.status === 200) {
-            Notify("colored", `${response?.message || 'Logged in success'}`, "success")
+            Notify("colored",
+                "تم الإضافة بنجاح", "success");
         }
         props.onClose();
         update('update');
