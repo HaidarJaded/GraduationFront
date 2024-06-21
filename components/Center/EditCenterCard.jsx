@@ -17,6 +17,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export function EditCenterCard({...props}) {
     const {open} = props;
+    const [id, setId] = useState(props.id);
     const [data, setData] = useState();
     const {update} = props;
 
@@ -29,7 +30,7 @@ export function EditCenterCard({...props}) {
 
     const fetchAndSetCenter = useCallback(async () => {
         const response = await DashboardInfo.getCenter(1);
-        await setData(response);
+        setData(response);
     }, [])
 
 
@@ -37,37 +38,43 @@ export function EditCenterCard({...props}) {
         fetchAndSetCenter()
     }, [fetchAndSetCenter])
 
-    const formOptions = getValidationObject("start_work","end_work");
+    const formOptions = getValidationObject("start_work", "end_work");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
 
     const onSubmit = async () => {
-        let dataCenter = {}
-        if (selectedCenterName && selectedCenterName !== data?.name)
-            Object.assign(dataCenter, {"name": selectedCenterName})
-        if (selectedCenterAddress && selectedCenterAddress !== data?.address)
-            Object.assign(dataCenter, {"address": selectedCenterAddress})
-        if (selectedCenterStatus && selectedCenterStatus !== data?.status)
-            Object.assign(dataCenter, {"status": selectedCenterStatus})
+        let dataCenter = {};
+
+        if (selectedCenterName && selectedCenterName !== data?.name) {
+            dataCenter.name = selectedCenterName;
+            console.log(selectedCenterName, data?.name);
+        }
+        if (selectedCenterAddress && selectedCenterAddress !== data?.address) {
+            dataCenter.address = selectedCenterAddress;
+            console.log(selectedCenterAddress, data?.address);
+        }
+        if (selectedCenterStatus && selectedCenterStatus !== data?.status) {
+            dataCenter.status = selectedCenterStatus;
+            console.log(selectedCenterStatus, data?.status);
+        }
         if (selectedCenterStartWork && selectedCenterStartWork !== data?.start_work)
-            Object.assign(dataCenter, {"start_work": selectedCenterStartWork})
+            dataCenter.start_work = selectedCenterStartWork;
         if (selectedCenterEndWork && selectedCenterEndWork !== data?.end_work)
-            Object.assign(dataCenter, {"end_work": selectedCenterEndWork})
+            dataCenter.end_work = selectedCenterEndWork;
+        console.log(dataCenter);
 
         if (Object.keys(dataCenter).length > 0) {
             try {
                 const response = await DashboardInfo.updateCenter(1, dataCenter);
-                Notify("light", response.message, "success")
-                props.onCloseDialog()
+                Notify("light", response.message, "success");
+                props.onCloseDialog();
                 update('update');
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
-
         }
-    }
-
+    };
 
     function handleKeyUp(event) {
         let keyName = event.target.name;
@@ -77,9 +84,6 @@ export function EditCenterCard({...props}) {
                 break;
             case 'address' :
                 setSelectedCenterAddress(event.target.value);
-                break;
-            case 'status' :
-                setSelectedCenterStatus(event.target.value);
                 break;
             case 'start_work' :
                 setSelectedCenterStartWork(event.target.value);
@@ -173,12 +177,15 @@ export function EditCenterCard({...props}) {
                                         حالة الجهاز
                                     </InputLabel>
                                     <Select
-                                        name={"status"}
+                                        name="status"
                                         labelId="status"
                                         id="status"
                                         value={selectedCenterStatus}
-                                        onChange={(event) => setSelectedCenterStatus(event.target.value)}
-                                        label="حالة الجهاز"
+                                        onChange={(event) => {
+                                            setSelectedCenterStatus(event.target.value);
+                                            console.log(event.target.value)
+                                        }}
+                                        label="حالة المركز"
                                         MenuProps={{
                                             sx: {
                                                 "&& .Mui-selected": {
@@ -192,13 +199,13 @@ export function EditCenterCard({...props}) {
                                             key={1}
                                             value={'مفتوح'}
                                         >
-                                          مفتوح
+                                            مفتوح
                                         </MenuItem>
                                         <MenuItem
                                             key={2}
                                             value={'مغلق'}
                                         >
-                                           مغلق
+                                            مغلق
                                         </MenuItem>
                                     </Select>
 

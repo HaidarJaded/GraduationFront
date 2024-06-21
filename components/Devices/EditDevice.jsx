@@ -59,6 +59,8 @@ export function EditDevice({...props}) {
             Object.assign(dataDevice, {"model": selectedModel})
         if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
             Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
+        console.log(Object.keys(dataDevice).length);
+        console.log(dataDevice);
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await deviceServices.updateDevice(id, dataDevice);
