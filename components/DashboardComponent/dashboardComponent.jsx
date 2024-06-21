@@ -6,8 +6,11 @@ import {GridChart} from "./GridChart";
 import {BasicBars, BasicPie} from "./Charts";
 import {useCallback, useEffect, useState} from "react";
 import QueryBuilderRoundedIcon from '@mui/icons-material/QueryBuilderRounded';
+import MeetingRoomRoundedIcon from '@mui/icons-material/MeetingRoomRounded';
+import NoMeetingRoomRoundedIcon from '@mui/icons-material/NoMeetingRoomRounded';
 import {DashboardInfo} from "../../Routes/api/dashboardInfo";
 import {OutlinedCard} from "./Cards/Card";
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import StoreRoundedIcon from '@mui/icons-material/StoreRounded';
 import Typography from '@mui/material/Typography';
 import IconButton from "@mui/material/IconButton";
@@ -91,16 +94,19 @@ export function DashboardComponent() {
                 }}>
 
                     <OutlinedCard name='اسم المركز' number={centerInfo[0]?.name}>
-                        {
-                            centerInfo[0]?.status === 'مفتوح' ? (
-                                <QueryBuilderRoundedIcon />
-                            ) : (
-                                <StoreRoundedIcon />
-                            )
-                        }
+                        <StoreRoundedIcon />
+                    </OutlinedCard>
+                    <OutlinedCard name='عنوان المركز' number={centerInfo[0]?.address}>
+                        <BadgeRoundedIcon />
                     </OutlinedCard>
                     <OutlinedCard name='حالة المركز' number={centerInfo[0]?.status}>
-
+                        {
+                            centerInfo[0]?.status === 'مفتوح' ? (
+                                <MeetingRoomRoundedIcon />
+                            ) : (
+                                <NoMeetingRoomRoundedIcon />
+                            )
+                        }
                     </OutlinedCard>
                     <OutlinedCard name='ساعات بدء العمل' number={centerInfo[0]?.start_work}>
                         <QueryBuilderRoundedIcon/>
@@ -128,6 +134,7 @@ export function DashboardComponent() {
             </Box>
             <EditCenterCard
                 open={editCenterOpen}
+                id={centerInfo[0]?.id}
                 onCloseDialog={handleClose}
                 update={reloadTable}
             />

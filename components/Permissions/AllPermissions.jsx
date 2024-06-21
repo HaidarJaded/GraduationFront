@@ -8,7 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {Checkbox, CircularProgress, Grid, List, ListItem, ListItemButton, ListItemText} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {useRouter} from "next/router";
 import {permissionsServices} from "../../Routes/api/permissions";
 import {Notify} from "../../utils";
 //import {ModelsEnum} from "../../enums";

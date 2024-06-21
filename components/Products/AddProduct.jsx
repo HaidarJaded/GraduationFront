@@ -6,9 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {Box, InputAdornment, TextField} from "@mui/material";
+import {Box, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "../../utils";
 import {servicesProducts} from "../../Routes/api/products";
 

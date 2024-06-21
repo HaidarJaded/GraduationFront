@@ -9,7 +9,6 @@ import Slide from '@mui/material/Slide';
 import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {deviceServices, usersServices} from "../../Routes";
-import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "../../utils";
 // import {ModelsEnum} from "../../enums";
 // import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
@@ -59,6 +58,8 @@ export function EditDevice({...props}) {
             Object.assign(dataDevice, {"model": selectedModel})
         if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
             Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
+        console.log(Object.keys(dataDevice).length);
+        console.log(dataDevice);
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await deviceServices.updateDevice(id, dataDevice);
@@ -83,8 +84,8 @@ export function EditDevice({...props}) {
             'rule*name': 'فني',
             'all_data': 1,
         };
-        const data = await usersServices?.getAll(params);
-        console.log("data?.body للفنيين",data?.body)
+        const response = await usersServices.getAll(params);
+        const data = await response?.data;
         data ? setModelOptions(data?.body) : setModelOptions([]);
     }, []);
 

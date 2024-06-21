@@ -4,7 +4,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { Icon } from '@mui/material';
 
 const bull = (
@@ -17,15 +16,14 @@ const bull = (
 );
 
 const CardComponent = ({ name,number,children }) => {
-    console.log(number)
     return (
         <React.Fragment>
-            <CardContent sx={{direction:"rtl", backgroundColor:"white",px:0,pt:2.5,pb:0,minWidth: 260,maxWidth:260,minHeight:100,maxHeight:100}}>
+            <CardContent sx={{direction:"rtl", backgroundColor:"white",px:2,pt:2.5,pb:0,minWidth: 260,maxWidth:600,minHeight:100,maxHeight:100}}>
                 <Typography sx={{mx:2, mb:0.4,fontSize: 14 }} color="text.primary">
                     {name}
                 </Typography>
 
-                <Typography sx={{fontSize: 22,fontWeight: 'bold'}} variant="body2">
+                <Typography sx={{fontSize: 19,fontWeight: 'bold'}} variant="body2">
                 <IconButton aria-label="icon" >
                     <Icon sx={{fontSize: '0.5rem',height: '3em',width: '4em',color:'#694096'}}>{children}</Icon>
                 </IconButton>
