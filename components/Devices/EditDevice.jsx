@@ -83,8 +83,8 @@ export function EditDevice({...props}) {
             'rule*name': 'فني',
             'all_data': 1,
         };
-        const data = await usersServices?.getAll(params);
-        console.log("data?.body للفنيين",data?.body)
+        const response = await usersServices.getAll(params);
+        const data = await response?.data;
         data ? setModelOptions(data?.body) : setModelOptions([]);
     }, []);
 

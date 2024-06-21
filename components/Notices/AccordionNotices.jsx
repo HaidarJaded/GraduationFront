@@ -53,6 +53,8 @@ export function AccordionNotices() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
     };
@@ -60,20 +62,28 @@ export function AccordionNotices() {
     const [notifications, setNotifications] = useState([]);
 
     const fetchAndSetNotifications = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'dir': 'desc',
-            'page':currentPage,
+            'orderBy': 'created_at',
+            'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await notificationsServices.getAll(params);
+        const response = await notificationsServices.getAll(params);
+        const data = await response?.data;
+        const status = await response?.status;
+        data ? setNotifications(data?.body) : setNotifications([]);
         setPagination(data?.pagination);
-        setNotifications(data?.body);
-        console.log(data?.body)
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
     }, [pageSize, currentPage]);
 
     useEffect(() => {
         fetchAndSetNotifications();
-    }, [fetchAndSetNotifications,pageSize, currentPage]);
+    }, [fetchAndSetNotifications, pageSize, currentPage]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
@@ -81,6 +91,7 @@ export function AccordionNotices() {
         setCurrentPage(pagination?.current_page)
 
     }, [pagination])
+
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -102,7 +113,8 @@ export function AccordionNotices() {
         const validPaginationRanges = paginationRanges.filter(page => page <= pageCount);
 
         return (
-            <Stack direction="row" sx={{width: 1, px: 1,marginTop:3,bgcolor:"#b9a9a985"}} alignItems="center" spacing={2}>
+            <Stack direction="row" sx={{width: 1, px: 1, marginTop: 3, bgcolor: "#b9a9a985"}} alignItems="center"
+                   spacing={2}>
                 <Box sx={{
                     flexGrow:
                         '1',
@@ -169,56 +181,90 @@ export function AccordionNotices() {
             </Stack>
         );
     }
+
     const isAllSelected = pageSize >= rowCount;
+
     function range(start, end) {
 
         return Array.from({length: end - start + 2}, (_, i) => start + i);
     }
+
     return (
         <Box>
-            {notifications?.length === 0 ? (
+            {loading ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
-                    <Typography variant="h5" sx={{ marginBottom: 2, color: "#1b0986eb", fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
                         Loading...
                     </Typography>
-                    <Box sx={{ width: '50%' }}>
-                        <LinearProgress />
+                    <Box sx={{width: '50%'}}>
+                        <LinearProgress/>
                     </Box>
                 </Box>
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : notifications?.length === 0 ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        No Data
+                    </Typography>
+                </Box>
             ) : (
-              <Box>
+                <Box>
 
-                  {notifications?.map((notification, index) => (
-                  <Accordion
-                      sx={{direction:'rtl'}}
-                      key={notification.id}
-                      expanded={expanded === `panel${index}`}
-                      onChange={handleChange(`panel${index}`)}
-                  >
-                      <AccordionSummary
-                          aria-controls={`panel${index}d-content`}
-                          id={`panel${index}d-header`}
-                      >
-                          <Typography sx={{ fontSize: 20, margin: 1,color: "#1b0986eb", }}>{notification.title}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                          <Typography>
-                              {notification.body.map((line, idx) => (
-                                  <p key={idx}>{line}</p>
-                              ))}
-                          </Typography>
-                      </AccordionDetails>
-                  </Accordion>
-                  ))}
-                  <CustomPagination/>
-              </Box>
+                    {notifications?.map((notification, index) => (
+                        <Accordion
+                            sx={{direction: 'rtl'}}
+                            key={notification.id}
+                            expanded={expanded === `panel${index}`}
+                            onChange={handleChange(`panel${index}`)}
+                        >
+                            <AccordionSummary
+                                aria-controls={`panel${index}d-content`}
+                                id={`panel${index}d-header`}
+                            >
+                                <Typography sx={{
+                                    fontSize: 20,
+                                    margin: 1,
+                                    color: "#1b0986eb",
+                                }}>{notification?.title}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                {`مستلم الإشعار: ${notification?.notifiable_name}`}
+                                <Typography>
+                                    {notification?.body?.map((line, idx) => (
+                                        <p key={idx}>{line}</p>
+                                    ))}
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))}
+                    <CustomPagination/>
+                </Box>
             )}
         </Box>
     );
