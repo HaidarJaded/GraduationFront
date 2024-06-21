@@ -62,7 +62,7 @@ export function ProductCard() {
     const [openAddProduct, setOpenAddProduct] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
-    const [deletingId, setDeletingId] = useState(null);
+    const [deletingStatus, setDeletingStatus] = useState(false);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
@@ -80,13 +80,14 @@ export function ProductCard() {
         setRowId(null)
     };
     const handleDeleteClick = (id) => async () => {
-        setDeletingId(id);
+        setDeletingStatus(true);
         if (await servicesProducts.deleteProduct(id)) {
             Notify("colored",
                 "تم الحذف بنجاح", "success");
         }
-        setDeletingId(null);
-        reloadTable("update")
+        setDeletingStatus(false);
+        await reloadTable("update")
+
     };
     const reloadTable = async update => {
         fetchAndSetProducts()
@@ -317,10 +318,10 @@ export function ProductCard() {
                                             <FavoriteIcon
                                                 onClick={handleEditClick(product.id)}/>
                                         </IconButton>
-                                        <IconButton aria-label="edit">
-                                            <DeleteIcon
-                                                onClick={handleDeleteClick(product.id)}
-                                                disabled={deletingId === product.id}/>
+                                        <IconButton aria-label="edit"
+                                                    onClick={handleDeleteClick(product.id)}
+                                                    disabled={deletingStatus}>
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>

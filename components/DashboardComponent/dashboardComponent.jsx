@@ -96,9 +96,6 @@ export function DashboardComponent() {
                     <OutlinedCard name='اسم المركز' number={centerInfo[0]?.name}>
                         <StoreRoundedIcon />
                     </OutlinedCard>
-                    <OutlinedCard name='عنوان المركز' number={centerInfo[0]?.address}>
-                        <BadgeRoundedIcon />
-                    </OutlinedCard>
                     <OutlinedCard name='حالة المركز' number={centerInfo[0]?.status}>
                         {
                             centerInfo[0]?.status === 'مفتوح' ? (
@@ -108,6 +105,10 @@ export function DashboardComponent() {
                             )
                         }
                     </OutlinedCard>
+                    <OutlinedCard name='عنوان المركز' number={centerInfo[0]?.address}>
+                        <BadgeRoundedIcon />
+                    </OutlinedCard>
+
                     <OutlinedCard name='ساعات بدء العمل' number={centerInfo[0]?.start_work}>
                         <QueryBuilderRoundedIcon/>
                     </OutlinedCard>

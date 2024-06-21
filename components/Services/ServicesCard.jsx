@@ -203,7 +203,20 @@ export function RecipeReviewCard() {
                         {error}
                     </Typography>
                 </Box>
-            ) : (
+            ) : services.length===0?(
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                      No data
+                    </Typography>
+                </Box>
+            ):(
                 <Box>
                     <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container spacing={2}>
                         {services.map((service) => (
@@ -245,10 +258,10 @@ export function RecipeReviewCard() {
                                             <FavoriteIcon
                                                 onClick={handleEditClick(service.id) }/>
                                         </IconButton>
-                                        <IconButton aria-label="delete">
-                                            <DeleteIcon
-                                                onClick={handleDeleteClick(service.id) }
-                                                disabled={deletingId === service.id}/>
+                                        <IconButton aria-label="delete"
+                                                    onClick={handleDeleteClick(service.id)}
+                                                    disabled={deletingId === service.id}>
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>

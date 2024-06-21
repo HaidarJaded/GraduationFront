@@ -174,7 +174,7 @@ export function EditCenterCard({...props}) {
                                 <FormControl fullWidth>
                                     <InputLabel
                                         id="status">
-                                        حالة الجهاز
+                                        حالة المركز
                                     </InputLabel>
                                     <Select
                                         name="status"
