@@ -9,7 +9,6 @@ import Slide from '@mui/material/Slide';
 import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {deviceServices, usersServices} from "../../Routes";
-import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "../../utils";
 // import {ModelsEnum} from "../../enums";
 // import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
