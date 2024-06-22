@@ -47,6 +47,7 @@ export function EditDevice({...props}) {
 
 
     const onSubmit = async () => {
+        console.log("dddddddddddddddd");
         let dataDevice = {}
         if (selectedInfo && selectedInfo !== data?.info)
             Object.assign(dataDevice, {"info": selectedInfo})

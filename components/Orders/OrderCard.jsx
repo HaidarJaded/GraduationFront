@@ -13,6 +13,7 @@ import {OrdersDialog} from "./OrdersDialog";
 import IconButton from "@mui/material/IconButton";
 import BorderColorTwoToneIcon from '@mui/icons-material/BorderColorTwoTone';
 import {EditOrder} from "./EditOrder";
+import {servicesServices} from "../../Routes/api/services";
 
 export function OrderCard() {
     const [orders, setOrders] = useState([]);
@@ -27,8 +28,11 @@ export function OrderCard() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
-
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const fetchAndSetOrders = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         const params = {
             'with': 'devices,products,devices_orders,products_orders,user',
             'orderBy': 'date',
@@ -36,10 +40,15 @@ export function OrderCard() {
             'page': currentPage,
             'per_page': pageSize,
         };
-        const data = await ordersServices.getAllOrders(params);
+        const response = await ordersServices.getAllOrders(params);
+        const data = await response?.data;
+        const status = await response?.status;
         data ? setOrders(data?.body) : setOrders([]);
         setPagination(data?.pagination);
-        console.log(data);
+        if (status !== 200) {
+            setError(data?.message);
+        }
+        setLoading(false);
     }, [pageSize, currentPage]);
     useEffect(() => {
         fetchAndSetOrders();
@@ -166,13 +175,13 @@ export function OrderCard() {
 
     return (
         <>
-            {orders.length === 0 ? (
+            {loading ? (
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100vh',
+                    height: '80vh',
                     width: '100%',
                 }}>
                     <Typography variant="h5" sx={{marginBottom: 2, color: "#1b0986eb", fontWeight: "bold"}}>
@@ -182,7 +191,33 @@ export function OrderCard() {
                         <LinearProgress/>
                     </Box>
                 </Box>
-            ) : (
+            ) : error ? (
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : orders.length===0?(
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80vh',
+                    width: '100%',
+                }}>
+                    <Typography variant="h5" sx={{color: "red", fontWeight: "bold"}}>
+                        No data
+                    </Typography>
+                </Box>
+            ):(
                 <Box>
                     <Grid sx={{display: 'flex', flexDirection: ' row-reverse', alignItems: 'flex-end'}} container
                           spacing={2}>
@@ -231,17 +266,17 @@ export function OrderCard() {
                         ))}
                     </Grid>
 
-                    {rowId && (
-                        <EditOrder
-                            open={openEdit}
-                            onCloseDialog={handleCloseEdit}
-                            id={rowId}
-                            update={reloadTable}
-                        />
-                    )}
-                    <CustomPagination/>
                 </Box>
             )}
+            {rowId && (
+                <EditOrder
+                    open={openEdit}
+                    onCloseDialog={handleCloseEdit}
+                    id={rowId}
+                    update={reloadTable}
+                />
+            )}
+            <CustomPagination/>
             <OrdersDialog
                 open={openDialog}
                 onClose={handleCloseDialog}

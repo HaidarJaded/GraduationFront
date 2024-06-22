@@ -9,7 +9,6 @@ import Slide from '@mui/material/Slide';
 import {Box, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {getValidationObject, Notify} from "../../utils";
-import {servicesProducts} from "../../Routes/api/products";
 import {servicesServices} from "../../Routes/api/services";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

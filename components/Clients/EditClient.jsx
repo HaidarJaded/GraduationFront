@@ -125,8 +125,8 @@ export function EditClient({...props}) {
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={props?.onCloseDialog}>Disagree</Button>
-                    <Button type={'submit'}>Agree</Button>
+                    <Button onClick={props?.onCloseDialog}>إلغاء</Button>
+                    <Button type={'submit'}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>
