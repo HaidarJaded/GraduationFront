@@ -85,7 +85,7 @@ export function AddService({...props}) {
                                 label="device_model"
                                 name="device_model"
                                 autoComplete="device_model"
-                                autoFocus
+
                                 {...register('device_model')}
                                 helperText={errors.device_model && errors.device_model?.message || (data.device_model?.length > 0 && data.device_model[0])}
                                 error={(errors.device_model || data.device_model?.length > 0) && true}
@@ -101,7 +101,7 @@ export function AddService({...props}) {
                                 label="price "
                                 name="price"
                                 autoComplete="price"
-                                autoFocus
+
                                 {...register('price')}
                                 helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
                                 error={(errors.price || data.price?.length > 0) && true}
@@ -116,7 +116,6 @@ export function AddService({...props}) {
                                 label="time_required"
                                 name="time_required"
                                 autoComplete="time_required"
-                                autoFocus
                                 {...register('time_required')}
                                 helperText={errors.time_required ? errors.time_required.message : ''}
                                 error={!!errors.time_required}
