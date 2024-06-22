@@ -23,7 +23,7 @@ export function AddService({...props}) {
     const [data, setData] = useState({
         price: "", name: "", time_required: ""
     });
-    const formOptions = getValidationObject("name", "price","time_required");
+    const formOptions = getValidationObject("name", "price","time_required","device_model");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
