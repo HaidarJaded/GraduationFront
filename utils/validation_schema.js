@@ -49,8 +49,16 @@ export function getValidationObject() {
                     .required('quantity is required');
                 break;
             case "cost_to_client":
-                result['cost_to_client'] = Yup.string()
-                    .matches(/^\d+(\.\d+)?$/, 'cost must contain only numbers and can be a decimal')
+                    result['cost_to_client'] = Yup.string().when(
+                        [], // condition based on other fields could be added here
+                        (cost_to_client, schema) => {
+                            if (cost_to_client !== null) {
+                                return schema.matches(/^\d+(\.\d+)?$/, 'Cost must contain only numbers and can be a decimal');
+                            } else {
+                                return schema.nullable().notRequired();
+                            }
+                        }
+                    )
 
                 break;
             case "time_required":

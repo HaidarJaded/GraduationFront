@@ -43,6 +43,7 @@ export function EditProduct({...props}) {
 
 
     const onSubmit = async () => {
+        console.log("dddd")
         let dataProduct = {}
 
         if (selectedName && selectedName !== data?.name)
@@ -138,9 +139,7 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="price"
                                     label="السعر"
-                                    {...register('price')}
-                                    helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
-                                    error={(errors.price || data.price?.length > 0) && true}
+
 
                                 />
                             </Grid>
@@ -153,9 +152,6 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="quantity"
                                     label="الكمية"
-                                    {...register('quantity')}
-                                    helperText={errors.quantity && errors.quantity?.message || (data.quantity?.length > 0 && data.quantity[0])}
-                                    error={(errors.quantity || data.quantity?.length > 0) && true}
                                 />
                             </Grid>
                         </Grid>

@@ -30,7 +30,6 @@ export function AddProduct({...props}) {
         console.log('submit');
         const data = Object.assign(user)
         const response =  await servicesProducts.addProduct(data);
-        console.log(response.status)
         if (response?.status >= 200 && response?.status<300 ) {
             Notify("colored",
                 "تمت الإضافة بنجاح", "success");
