@@ -139,9 +139,7 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="price"
                                     label="السعر"
-                                    {...register('price')}
-                                    helperText={errors.price ? errors.price.message : ''}
-                                    error={!!errors.price}
+
 
                                 />
                             </Grid>
@@ -154,9 +152,6 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="quantity"
                                     label="الكمية"
-                                    {...register('quantity')}
-                                    helperText={errors.quantity ? errors.quantity.message : ''}
-                                    error={!!errors.quantity}
                                 />
                             </Grid>
                         </Grid>
