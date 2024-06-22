@@ -57,7 +57,7 @@ export function AddUser({...props}) {
         const response =  await usersServices.addUser(data);
         if (response?.status === 200) {
             Notify("colored",
-                "تم الإضافة بنجاح", "success");
+                "تمت الإضافة بنجاح", "success");
         }
         props.onClose();
         update('update');

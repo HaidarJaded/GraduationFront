@@ -15,12 +15,52 @@ import LinearProgress from "@mui/material/LinearProgress";
 import {EditService} from "./EditService";
 import {Notify} from "../../utils";
 import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
+import {AddService} from "./AddService";
+import {styled} from "@mui/material/styles";
+
+const BootstrapButton = styled(Button)({
+    boxShadow: 'none',
+    textTransform: 'none',
+    fontSize: 16,
+    padding: '6px 12px',
+    border: '1px solid',
+    lineHeight: 1.5,
+    backgroundColor: 'rgba(250,220,70,0.89)',
+    borderColor: 'rgb(248,241,106)',
+    fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+    ].join(','),
+    '&:hover': {
+        backgroundColor: '#f3db84',
+        borderColor: '#f3db84',
+        boxShadow: 'none',
+    },
+    '&:active': {
+        boxShadow: 'none',
+        backgroundColor: '#f3db84',
+        borderColor: '#f3db84',
+    },
+    '&:focus': {
+        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+    },
+});
 
 export function RecipeReviewCard() {
 
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const [deletingId, setDeletingId] = useState(null);
+    const [openAddService, setOpenAddService] = React.useState(false);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
@@ -35,6 +75,9 @@ export function RecipeReviewCard() {
         }
         setDeletingId(null);
         reloadTable("update")
+    };
+    const handleCloseAddService = () => {
+        setOpenAddService(false);
     };
     const handleClose = () => {
         setOpen(false);
@@ -174,6 +217,25 @@ export function RecipeReviewCard() {
 
     return (
         <>
+            <Box sx={{
+                m: 2,
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'end',
+                alignItems: 'center',
+            }}>
+                <Box>
+                    <BootstrapButton sx={{marginX: 2, direction: "rtl"}} variant="contained" disableRipple
+                                     endIcon={<AddIcon sx={{marginRight: 2}}/>}
+                                     onClick={() => {
+                                         setOpenAddService(true);
+                                     }}>
+                        <Typography variant="h6" sx={{fontWeight: 'bold'}}>
+                            إضافة خدمة
+                        </Typography>
+                    </BootstrapButton>
+                </Box>
+            </Box>
             {loading ? (
                 <Box sx={{
                     display: 'flex',
@@ -247,6 +309,9 @@ export function RecipeReviewCard() {
                                     />
                                     <CardContent sx={{ direction: "rtl" }}>
                                         <Typography variant="body1" color="text.secondary">
+                                            {` نوع الجهاز :  ${service.device_model}`}
+                                        </Typography>
+                                        <Typography variant="body1" color="text.secondary">
                                             {`السعر: ${service.price}`}
                                         </Typography>
                                         <Typography variant="body1" color="text.secondary">
@@ -281,6 +346,13 @@ export function RecipeReviewCard() {
                             update={reloadTable}
                         />
                     )}
+
+                <AddService
+                    open={openAddService}
+                    onClose={handleCloseAddService}
+                    update={reloadTable}
+                />
+
                     <CustomPagination/>
 
 

@@ -61,8 +61,25 @@ const deleteService=async (id)=>{
       responseErrorHandlers(error?.response)
   }
 };
+const addService = async (product) => {
+    try {
+        return await axiosInstance
+            .post(`${BASE_URL}${SERVICES_URL}`, product)
+            .then(async (response) => {
+                const result = await response?.data;
+                return {
+                    data: result,
+                    status: response?.status,
+                };
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
+
 export const servicesServices = {
     getAllServices, getService
     , updateService,
-    deleteService
+    deleteService,
+    addService
 };

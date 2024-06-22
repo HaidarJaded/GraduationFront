@@ -54,6 +54,9 @@ function MyApp({Component, pageProps}) {
     )}
     return (
         <>
+            <Head>
+                <link rel="icon" href="/myp-favicon-black.ico" />
+            </Head>
             <ThemeProvider theme={theme}>
                 <CssBaseline/>
 

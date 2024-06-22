@@ -76,6 +76,7 @@ const addProduct = async (product) => {
     }
 };
 
+
 export const servicesProducts = {
     getAllProducts,
     deleteProduct,
