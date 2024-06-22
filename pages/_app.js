@@ -7,8 +7,9 @@ import {ThemeProvider} from '@mui/material/styles';
 import getConfig from 'next/config';
 import {Layout} from "../layouts";
 import LoginPage from "./auth/login";
-import {responseErrorHandlers} from "../wrappers";
+import Link from 'next/link';
 import Home from "./index";
+import Head from "next/head";
 const {publicRuntimeConfig} = getConfig();
 
 function MyApp({Component, pageProps}) {
@@ -33,7 +34,9 @@ function MyApp({Component, pageProps}) {
     if (Component!==LoginPage && Component!== Home){
     return (
         <>
-
+            <Head>
+                <link rel="icon" href="/myp-favicon-black.ico" />
+            </Head>
             <ThemeProvider theme={theme}>
 
                 <CssBaseline/>
@@ -51,6 +54,9 @@ function MyApp({Component, pageProps}) {
     )}
     return (
         <>
+            <Head>
+                <link rel="icon" href="/myp-favicon-black.ico" />
+            </Head>
             <ThemeProvider theme={theme}>
                 <CssBaseline/>
 

@@ -10,27 +10,27 @@ import {Box, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {getValidationObject, Notify} from "../../utils";
 import {servicesProducts} from "../../Routes/api/products";
+import {servicesServices} from "../../Routes/api/services";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function AddProduct({...props}) {
+export function AddService({...props}) {
     const {open} = props;
     const {update} = props;
 
     const [data, setData] = useState({
-        price: "", name: "", quantity: ""
+        price: "", name: "", time_required: ""
     });
-    const formOptions = getValidationObject("name", "price","quantity");
+    const formOptions = getValidationObject("name", "price","time_required");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
-    const onSubmit = async (user) => {
+    const onSubmit = async (service) => {
         console.log('submit');
-        const data = Object.assign(user)
-        const response =  await servicesProducts.addProduct(data);
-        console.log(response.status)
+        const data = Object.assign(service)
+        const response =  await servicesServices.addService(data);
         if (response?.status >= 200 && response?.status<300 ) {
             Notify("colored",
                 "تمت الإضافة بنجاح", "success");
@@ -57,7 +57,7 @@ export function AddProduct({...props}) {
                         direction: "rtl",
                         color: '#20095e'
                     }
-                }>إضافة منتج </DialogTitle>
+                }>إضافة خدمة </DialogTitle>
                 <DialogContent>
                     <Box   sx={{width: "400px"}}>
 
@@ -74,6 +74,21 @@ export function AddProduct({...props}) {
                                 {...register('name')}
                                 helperText={errors.name && errors.name?.message || (data.name?.length > 0 && data.name[0])}
                                 error={(errors.name || data.name?.length > 0) && true}
+                            />
+                        </Box>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="device_model"
+                                label="device_model"
+                                name="device_model"
+                                autoComplete="device_model"
+                                autoFocus
+                                {...register('device_model')}
+                                helperText={errors.device_model && errors.device_model?.message || (data.device_model?.length > 0 && data.device_model[0])}
+                                error={(errors.device_model || data.device_model?.length > 0) && true}
                             />
                         </Box>
                         <Box sx={{display: 'flex', alignItems: 'center'}}>
@@ -97,14 +112,14 @@ export function AddProduct({...props}) {
                                 margin="normal"
                                 required
                                 fullWidth
-                                id="quantity"
-                                label="quantity"
-                                name="quantity"
-                                autoComplete="quantity"
+                                id="time_required"
+                                label="time_required"
+                                name="time_required"
+                                autoComplete="time_required"
                                 autoFocus
-                                {...register('quantity')}
-                                helperText={errors.quantity && errors.quantity?.message || (data.quantity?.length > 0 && data.quantity[0])}
-                                error={(errors.quantity || data.quantity?.length > 0) && true}
+                                {...register('time_required')}
+                                helperText={errors.time_required ? errors.time_required.message : ''}
+                                error={!!errors.time_required}
                             />
                         </Box>
 
