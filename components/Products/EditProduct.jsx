@@ -9,7 +9,7 @@ import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/router";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
 import {servicesServices} from "../../Routes/api/services";
 import {servicesProducts} from "../../Routes/api/products";
 //import {ModelsEnum} from "../../enums";
@@ -37,7 +37,8 @@ export function EditProduct({...props}) {
     }, [fetchAndSetProduct]);
 
 
-    const {register, handleSubmit, formState} = useForm();
+    const formOptions = getValidationObject("name", "price","quantity");
+    const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
 
@@ -124,6 +125,7 @@ export function EditProduct({...props}) {
                                     id="name"
                                     label="اسم المنتج"
                                     autoFocus
+
                                 />
                             </Grid>
 
@@ -136,6 +138,9 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="price"
                                     label="السعر"
+                                    {...register('price')}
+                                    helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
+                                    error={(errors.price || data.price?.length > 0) && true}
 
                                 />
                             </Grid>
@@ -148,7 +153,9 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="quantity"
                                     label="الكمية"
-
+                                    {...register('quantity')}
+                                    helperText={errors.quantity && errors.quantity?.message || (data.quantity?.length > 0 && data.quantity[0])}
+                                    error={(errors.quantity || data.quantity?.length > 0) && true}
                                 />
                             </Grid>
                         </Grid>

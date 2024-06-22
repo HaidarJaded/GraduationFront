@@ -35,7 +35,7 @@ function MyApp({Component, pageProps}) {
     return (
         <>
             <Head>
-                <link rel="icon" href="/myp-favicon-black.ico" />
+                <link rel="icon" href="/logo-color.ico" />
             </Head>
             <ThemeProvider theme={theme}>
 
@@ -55,7 +55,7 @@ function MyApp({Component, pageProps}) {
     return (
         <>
             <Head>
-                <link rel="icon" href="/myp-favicon-black.ico" />
+                <link rel="icon" href="/logo-color.ico" />
             </Head>
             <ThemeProvider theme={theme}>
                 <CssBaseline/>

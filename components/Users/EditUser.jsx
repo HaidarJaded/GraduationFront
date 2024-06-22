@@ -10,7 +10,7 @@ import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {usersServices} from "../../Routes";
 import {useRouter} from "next/router";
-import {Notify} from "../../utils";
+import {getValidationObject, Notify} from "../../utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -44,7 +44,8 @@ export function EditUser({...props}) {
     }, [fetchAndSetUser]);
 
 
-    const {register, handleSubmit, formState} = useForm();
+    const formOptions = getValidationObject("email","name","last_name",'phone');
+    const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
 
@@ -130,6 +131,9 @@ export function EditUser({...props}) {
                                     id="name"
                                     label="الاسم"
                                     autoFocus
+                                    {...register('name')}
+                                    helperText={errors.name ? errors.name.message : ''}
+                                    error={!!errors.name}
                                 />
                             </Grid>
 
@@ -142,6 +146,9 @@ export function EditUser({...props}) {
                                     fullWidth
                                     id="last_name"
                                     label="الكنية"
+                                    {...register('last_name')}
+                                    helperText={errors.last_name ? errors.last_name.message : ''}
+                                    error={!!errors.last_name}
 
                                 />
                             </Grid>
@@ -154,6 +161,9 @@ export function EditUser({...props}) {
                                     fullWidth
                                     id="email"
                                     label="email"
+                                    {...register('email')}
+                                    helperText={errors.email ? errors.email.message : ''}
+                                    error={!!errors.email}
 
                                 />
                             </Grid>
@@ -178,7 +188,9 @@ export function EditUser({...props}) {
                                 fullWidth
                                 id="phone"
                                 label="الهاتف"
-
+                                {...register('phone')}
+                                helperText={errors.phone ? errors.phone.message : ''}
+                                error={!!errors.phone}
                             />
                         </Grid>
 

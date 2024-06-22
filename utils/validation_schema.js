@@ -60,18 +60,22 @@ export function getValidationObject() {
                 break;
             case "start_work":
                 result['start_work'] =Yup.string()
-                    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Start work time must be in the format HH:mm')
-
+                    .matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, 'Start work time must be in the format HH:mm:ss');
                 break;
             case "end_work":
                 result['end_work'] =Yup.string()
-                    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'End work time must be in the format HH:mm')
+                    .matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, 'Start work time must be in the format HH:mm:ss');
 
                 break;
             case "device_model":
                 result['device_model'] = Yup.string()
                     .required('device_model is required');
                 break;
+            case "phone":
+                result['phone'] = Yup.string()
+                    .max(10, 'Phone number must not be greater than 10 characters');
+                break;
+
 
         }
     }
