@@ -1,7 +1,6 @@
 import getConfig from "next/config";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useHistory } from "react-router-dom";
 
 import axiosInstance from "../../../utils/auth/axiosInstance";
 

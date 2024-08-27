@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {useCallback, useEffect, useState} from "react";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import {Box, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, Chip, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {servicesServices} from "../../Routes/api/services";
 import LinearProgress from "@mui/material/LinearProgress";
 import {EditService} from "./EditService";
@@ -18,6 +18,8 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddService} from "./AddService";
 import {styled} from "@mui/material/styles";
+import EditIcon from "@mui/icons-material/Edit";
+import NotificationAddRoundedIcon from "@mui/icons-material/NotificationAddRounded";
 
 const BootstrapButton = styled(Button)({
     boxShadow: 'none',
@@ -224,17 +226,27 @@ export function RecipeReviewCard() {
                 justifyContent: 'end',
                 alignItems: 'center',
             }}>
-                <Box>
-                    <BootstrapButton sx={{marginX: 2, direction: "rtl"}} variant="contained" disableRipple
-                                     endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                                     onClick={() => {
-                                         setOpenAddService(true);
-                                     }}>
-                        <Typography variant="h6" sx={{fontWeight: 'bold'}}>
-                            إضافة خدمة
-                        </Typography>
-                    </BootstrapButton>
-                </Box>
+
+                    <IconButton aria-label="delete"
+                                sx={{borderRadius:6}}
+                                onClick={() => {
+                                    setOpenAddService(true);
+                                }}>
+                        <Stack direction="row" spacing={2}>
+                            <Chip icon={<AddIcon/>} label=" إضافة خدمة"  sx={{
+                                fontSize: '18px',
+                                padding:2.5,
+                                backgroundColor: 'rgba(47,33,86,0.6)',
+                                color: '#fff',
+                                '& .MuiChip-icon': {
+                                    color: '#fff',
+                                    fontSize: '24px'
+                                }
+                            }}  />
+                        </Stack>
+
+                    </IconButton>
+
             </Box>
             {loading ? (
                 <Box sx={{
@@ -319,8 +331,8 @@ export function RecipeReviewCard() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
-                                        <IconButton aria-label="edit"  sx={{color: "#ec6060"}}>
-                                            <FavoriteIcon
+                                        <IconButton aria-label="edit"  sx={{color: "#3c1b7e"}}>
+                                            <EditIcon
                                                 onClick={handleEditClick(service.id) }/>
                                         </IconButton>
                                         <IconButton aria-label="delete"

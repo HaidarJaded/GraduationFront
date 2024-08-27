@@ -4,6 +4,7 @@ import getConfig from "next/config";
 
 import {responseErrorHandlers} from "../../wrappers";
 import axiosInstance from "../../utils/auth/axiosInstance";
+import {authServices} from "./auth";
 
 const {publicRuntimeConfig} = getConfig();
 
@@ -51,8 +52,20 @@ const updateOrder = async (id, params) => {
         responseErrorHandlers(error?.response);
     }
 };
+const deleteOrder=async(id)=>{
+  try {
+      const response=await axiosInstance.delete(`${BASE_URL}${ORDERS_URL}/${id}`);
+      return response.status === 200;
+  }
+  catch (error)
+  {
+      responseErrorHandlers(error?.response);
+  }
+};
+
 export const ordersServices = {
     getAllOrders,
     getOrder,
-    updateOrder
+    updateOrder,
+    deleteOrder
 };

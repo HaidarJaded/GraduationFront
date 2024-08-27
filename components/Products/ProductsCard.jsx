@@ -9,7 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import {Box, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
+import {Box, Chip, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
@@ -18,6 +18,7 @@ import {EditProduct} from "./EditProduct";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
+import EditIcon from "@mui/icons-material/Edit";
 
 const BootstrapButton = styled(Button)({
     boxShadow: 'none',
@@ -231,18 +232,28 @@ export function ProductCard() {
                 justifyContent: 'end',
                 alignItems: 'center',
             }}>
-                <Box>
-                    <BootstrapButton sx={{marginX: 2, direction: "rtl"}} variant="contained" disableRipple
-                                     endIcon={<AddIcon sx={{marginRight: 2}}/>}
-                                     onClick={() => {
-                                         setRowIdAddProduct(1)
-                                         setOpenAddProduct(true);
-                                     }}>
-                        <Typography variant="h6" sx={{fontWeight: 'bold'}}>
-                            إضافة منتج
-                        </Typography>
-                    </BootstrapButton>
-                </Box>
+
+                <IconButton aria-label="delete"
+                            sx={{borderRadius:6}}
+                            onClick={() => {
+                                setRowIdAddProduct(1)
+                                setOpenAddProduct(true);
+                            }}>
+                    <Stack direction="row" spacing={2}>
+                        <Chip icon={<AddIcon/>} label=" إضافة منتج"  sx={{
+                            fontSize: '18px',
+                            padding:2.5,
+                            backgroundColor: 'rgba(47,33,86,0.6)',
+                            color: '#fff',
+                            '& .MuiChip-icon': {
+                                color: '#fff',
+                                fontSize: '24px'
+                            }
+                        }}  />
+                    </Stack>
+
+                </IconButton>
+
             </Box>
 
             {loading ? (
@@ -314,8 +325,8 @@ export function ProductCard() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
-                                        <IconButton aria-label="edit" sx={{color: "#ec6060"}}>
-                                            <FavoriteIcon
+                                        <IconButton aria-label="edit" sx={{color: "#3c1b7e"}}>
+                                            <EditIcon
                                                 onClick={handleEditClick(product.id)}/>
                                         </IconButton>
                                         <IconButton aria-label="edit"

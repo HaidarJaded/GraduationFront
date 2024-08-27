@@ -7,9 +7,49 @@ import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import {notificationsServices} from "../../Routes/api/notices";
-import {Box, MenuItem, Select, Stack} from "@mui/material";
+import {Box, Chip, Icon, MenuItem, Select, Stack} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
+import NotificationAddRoundedIcon from '@mui/icons-material/NotificationAddRounded';
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+
+const BootstrapButton = styled(Button)({
+    boxShadow: 'none',
+    textTransform: 'none',
+    fontSize: 16,
+    padding: '6px 12px',
+    border: '1px solid',
+    lineHeight: 1.5,
+    backgroundColor: 'rgba(250,220,70,0.89)',
+    borderColor: 'rgb(248,241,106)',
+    fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+    ].join(','),
+    '&:hover': {
+        backgroundColor: '#f3db84',
+        borderColor: '#f3db84',
+        boxShadow: 'none',
+    },
+    '&:active': {
+        boxShadow: 'none',
+        backgroundColor: '#f3db84',
+        borderColor: '#f3db84',
+    },
+    '&:focus': {
+        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+    },
+});
 
 const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -190,7 +230,34 @@ export function AccordionNotices() {
     }
 
     return (
-        <Box>
+        <>
+        <Box sx={{
+            m: 2,
+            display: 'flex',
+            gap: 2,
+            justifyContent: 'end',
+            alignItems: 'center',
+        }}>
+            <Box>
+
+                <IconButton aria-label="delete" sx={{borderRadius:6}}>
+                <Stack direction="row" spacing={2}>
+                    <Chip icon={<NotificationAddRoundedIcon/>} label="إرسال إشعار"
+                          sx={{
+                              fontSize: '18px',
+                              padding:2.5,
+                              backgroundColor: 'rgba(47,33,86,0.6)',
+                              color: '#fff',
+                              '& .MuiChip-icon': {
+                                  color: '#fff',
+                                  fontSize: '24px'
+                              }
+                          }} />
+                </Stack>
+
+                </IconButton>
+            </Box>
+        </Box>
             {loading ? (
                 <Box sx={{
                     display: 'flex',
@@ -254,7 +321,9 @@ export function AccordionNotices() {
                                 }}>{notification?.title}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                {`مستلم الإشعار: ${notification?.notifiable_name}`}
+                                {`مستلم الإشعار : ${notification?.notifiable_name}`}
+                                <br/>
+                                {`دور المستلم : ${notification?.notifiable_type}`}
                                 <Typography>
                                     {notification?.body?.map((line, idx) => (
                                         <p key={idx}>{line}</p>
@@ -266,6 +335,6 @@ export function AccordionNotices() {
                     <CustomPagination/>
                 </Box>
             )}
-        </Box>
+        </>
     );
 }

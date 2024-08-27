@@ -14,6 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import BorderColorTwoToneIcon from '@mui/icons-material/BorderColorTwoTone';
 import {EditOrder} from "./EditOrder";
 import {servicesServices} from "../../Routes/api/services";
+import {Notify} from "../../utils";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 
 export function OrderCard() {
     const [orders, setOrders] = useState([]);
@@ -29,6 +31,8 @@ export function OrderCard() {
     const [pageSize, setPageSize] = useState(pagination?.per_page)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page)
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState(null);
+
     const [error, setError] = useState(null);
     const fetchAndSetOrders = useCallback(async () => {
         setLoading(true);
@@ -63,6 +67,15 @@ export function OrderCard() {
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+    };
+    const handleDeleteClick = (id) => async () => {
+        setDeletingId(id);
+        if (await ordersServices.deleteOrder(id)) {
+            Notify("colored",
+                "تم الحذف بنجاح", "success");
+        }
+        setDeletingId(null);
+        reloadTable("update")
     };
     const handleEditClick = (id) => () => {
         setOpenEdit(true)
@@ -258,6 +271,12 @@ export function OrderCard() {
                                         <IconButton aria-label="edit"  sx={{color: "#690b9d"}}>
 
                                             <BorderColorTwoToneIcon   onClick={handleEditClick(orderUser.id) } />
+                                        </IconButton>
+                                        <IconButton aria-label="delete"
+                                                    sx={{color: "#690b9d"}}
+                                                    onClick={handleDeleteClick(orderUser.id)}
+                                                    disabled={deletingId === orderUser.id}>
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </CardActions>
                                 </Card>

@@ -25,7 +25,7 @@ export default function LoginPage() {
     };
 
     const router = useRouter();
-    //what can this code do
+
     useEffect(() => {
           const initiateAuthRefresh = async () => {
             if (await authServices.refreshAuthToken()) {

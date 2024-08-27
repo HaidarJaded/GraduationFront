@@ -231,8 +231,7 @@ export function Devices() {
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
-            'orderBy': 'date_receipt',
-            'date_receipt!':'',
+            'orderBy': 'created_at',
             'dir': 'desc',
             'deliver_to_client': 0,
             'page': currentPage,
