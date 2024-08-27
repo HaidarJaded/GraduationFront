@@ -156,6 +156,9 @@ export function Devices() {
         {field: 'clientName', headerName: 'اسم العميل', width: 170},
         {field: 'userName', headerName: 'اسم فني الصيانة', width: 200},
         {field: 'status', headerName: 'حالة الجهاز', width: 160},
+        {field: 'cost_to_client', headerName: 'الكلفة', width: 160},
+        {field: 'customer_complaint', headerName: 'الشكوى', width: 160},
+        {field: 'problem', headerName: 'العطل', width: 160},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
         {
             field: 'deliver_to_client',
@@ -324,7 +327,10 @@ export function Devices() {
             userName: device?.user?.name,
             userId: device?.user?.id,
             status: device?.status,
+            cost_to_client:device?.cost_to_client,
             date_receipt: device?.date_receipt,
+            customer_complaint:device?.customer_complaint,
+            problem:device?.problem,
             deliver_to_client: device?.deliver_to_client,
         }));
 

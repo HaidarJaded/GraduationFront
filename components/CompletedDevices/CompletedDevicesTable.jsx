@@ -115,6 +115,9 @@ export function CompletedDevices() {
         {field: 'user_name', headerName: 'اسم فني الصيانة', width: 160},
         {field: 'cost_to_client', headerName: 'الكلفة', width: 160},
         {field: 'status', headerName: 'حالة الجهاز', width: 160},
+        {field: 'customer_complaint', headerName: 'الشكوى', width: 160},
+        {field: 'problem', headerName: 'العطل', width: 160},
+        {field: 'client_date_warranty', headerName: 'تاريخ انتهاء الكفالة', width: 160},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
         {field: 'date_delivery_client', headerName: 'تاريخ التسليم', width: 100},
 
@@ -209,7 +212,10 @@ export function CompletedDevices() {
             cost_to_client: row?.cost_to_client,
             status: row?.status,
             date_receipt: row?.date_receipt,
+            customer_complaint:row?.customer_complaint,
+            problem:row?.problem,
             date_delivery_client: row?.date_delivery_client,
+            client_date_warranty: row?.client_date_warranty,
         }));
         setRows(rowsWithNumbers);
         //console.log(rows);

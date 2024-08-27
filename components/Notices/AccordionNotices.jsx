@@ -11,9 +11,8 @@ import {Box, Chip, Icon, MenuItem, Select, Stack} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
 import NotificationAddRoundedIcon from '@mui/icons-material/NotificationAddRounded';
-import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import {SendNotification} from "./SendNotification";
 
 const BootstrapButton = styled(Button)({
     boxShadow: 'none',
@@ -92,7 +91,8 @@ export function AccordionNotices() {
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page);
+    const [open, setOpen] = React.useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const handleChange = (panel) => (event, newExpanded) => {
@@ -131,7 +131,12 @@ export function AccordionNotices() {
         setCurrentPage(pagination?.current_page)
 
     }, [pagination])
-
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const reloadTable = async update => {
+        fetchAndSetNotifications()
+    };
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
             setPageSize(Number(event.target.value));
@@ -240,7 +245,10 @@ export function AccordionNotices() {
         }}>
             <Box>
 
-                <IconButton aria-label="delete" sx={{borderRadius:6}}>
+                <IconButton aria-label="delete" sx={{borderRadius:6}}
+                            onClick={() => {
+                                setOpen(true);
+                            }}>
                 <Stack direction="row" spacing={2}>
                     <Chip icon={<NotificationAddRoundedIcon/>} label="إرسال إشعار"
                           sx={{
@@ -335,6 +343,11 @@ export function AccordionNotices() {
                     <CustomPagination/>
                 </Box>
             )}
+            <SendNotification
+                open={open}
+                onCloseDialog={handleClose}
+                update={reloadTable}
+            />
         </>
     );
 }
