@@ -13,7 +13,6 @@ import {OrdersDialog} from "./OrdersDialog";
 import IconButton from "@mui/material/IconButton";
 import BorderColorTwoToneIcon from '@mui/icons-material/BorderColorTwoTone';
 import {EditOrder} from "./EditOrder";
-import {servicesServices} from "../../Routes/api/services";
 import {Notify} from "../../utils";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 

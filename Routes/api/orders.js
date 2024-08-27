@@ -4,7 +4,6 @@ import getConfig from "next/config";
 
 import {responseErrorHandlers} from "../../wrappers";
 import axiosInstance from "../../utils/auth/axiosInstance";
-import {authServices} from "./auth";
 
 const {publicRuntimeConfig} = getConfig();
 

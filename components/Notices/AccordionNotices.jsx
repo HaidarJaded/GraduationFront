@@ -7,48 +7,13 @@ import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import {notificationsServices} from "../../Routes/api/notices";
-import {Box, Chip, Icon, MenuItem, Select, Stack} from "@mui/material";
+import {Box, Chip, MenuItem, Select, Stack} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Button from "@mui/material/Button";
 import NotificationAddRoundedIcon from '@mui/icons-material/NotificationAddRounded';
 import IconButton from "@mui/material/IconButton";
 import {SendNotification} from "./SendNotification";
 
-const BootstrapButton = styled(Button)({
-    boxShadow: 'none',
-    textTransform: 'none',
-    fontSize: 16,
-    padding: '6px 12px',
-    border: '1px solid',
-    lineHeight: 1.5,
-    backgroundColor: 'rgba(250,220,70,0.89)',
-    borderColor: 'rgb(248,241,106)',
-    fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-    ].join(','),
-    '&:hover': {
-        backgroundColor: '#f3db84',
-        borderColor: '#f3db84',
-        boxShadow: 'none',
-    },
-    '&:active': {
-        boxShadow: 'none',
-        backgroundColor: '#f3db84',
-        borderColor: '#f3db84',
-    },
-    '&:focus': {
-        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-    },
-});
 
 const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />

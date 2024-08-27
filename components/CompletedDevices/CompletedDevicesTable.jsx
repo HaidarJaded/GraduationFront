@@ -1,13 +1,12 @@
 import * as React from 'react';
 import {useCallback, useEffect, useState} from 'react';
-import {DataGrid, GridActionsCellItem, GridRowModes, GridToolbarContainer} from '@mui/x-data-grid';
+import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
 import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material/styles";
-import AddIcon from "@mui/icons-material/Add";
 import {EditCompletedDevice} from "./EditCompletedDevice";
 import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";

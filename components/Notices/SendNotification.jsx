@@ -4,7 +4,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import {Box, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {Box, TextField} from "@mui/material";
 import {useState} from "react";
 import {getValidationObject, Notify} from "../../utils";
 import {useForm} from "react-hook-form";

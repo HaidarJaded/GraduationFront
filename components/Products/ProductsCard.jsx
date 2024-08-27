@@ -8,7 +8,6 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import {Box, Chip, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
@@ -20,41 +19,6 @@ import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
 import EditIcon from "@mui/icons-material/Edit";
 
-const BootstrapButton = styled(Button)({
-    boxShadow: 'none',
-    textTransform: 'none',
-    fontSize: 16,
-    padding: '6px 12px',
-    border: '1px solid',
-    lineHeight: 1.5,
-    backgroundColor: 'rgba(250,220,70,0.89)',
-    borderColor: 'rgb(248,241,106)',
-    fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-    ].join(','),
-    '&:hover': {
-        backgroundColor: '#f3db84',
-        borderColor: '#f3db84',
-        boxShadow: 'none',
-    },
-    '&:active': {
-        boxShadow: 'none',
-        backgroundColor: '#f3db84',
-        borderColor: '#f3db84',
-    },
-    '&:focus': {
-        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-    },
-});
 
 export function ProductCard() {
     const [loading, setLoading] = useState(true);
