@@ -25,8 +25,11 @@ export function AddService({...props}) {
     const formOptions = getValidationObject("name", "price","time_required","device_model");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
+    const [addState,setAddState]=useState(false);
+
 
     const onSubmit = async (service) => {
+        setAddState(true);
         console.log('submit');
         const data = Object.assign(service)
         const response =  await servicesServices.addService(data);
@@ -34,6 +37,7 @@ export function AddService({...props}) {
             Notify("colored",
                 "تمت الإضافة بنجاح", "success");
         }
+        setAddState(false);
         props.onClose();
         update('update');
     };
@@ -125,7 +129,7 @@ export function AddService({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onClose}>إلغاء</Button>
-                    <Button type='submit'>إضافة</Button>
+                    <Button type='submit' disabled={addState}>إضافة</Button>
                 </DialogActions>
             </Dialog>
         </>

@@ -8,40 +8,39 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import {CircularProgress, Grid, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
-import {useRouter} from "next/router";
 import {getValidationObject, Notify} from "../../utils";
 import {servicesProducts} from "../../Routes/api/products";
-//import {ModelsEnum} from "../../enums";
-//import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function EditProduct({...props}) {
+export function EditProduct2({...props}) {
     const {open} = props;
     const [id, setId] = useState(props.id);
-    const route = useRouter()
     const [data, setData] = useState();
     const {update} = props;
 
-    const fetchAndSetProduct = useCallback(async () => {
 
+    const fetchAndSetProduct = useCallback(async () => {
         const response = await servicesProducts.getProduct(id);
         await setData(response);
     }, [id])
+    ///
+
 
     useEffect(() => {
         fetchAndSetProduct();
     }, [fetchAndSetProduct]);
 
 
-    const formOptions = getValidationObject("name", "price","quantity");
+    const formOptions = getValidationObject("price","quantity","name");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
-
     const onSubmit = async () => {
+        setEditState(true);
         console.log("dddd")
         let dataProduct = {}
 
@@ -54,6 +53,7 @@ export function EditProduct({...props}) {
         if (selectedQuantity && selectedQuantity !== data?.quantity)
             Object.assign(dataProduct, {"quantity": selectedQuantity})
         if (Object.keys(dataProduct).length > 0) {
+            console.log("شرط انو في تعباية صحيح");
             try {
                 const response = await servicesProducts.updateProduct(id, dataProduct);
                 Notify("light", response.message, "success")
@@ -64,20 +64,19 @@ export function EditProduct({...props}) {
             }
 
         }
+        setEditState(false);
+
     }
+
 
     const [selectedQuantity, setSelectedQuantity] = useState(data?.quantity);
     const [selectedName, setSelectedName] = useState(data?.name);
     const [selectedPrice, setSelectedPrice] = useState(data?.price);
-
-
-    // useEffect(() => {
-    //     const _ModelOptions = getEnum(ModelsEnum)
-    //     setModelOptions(_ModelOptions)
-    // }, [])
+    const [editState,setEditState]=useState(false);
 
 
     function handleKeyUp(event) {
+        console.log("Keyup")
         let keyName = event.target.name;
         switch (keyName) {
             case 'price':
@@ -124,8 +123,9 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="name"
                                     label="اسم المنتج"
-                                    autoFocus
-
+                                    {...register('name')}
+                                    helperText={errors.name ? errors.name.message : ''}
+                                    error={!!errors.name}
                                 />
                             </Grid>
 
@@ -138,8 +138,9 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="price"
                                     label="السعر"
-
-
+                                    {...register('price')}
+                                    helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
+                                    error={(errors.price || data.price?.length > 0) && true}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -151,6 +152,10 @@ export function EditProduct({...props}) {
                                     fullWidth
                                     id="quantity"
                                     label="الكمية"
+                                    {...register('quantity')}
+                                    helperText={errors.quantity && errors.quantity?.message || (data.quantity?.length > 0 && data.quantity[0])}
+                                    error={(errors.quantity || data.quantity?.length > 0) && true}
+
                                 />
                             </Grid>
                         </Grid>
@@ -166,7 +171,7 @@ export function EditProduct({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onCloseDialog}>إلغاء التعديل</Button>
-                    <Button type={'submit'}>تعديل</Button>
+                    <Button type={'submit'} disabled={editState}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>

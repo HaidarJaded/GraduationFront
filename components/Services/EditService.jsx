@@ -40,6 +40,7 @@ export function EditService({...props}) {
     const {errors} = formState;
 
     const onSubmit = async () => {
+        setEditState(true);
         let dataService = {}
 
         if (selectedTimeRequired && selectedTimeRequired !== data?.time_required)
@@ -64,12 +65,15 @@ export function EditService({...props}) {
             }
 
         }
+        setEditState(false);
     }
 
     const [selectedTimeRequired, setSelectedTimeRequired] = useState(data?.time_required);
     const [selectedName, setSelectedName] = useState(data?.name);
     const [selectedPrice, setSelectedPrice] = useState(data?.price);
     const [selectedDeviceModel, setSelectedDeviceModel] = useState(data?.device_model);
+    const [editState,setEditState]=useState(false);
+
 
     // useEffect(() => {
     //     const _ModelOptions = getEnum(ModelsEnum)
@@ -185,7 +189,7 @@ export function EditService({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onCloseDialog}>إلغاء التعديل</Button>
-                    <Button type={'submit'}>تعديل</Button>
+                    <Button type={'submit'} disabled={editState}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>

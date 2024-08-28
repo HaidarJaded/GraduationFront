@@ -13,11 +13,11 @@ import LinearProgress from "@mui/material/LinearProgress";
 import {servicesProducts} from "../../Routes/api/products";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {Notify} from "../../utils";
-import {EditProduct} from "./EditProduct";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
 import EditIcon from "@mui/icons-material/Edit";
+import {EditProduct2} from "./EditProduct2";
 
 
 export function ProductCard() {
@@ -309,7 +309,7 @@ export function ProductCard() {
             )}
 
             {rowId && (
-                <EditProduct
+                <EditProduct2
                     open={open}
                     onCloseDialog={handleClose}
                     id={rowId}
