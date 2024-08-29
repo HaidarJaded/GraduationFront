@@ -6,10 +6,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField} from "@mui/material";
-import {useForm} from "react-hook-form";
+import {CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField} from "@mui/material";
+import {Controller, useForm} from "react-hook-form";
 import {getValidationObject, Notify} from "../../utils";
 import {DashboardInfo} from "../../Routes/api/dashboardInfo";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {TimePicker} from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -20,6 +25,24 @@ export function EditCenterCard({...props}) {
     const [id, setId] = useState(props.id);
     const [data, setData] = useState();
     const {update} = props;
+
+
+    const [startWorkValue, setStartWorkValue] = React.useState(data?.start_work);
+
+    const [endWorkValue, setEndWorkValue] = React.useState(data?.end_work);
+    const handleChangeEndWork = (newValue) => {
+        const formattedTime = newValue.format('hh:mm A');
+        setEndWorkValue(formattedTime);
+
+        console.log(formattedTime);
+    };
+
+    const handleChange = (newValue) => {
+        const formattedTime = newValue.format('hh:mm A');
+        setStartWorkValue(formattedTime);
+        console.log(formattedTime);
+
+    };
 
     const [selectedCenterName, setSelectedCenterName] = useState(data?.name);
     const [selectedCenterAddress, setSelectedCenterAddress] = useState(data?.address);
@@ -46,6 +69,17 @@ export function EditCenterCard({...props}) {
     const onSubmit = async () => {
         let dataCenter = {};
 
+        if (startWorkValue && startWorkValue !== data?.start_work) {
+            console.log("start work if ",startWorkValue)
+            dataCenter.start_work = startWorkValue;
+            console.log(startWorkValue, data?.start_work);
+        }
+        if (endWorkValue && endWorkValue !== data?.end_work) {
+            console.log("end work if ",endWorkValue)
+            dataCenter.end_work = endWorkValue;
+            console.log(endWorkValue, data?.end_work);
+        }
+
         if (selectedCenterName && selectedCenterName !== data?.name) {
             dataCenter.name = selectedCenterName;
             console.log(selectedCenterName, data?.name);
@@ -58,10 +92,10 @@ export function EditCenterCard({...props}) {
             dataCenter.status = selectedCenterStatus;
             console.log(selectedCenterStatus, data?.status);
         }
-        if (selectedCenterStartWork && selectedCenterStartWork !== data?.start_work)
-            dataCenter.start_work = selectedCenterStartWork;
-        if (selectedCenterEndWork && selectedCenterEndWork !== data?.end_work)
-            dataCenter.end_work = selectedCenterEndWork;
+        // if (selectedCenterStartWork && selectedCenterStartWork !== data?.start_work)
+        //     dataCenter.start_work = selectedCenterStartWork;
+        // if (selectedCenterEndWork && selectedCenterEndWork !== data?.end_work)
+        //     dataCenter.end_work = selectedCenterEndWork;
         console.log(dataCenter);
 
         if (Object.keys(dataCenter).length > 0) {
@@ -141,35 +175,44 @@ export function EditCenterCard({...props}) {
                                     label="عنوان المركز"
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="start_work"
-                                    defaultValue={`${data?.start_work || ''}`}
-                                    fullWidth
-                                    id="start_work"
-                                    label="ساعات بدء العمل"
-                                    {...register('start_work')}
-                                    helperText={errors.start_work ? errors.start_work.message : ''}
-                                    error={!!errors.start_work}
 
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="end_work"
-                                    defaultValue={`${data?.end_work || ''}`}
-                                    fullWidth
-                                    id="end_work"
-                                    label="ساعات انتهاء العمل"
-                                    {...register('end_work')}
-                                    helperText={errors.end_work ? errors.end_work.message : ''}
-                                    error={!!errors.end_work}
-                                />
-                            </Grid>
+                            {/*<Grid item xs={12} sm={12}>*/}
+                            {/*    <TextField*/}
+                            {/*        margin="normal"*/}
+                            {/*        onKeyUp={handleKeyUp}*/}
+                            {/*        name="end_work"*/}
+                            {/*        defaultValue={`${data?.end_work || ''}`}*/}
+                            {/*        fullWidth*/}
+                            {/*        id="end_work"*/}
+                            {/*        label="ساعات إنتهاء العمل"*/}
+                            {/*        {...register('end_work')}*/}
+                            {/*        helperText={errors.end_work ? errors.end_work.message : ''}*/}
+                            {/*        error={!!errors.end_work}*/}
+
+                            {/*    />*/}
+                            {/*</Grid>*/}
+
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <Grid container spacing={2}>
+                                    <Grid item>
+                                        <TimePicker
+                                            label="بدء العمل"
+                                            value={data?.start_work ? dayjs(data.start_work, 'HH:mm A') : null}
+                                            onChange={handleChange}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </Grid>
+                                    <Grid item>
+                                        <TimePicker
+                                            label="نهاية العمل"
+                                            value={data?.end_work ? dayjs(data.end_work, 'HH:mm A') : null}
+                                            onChange={handleChangeEndWork}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </LocalizationProvider>
+
                             <Grid item xs={12} sx={{marginTop: 1}}>
                                 <FormControl fullWidth>
                                     <InputLabel

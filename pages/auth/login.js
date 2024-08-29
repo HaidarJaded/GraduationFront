@@ -15,6 +15,7 @@ import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 
 export default function LoginPage() {
+    const [disabledState ,setDisabledState]=useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => {
         setShowPassword((prev) => !prev);
@@ -45,12 +46,14 @@ export default function LoginPage() {
 
 
     const onSubmit = async (email) => {
-
+        setDisabledState(true)
         const response = await authServices.login(email)
         if (response?.status === 200) {
             Notify("colored", `${response?.message || 'Logged in success'}`, "success")
             await router.push('/Dashboard');
         }
+        setDisabledState(false)
+
     };
 
     return (
@@ -145,6 +148,7 @@ export default function LoginPage() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2, bgcolor: "primary.mainDark" }}
+                        disabled={disabledState}
                     >
                         Sign In
                     </Button>

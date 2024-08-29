@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {CircularProgress, Grid, TextField} from "@mui/material";
+import {CircularProgress, Grid, Stack,Box, TextField} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {getValidationObject, Notify} from "../../utils";
 import {servicesServices} from "../../Routes/api/services";
@@ -38,8 +38,48 @@ export function EditService({...props}) {
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
+    const extractDays = (timeRequired) => {
+        const match = timeRequired?.match(/(\d+)+days/);
+        console.log(match ? match[1] : 0)
+        return match ? match[1] : 0;
+    };
+    const extractHours = (timeRequired) => {
+        const match = timeRequired?.match(/(\d+)+hours/);
+        console.log(match ? match[1] : 0)
+        return match ? match[1] : 0;
+    };
+
+    const [days, setDays] = React.useState(0);
+    const [hours, setHours] = React.useState(0);
+    const [selectedTimeRequired, setSelectedTimeRequired] = useState(data?.time_required);
+
+    useEffect(() => {
+        if (data?.time_required) {
+            const extractedDays = extractDays(data.time_required);
+            const extractedHours = extractHours(data.time_required);
+            setDays(extractedDays);
+            setHours(extractedHours);
+        }
+    }, [data?.time_required]);
+    const handleDaysChange = (event) => {
+        setDays(event.target.value);
+        processInput(event.target.value, hours);
+    };
+
+    const handleHoursChange = (event) => {
+        setHours(event.target.value);
+        processInput(days, event.target.value);
+    };
+
+    const processInput = (daysValue, hoursValue) => {
+        console.log("prosTnput");
+        const formattedValue = `${daysValue} days ${hoursValue} hours`;
+        setSelectedTimeRequired(formattedValue);
+    };
+
     const onSubmit = async () => {
         setEditState(true);
+        console.log("sed")
         let dataService = {}
 
         if (selectedTimeRequired && selectedTimeRequired !== data?.time_required)
@@ -67,7 +107,7 @@ export function EditService({...props}) {
         setEditState(false);
     }
 
-    const [selectedTimeRequired, setSelectedTimeRequired] = useState(data?.time_required);
+    // const [selectedTimeRequired, setSelectedTimeRequired] = useState(data?.time_required);
     const [selectedName, setSelectedName] = useState(data?.name);
     const [selectedPrice, setSelectedPrice] = useState(data?.price);
     const [selectedDeviceModel, setSelectedDeviceModel] = useState(data?.device_model);
@@ -120,8 +160,8 @@ export function EditService({...props}) {
                 <DialogContent>
 
                     {data ? (
-                        <Grid container maxWidth="lg" spacing={1}>
-                            <Grid item xs={12} sm={6}>
+                        <Box   sx={{width: "400px"}} >
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
@@ -132,8 +172,8 @@ export function EditService({...props}) {
                                     label="اسم الخدمة"
                                     autoFocus
                                 />
-                            </Grid>
 
+                            </Box>
                             {/*<Grid item xs={12} sm={6}>*/}
                             {/*    <TextField*/}
                             {/*        margin="normal"*/}
@@ -146,7 +186,7 @@ export function EditService({...props}) {
 
                             {/*    />*/}
                             {/*</Grid>*/}
-                            <Grid item xs={12} sm={6}>
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
                                 <TextField
                                     margin="normal"
                                     onKeyUp={handleKeyUp}
@@ -159,23 +199,34 @@ export function EditService({...props}) {
                                     helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
                                     error={(errors.price || data.price?.length > 0) && true}
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                                <TextField
-                                    margin="normal"
-                                    onKeyUp={handleKeyUp}
-                                    name="time_required"
-                                    defaultValue={`${data?.time_required || ''}`}
-                                    fullWidth
-                                    id="time_required"
-                                    label="الوقت المطلوب"
-                                    {...register('time_required')}
-                                    helperText={errors.time_required ? errors.time_required.message : ''}
-                                    error={!!errors.time_required}
 
-                                />
-                            </Grid>
-                        </Grid>
+                            </Box>
+                            <Stack  direction="row" label="الوقت المطلوب">
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} sx={{marginTop:2}}>
+                                        <TextField
+
+                                            label="Days"
+                                            type="number"
+                                            value={days}
+                                            onChange={handleDaysChange}
+                                            InputProps={{ inputProps: { min: 0 } }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} sx={{marginTop:2}}>
+                                        <TextField
+                                            label="Hours"
+                                            type="number"
+                                            value={hours}
+                                            onChange={handleHoursChange}
+                                            InputProps={{ inputProps: { min: 0, max: 23 } }}
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </Stack>
+                        </Box>
                     ) : (
                         <Grid container maxWidth="lg" justifyContent={'center'} spacing={1}>
                             <Grid item xs={12} sm={6}>
@@ -188,7 +239,9 @@ export function EditService({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onCloseDialog}>إلغاء التعديل</Button>
-                    <Button type={'submit'} disabled={editState}>تعديل</Button>
+                    <Button onClick={()=>{
+                        onSubmit()
+                    }} disabled={editState}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>
