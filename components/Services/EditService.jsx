@@ -34,7 +34,7 @@ export function EditService({...props}) {
     }, [fetchAndSetService]);
 
 
-    const formOptions = getValidationObject("price","time_required");
+    const formOptions = getValidationObject("price");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
 
@@ -143,7 +143,8 @@ export function EditService({...props}) {
     return (
         <>
             <Dialog
-                component="form" onSubmit={handleSubmit(onSubmit)}
+                component="form"
+                onSubmit={handleSubmit(onSubmit)}
                 open={open}
                 TransitionComponent={Transition}
                 keepMounted
@@ -239,9 +240,7 @@ export function EditService({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onCloseDialog}>إلغاء التعديل</Button>
-                    <Button onClick={()=>{
-                        onSubmit()
-                    }} disabled={editState}>تعديل</Button>
+                    <Button type="submit" disabled={editState}>تعديل</Button>
                 </DialogActions>
             </Dialog>
         </>

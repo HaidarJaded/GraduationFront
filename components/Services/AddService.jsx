@@ -22,7 +22,7 @@ export function AddService({...props}) {
     const [data, setData] = useState({
         price: "", name: "", time_required: ""
     });
-    const formOptions = getValidationObject("name", "price","time_required","device_model");
+    const formOptions = getValidationObject("name", "price","device_model");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
     const [addState,setAddState]=useState(false);
@@ -42,7 +42,6 @@ export function AddService({...props}) {
     };
 
     const processInput = (daysValue, hoursValue) => {
-        console.log("prosTnput");
         const formattedValue = `${daysValue}days ${hoursValue}hours`;
         setSelectedTimeRequired(formattedValue);
     };
@@ -50,7 +49,10 @@ export function AddService({...props}) {
     const onSubmit = async (service) => {
         setAddState(true);
         console.log('submit');
-        const data = Object.assign(service)
+        const data = {
+            ...service, // نسخ القيم الموجودة في service
+            time_required: selectedTimeRequired // إضافة أو تحديث قيمة time_required
+        };
         const response =  await servicesServices.addService(data);
         if (response?.status >= 200 && response?.status<300 ) {
             Notify("colored",
@@ -114,7 +116,6 @@ export function AddService({...props}) {
                             />
                         </Box>
                         <Box sx={{display: 'flex', alignItems: 'center'}}>
-
                             <TextField
                                 margin="normal"
                                 required
@@ -123,7 +124,6 @@ export function AddService({...props}) {
                                 label="price "
                                 name="price"
                                 autoComplete="price"
-
                                 {...register('price')}
                                 helperText={errors.price && errors.price?.message || (data.price?.length > 0 && data.price[0])}
                                 error={(errors.price || data.price?.length > 0) && true}
@@ -159,7 +159,7 @@ export function AddService({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onClose}>إلغاء</Button>
-                    <Button type='submit' disabled={addState}>إضافة</Button>
+                    <Button type="submit" disabled={addState}>إضافة</Button>
                 </DialogActions>
             </Dialog>
         </>
