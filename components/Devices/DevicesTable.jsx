@@ -94,23 +94,41 @@ export function Devices() {
     };
 
     const [openDeliverToClientDialog, setOpenDeliverToClientDialog] = useState(false);
+    const [openPaymentStatus, setOpenPaymentStatus] = useState(false);
+    const [isPaid, setIsPaid] = useState(false);
     const [currentId, setCurrentId] = useState(null);
 
     const handleOpenDialogDeliverToClient = (id) => {
         setCurrentId(id);
-        setOpenDeliverToClientDialog(true);
+        setOpenPaymentStatus(true);
     };
 
     const handleCloseDialogDeliverToClient = () => {
         setOpenDeliverToClientDialog(false);
     };
+    const handleCloseDialogPaymentStatus = () => {
+        setOpenDeliverToClientDialog(true);
+        setOpenPaymentStatus(false);
 
+    };
+    const handleConfirmPaymentStatus = () => {
+        setOpenDeliverToClientDialog(true);
+        setIsPaid(true);
+    };
     const handleConfirmDeliverToClient = async () => {
+        setOpenPaymentStatus(false)
         console.log(currentId);
         const updateData = async () => {
             try {
-                const response = await deviceServices.updateDevice(currentId, {deliver_to_client: 1});
-                Notify("light", response.message, "success");
+                if(isPaid){
+                    const response = await deviceServices.updateDevice(currentId, {deliver_to_client: 1,payment_status:1});
+                    Notify("light", response.message, "success");
+                }
+                else {
+                    const response = await deviceServices.updateDevice(currentId, {deliver_to_client: 1});
+                    Notify("light", response.message, "success");
+                }
+
             } catch (error) {
                 console.log(error)
             }
@@ -548,6 +566,21 @@ export function Devices() {
                     update={reloadTable}
                 />
             )}
+            <Dialog open={openPaymentStatus} onClose={handleCloseDialogPaymentStatus}
+                    aria-labelledby="alert-dialog-title">
+                <DialogTitle id="alert-dialog-title">{"تحديد حالة الدفع"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                       هل ثمن الجهاز مقبوض؟
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialogPaymentStatus}>غير مقبوض</Button>
+                    <Button onClick={handleConfirmPaymentStatus} autoFocus>
+                        مقبوض
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Dialog open={openDeliverToClientDialog} onClose={handleCloseDialogDeliverToClient}
                     aria-labelledby="alert-dialog-title">
                 <DialogTitle id="alert-dialog-title">{"تأكيد تسليم جهاز"}</DialogTitle>
