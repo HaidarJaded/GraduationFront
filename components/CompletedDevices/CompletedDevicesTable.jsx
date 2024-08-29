@@ -12,6 +12,8 @@ import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
 import ClearIcon from "@mui/icons-material/Clear";
+import {clientsServices} from "../../Routes/api/clients";
+import Switch from "@mui/material/Switch";
 
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
@@ -91,14 +93,51 @@ export function CompletedDevices() {
     //     setRowModesModel({
     //         ...rowModesModel,
     //         [id]: {mode: GridRowModes.View, ignoreModifications: true},
+    const SwitchComponent = (params) => {
+
+        const deviceId = params.params.id;
+
+        const [checked, setChecked] = React.useState(params.params.row.payment_status === 1);
+
+        const handleChange = async (event) => {
+
+            const newPaymentStatus = checked ? 0 : 1;
+            console.log(newPaymentStatus);
+            setChecked(!checked)
+
+            const updateData = async () => {
+                try {
+                    const response = await completedDevicesServices.updateCompletedDevice(deviceId, {payment_status: newPaymentStatus});
+                    Notify("light", response.message, "success");
+                } catch (error) {
+                    console.log(error)
+                }
+
+            };
+            await updateData();
+        };
+        return (
+            <>
+                <Switch
+                    checked={checked}
+                    onChange={handleChange}
+                    inputProps={{'aria-label': 'controlled'}}
+                />
+                <span>{checked ? 'مقبوض' : 'بالدين'}</span>
+            </>
+
+
+    );
+
+    }
     //     });
     //
     //     const editedRow = rows.find((row) => row.id === id);
     //     if (editedRow.isNew) {
     //         setRows(rows.filter((row) => row.id !== id));
     //     }
-    // };
 
+    // };
     const handleClose = () => {
         setOpen(false);
     };
@@ -112,14 +151,20 @@ export function CompletedDevices() {
         {field: 'code', headerName: 'Code', width: 130},
         {field: 'client_name', headerName: 'اسم العميل', width: 170},
         {field: 'user_name', headerName: 'اسم فني الصيانة', width: 160},
-        {field: 'cost_to_client', headerName: 'الكلفة', width: 160},
         {field: 'status', headerName: 'حالة الجهاز', width: 160},
         {field: 'customer_complaint', headerName: 'الشكوى', width: 160},
         {field: 'problem', headerName: 'العطل', width: 160},
+        {field: 'cost_to_client', headerName: 'الكلفة', width: 160},
+        // {field: 'payment_status', headerName: 'حالة الدفع', width: 160},
         {field: 'client_date_warranty', headerName: 'تاريخ انتهاء الكفالة', width: 160},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
         {field: 'date_delivery_client', headerName: 'تاريخ التسليم', width: 100},
-
+        {
+            field: 'payment_status',
+            headerName: 'حالة الدفع',
+            width: 150,
+            renderCell: (id) => <SwitchComponent params={id}/>
+        },
         {
             field: 'actions',
             type: 'actions',
@@ -214,6 +259,7 @@ export function CompletedDevices() {
             customer_complaint:row?.customer_complaint,
             problem:row?.problem,
             date_delivery_client: row?.date_delivery_client,
+            payment_status: row?.payment_status,
             client_date_warranty: row?.client_date_warranty,
         }));
         setRows(rowsWithNumbers);
