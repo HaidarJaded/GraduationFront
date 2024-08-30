@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
-import {Box, Grid, Stack, TextField} from "@mui/material";
+import {Box, Grid, Stack, TextField, Typography} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {getValidationObject, Notify} from "../../utils";
 import {servicesServices} from "../../Routes/api/services";
@@ -129,7 +129,10 @@ export function AddService({...props}) {
                                 error={(errors.price || data.price?.length > 0) && true}
                             />
                         </Box>
-                        <Stack  direction="row" label="الوقت المطلوب">
+                        <Stack  direction="column">
+                            <Typography sx={{color:"rgba(0, 0, 0, 0.6)",fontSize:15 ,direction:'rtl'}}>
+                                الوقت المطلوب :
+                            </Typography>
                             <Grid container spacing={2}>
                                 <Grid item xs={6} sx={{marginTop:2}}>
                                     <TextField
