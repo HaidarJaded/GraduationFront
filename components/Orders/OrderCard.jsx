@@ -37,7 +37,7 @@ export function OrderCard() {
         setLoading(true);
         setError(null);
         const params = {
-            'with': 'devices,products,devices_orders,products_orders,user',
+            'with': 'devices,products,devices_orders,products_orders,user,client',
             'orderBy': 'date',
             "dir": "desc",
             'page': currentPage,
@@ -257,6 +257,9 @@ export function OrderCard() {
                                         </Typography>
                                         <Typography variant="body2">
                                            {` ${orderUser?.user?.name} :عامل التوصيل `}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            {` ${orderUser?.client?.name} ${orderUser?.client?.last_name} :العميل `}
                                         </Typography>
                                     </CardContent>
                                     <CardActions disableSpacing>
