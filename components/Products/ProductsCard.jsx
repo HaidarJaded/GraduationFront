@@ -29,8 +29,8 @@ export function ProductCard() {
     const [deletingStatus, setDeletingStatus] = useState(false);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
     const handleCloseAddProduct = () => {
         setOpenAddProduct(false);
         setRowIdAddProduct(null)
@@ -80,13 +80,10 @@ export function ProductCard() {
 
     useEffect(() => {
         fetchAndSetProducts();
-    }, [fetchAndSetProducts, pageSize, currentPage]);
+    }, [fetchAndSetProducts]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
 
     function CustomPagination() {

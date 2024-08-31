@@ -240,8 +240,8 @@ export function Devices() {
     const [devices, setDevices] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [pageSize, setPageSize] = useState(pagination?.per_page??20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page??1)
     const route = useRouter()
 
 //fetch data and pagination process
@@ -269,11 +269,11 @@ export function Devices() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [pageSize, currentPage, searchKey]);
+    }, [route, pageSize, currentPage, searchKey]);
 
     useEffect(() => {
         fetchAndSetDevices();
-    }, [fetchAndSetDevices, route, pageSize, currentPage, searchKey]);
+    }, [fetchAndSetDevices]);
 
 
     const reloadTable = async update => {
@@ -281,9 +281,6 @@ export function Devices() {
     };
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
 
     function CustomNoRowsOverlay() {

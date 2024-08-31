@@ -27,8 +27,8 @@ export function OrderCard() {
     const [rowId, setRowId] = React.useState(null);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState(null);
 
@@ -55,13 +55,10 @@ export function OrderCard() {
     }, [pageSize, currentPage]);
     useEffect(() => {
         fetchAndSetOrders();
-    }, [fetchAndSetOrders, pageSize, currentPage]);
+    }, [fetchAndSetOrders]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
 
     const handleCloseDialog = () => {
