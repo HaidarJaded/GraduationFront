@@ -10,7 +10,6 @@ import {Box, Grid, Stack, TextField, Typography} from "@mui/material";
 import {useForm} from "react-hook-form";
 import {getValidationObject, Notify} from "../../utils";
 import {servicesServices} from "../../Routes/api/services";
-import {servicesProducts} from "../../Routes/api/products";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
