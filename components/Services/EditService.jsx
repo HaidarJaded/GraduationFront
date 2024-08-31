@@ -73,7 +73,7 @@ export function EditService({...props}) {
 
     const processInput = (daysValue, hoursValue) => {
         console.log("prosTnput");
-        const formattedValue = `${daysValue} days ${hoursValue} hours`;
+        const formattedValue = `${daysValue}days ${hoursValue}hours`;
         setSelectedTimeRequired(formattedValue);
     };
 
