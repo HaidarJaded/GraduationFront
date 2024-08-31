@@ -4,7 +4,7 @@ import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useRouter} from "next/router";
-import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
+import {Box, DialogContentText, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import {styled} from "@mui/material/styles";
 import {EditCompletedDevice} from "./EditCompletedDevice";
@@ -12,9 +12,11 @@ import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
 import {completedDevicesServices} from "../../Routes/api/completedDevices";
 import ClearIcon from "@mui/icons-material/Clear";
-import {clientsServices} from "../../Routes/api/clients";
 import Switch from "@mui/material/Switch";
-
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -60,7 +62,7 @@ export function CompletedDevices() {
         return () => clearTimeout(timer);
     }, [bufferedSearchKey]);
 
-
+    const [openDialogInsure , setOpenDialogInsure]=useState(false);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const handleEditClick = (id) => () => {
@@ -94,13 +96,10 @@ export function CompletedDevices() {
     //         ...rowModesModel,
     //         [id]: {mode: GridRowModes.View, ignoreModifications: true},
     const SwitchComponent = (params) => {
-
         const deviceId = params.params.id;
-
         const [checked, setChecked] = React.useState(params.params.row.payment_status === 1);
 
-        const handleChange = async (event) => {
-
+        const handleConfirmPaymentStatus = async () => {
             const newPaymentStatus = checked ? 0 : 1;
             console.log(newPaymentStatus);
             setChecked(!checked)
@@ -116,19 +115,27 @@ export function CompletedDevices() {
             };
             await updateData();
         };
+        const handleChange = async (event) => {
+
+            if (!checked)
+            {
+                setOpenDialogInsure(true);
+                handleConfirmPaymentStatus();
+            }
+
+        };
         return (
             <>
+
                 <Switch
                     checked={checked}
                     onChange={handleChange}
                     inputProps={{'aria-label': 'controlled'}}
+                    disabled={checked}
                 />
                 <span>{checked ? 'مقبوض' : 'بالدين'}</span>
             </>
-
-
     );
-
     }
     //     });
     //
@@ -140,6 +147,9 @@ export function CompletedDevices() {
     // };
     const handleClose = () => {
         setOpen(false);
+    };
+    const handleCloseDialogInsure = () => {
+        setOpenDialogInsure(false);
     };
 
 
@@ -515,6 +525,21 @@ export function CompletedDevices() {
                     update={reloadTable}
                 />
             )}
+            <Dialog open={openDialogInsure} onClose={handleCloseDialogInsure}
+                    aria-labelledby="alert-dialog-title">
+                <DialogTitle id="alert-dialog-title">{"تحديد حالة الدفع"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        هل انت متأكد من ان ثمن الجهاز مقبوض؟
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialogInsure}>إلغاء</Button>
+                    <Button  autoFocus>
+                        تأكيد
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 
