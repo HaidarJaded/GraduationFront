@@ -83,16 +83,19 @@ export function SendNotification({...props})
         }
     }, [recipientType]);
 
-    const handleToggle = (userId, ruleId) => {
+    const handleToggle = (user) => {
+        const { id, rule_id } = user;
+        const userKey = `${id}-${rule_id}`;
+
         const currentIndex = checkedUsers.findIndex(
-            (checkedUser) => checkedUser.user_id === userId && checkedUser.rule_id===ruleId);
+            (checkedUser) => `${checkedUser.id}-${checkedUser.rule_id}` === userKey
+        );
 
         const newChecked = [...checkedUsers];
-
         if (currentIndex === -1) {
-            newChecked.push({ userId, ruleId }); // إضافة كائن جديد
+            newChecked.push(user);
         } else {
-            newChecked.splice(currentIndex, 1); // حذف الكائن
+            newChecked.splice(currentIndex, 1);
         }
 
         setCheckedUsers(newChecked);
@@ -101,6 +104,7 @@ export function SendNotification({...props})
     const onSubmit = async (user) => {
         console.log(recipientType);
         console.log(checkedUsers);
+        console.log('checkedUsers');
 
     };
     return (
@@ -141,7 +145,7 @@ export function SendNotification({...props})
                                 margin="normal"
                                 label="نص الإشعار"
                                 multiline
-                                rows={3}
+                                rows={2}
                                 fullWidth
                             />
                         </Box>
@@ -201,15 +205,18 @@ export function SendNotification({...props})
                                                             secondaryAction={
                                                                 <Checkbox
                                                                     edge="end"
+                                                                    // checked={checkedUsers.indexOf(user.id) !== -1}
+                                                                    // onChange={() => handleToggle(user.id)}
                                                                     checked={checkedUsers.some(
-                                                                        (checkedUser) => checkedUser.user_id === user.id && checkedUser.rule_id === user.rule_id
+                                                                        (checkedUser) =>
+                                                                            checkedUser.id === user.id && checkedUser.rule_id === user.rule_id
                                                                     )}
-                                                                    onChange={() => handleToggle(user.id,user.rule_id)}
+                                                                    onChange={() => handleToggle(user)}
                                                                 />
                                                             }
                                                         >
                                                             <ListItemButton>
-                                                                <ListItemText id={user.id} primary={user.name} />
+                                                                <ListItemText id={user.id} primary={`${user.name} ${user.last_name}`} />
                                                             </ListItemButton>
                                                         </ListItem>
                                                         </>
@@ -237,15 +244,18 @@ export function SendNotification({...props})
                                                                 secondaryAction={
                                                                     <Checkbox
                                                                         edge="end"
+                                                                        // checked={checkedUsers.indexOf(user.id) !== -1}
+                                                                        // onChange={() => handleToggle(user.id)}
                                                                         checked={checkedUsers.some(
-                                                                            (checkedUser) => checkedUser.user_id === user.id && checkedUser.rule_id === user.rule_id
+                                                                            (checkedUser) =>
+                                                                                checkedUser.id === user.id && checkedUser.rule_id === user.rule_id
                                                                         )}
-                                                                        onChange={() => handleToggle(user.id,user.rule_id)}
+                                                                        onChange={() => handleToggle(user)}
                                                                     />
                                                                 }
                                                             >
                                                                 <ListItemButton>
-                                                                    <ListItemText id={user.id} primary={user.name} />
+                                                                    <ListItemText id={user.id} primary={`${user.name} ${user.last_name}`} />
                                                                 </ListItemButton>
                                                             </ListItem>
                                                         </>
@@ -272,15 +282,18 @@ export function SendNotification({...props})
                                                                 secondaryAction={
                                                                     <Checkbox
                                                                         edge="end"
+                                                                        // checked={checkedUsers.indexOf(user.id) !== -1}
+                                                                        // onChange={() => handleToggle(user.id)}
                                                                         checked={checkedUsers.some(
-                                                                            (checkedUser) => checkedUser.user_id === user.id && checkedUser.rule_id === user.rule_id
+                                                                            (checkedUser) =>
+                                                                                checkedUser.id === user.id && checkedUser.rule_id === user.rule_id
                                                                         )}
-                                                                        onChange={() => handleToggle(user.id,user.rule_id)}
+                                                                        onChange={() => handleToggle(user)}
                                                                     />
                                                                 }
                                                             >
                                                                 <ListItemButton>
-                                                                    <ListItemText id={user.id} primary={user.name} />
+                                                                    <ListItemText id={user.id} primary={`${user.name} ${user.last_name}`} />
                                                                 </ListItemButton>
                                                             </ListItem>
                                                         </>

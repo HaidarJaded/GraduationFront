@@ -50,8 +50,8 @@ export function AddService({...props}) {
         setAddState(true);
         console.log('submit');
         const data = {
-            ...service, // نسخ القيم الموجودة في service
-            time_required: selectedTimeRequired // إضافة أو تحديث قيمة time_required
+            ...service,
+            time_required: selectedTimeRequired
         };
         const response =  await servicesServices.addService(data);
         if (response?.status >= 200 && response?.status<300 ) {
@@ -61,6 +61,7 @@ export function AddService({...props}) {
         setAddState(false);
         props.onClose();
         update('update');
+
     };
 
     return (
@@ -98,6 +99,7 @@ export function AddService({...props}) {
                                 {...register('name')}
                                 helperText={errors.name && errors.name?.message || (data.name?.length > 0 && data.name[0])}
                                 error={(errors.name || data.name?.length > 0) && true}
+
                             />
                         </Box>
                         <Box sx={{display: 'flex', alignItems: 'center'}}>
