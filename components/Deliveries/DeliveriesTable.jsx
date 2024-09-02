@@ -150,11 +150,11 @@ export function DeliveriesTable() {
     const cacheRef = useRef({});
     const cacheKey = `${currentPage}-${pageSize}`;
 
-    const fetchAndSetUsers = useCallback(async () => {
+    const fetchAndSetUsers = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
 
-        if (cacheRef.current[cacheKey]) {
+        if (!forceReload && cacheRef.current[cacheKey]) {
             setDeliveries(cacheRef.current[cacheKey]);
             setLoading(false);
             return;
@@ -193,7 +193,7 @@ export function DeliveriesTable() {
     }, [fetchAndSetUsers]);
 
     const reloadTable = async update => {
-        fetchAndSetUsers()
+        fetchAndSetUsers(true)
     };
     useEffect(() => {
         setRowCount(pagination?.total)

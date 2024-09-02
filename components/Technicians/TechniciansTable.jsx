@@ -16,6 +16,7 @@ import {AddUser} from "../Users";
 import LinearProgress from "@mui/material/LinearProgress";
 import {EditUser} from "../Users";
 import ClearIcon from "@mui/icons-material/Clear";
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -167,9 +168,16 @@ export function TechniciansTable() {
     const cacheRef = useRef({});
     const cacheKey = `${currentPage}-${pageSize}`;
 
-    const fetchAndSetTechnicians = useCallback(async () => {
+    const fetchAndSetTechnicians = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        if (!forceReload && cacheRef.current[cacheKey]) {
+            setTechnicians(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             'rule*name': 'فني',
             'withCount': 'devices',
@@ -177,15 +185,26 @@ export function TechniciansTable() {
             'per_page': pageSize,
             'search': searchKey,
         };
-        const response = await usersServices.getAll(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setTechnicians(data?.body) : setTechnicians([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await usersServices.getAll(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setTechnicians(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setTechnicians([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("An error occurred while fetching data.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
+
     }, [route, pageSize, currentPage, searchKey]);
 
     useEffect(() => {
@@ -194,7 +213,7 @@ export function TechniciansTable() {
 
 
     const reloadTable = async update => {
-        fetchAndSetTechnicians()
+        fetchAndSetTechnicians(true);
     };
     useEffect(() => {
         setRowCount(pagination?.total)
