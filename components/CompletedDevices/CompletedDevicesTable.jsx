@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
@@ -205,10 +205,19 @@ export function CompletedDevices() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1);
 
     const route = useRouter();
+    const cacheRef = useRef({});
+    const cacheKey = `${currentPage}-${pageSize}`;
 
     const fetchAndSetCompletedDevices = useCallback(async () => {
         setLoading(true);
         setError(null);
+
+        if (cacheRef.current[cacheKey]) {
+            setCompletedDevices(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             'repaired_in_center': 1,
             'date_receipt!':'',
@@ -218,15 +227,25 @@ export function CompletedDevices() {
             'per_page': pageSize,
             'search': searchKey
         };
-        const response = await completedDevicesServices.getAll(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setCompletedDevices(data?.body) : setCompletedDevices([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await completedDevicesServices.getAll(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setCompletedDevices(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setCompletedDevices([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("An error occurred while fetching data.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [route, currentPage, pageSize, searchKey]);
 
     const reloadTable = async update => {
