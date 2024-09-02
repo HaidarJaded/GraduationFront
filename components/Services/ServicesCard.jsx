@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import {Box, Chip, Grid, MenuItem, Select, Stack, Typography} from "@mui/material";
 import {servicesServices} from "../../Routes/api/services";
@@ -17,6 +17,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddService} from "./AddService";
 import EditIcon from "@mui/icons-material/Edit";
+import {servicesProducts} from "../../Routes/api/products";
 
 
 export function RecipeReviewCard() {
@@ -52,26 +53,47 @@ export function RecipeReviewCard() {
         setRowId(id)
     };
     const reloadTable = async update => {
-        fetchAndSetServices()
+        fetchAndSetServices(true)
     };
     const [services, setServices] = useState([]);
-    const fetchAndSetServices = useCallback(async () => {
+    const cacheRef = useRef({});
+
+    const fetchAndSetServices = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}`;
+
+        if (!forceReload && cacheRef.current[cacheKey]) {
+            setServices(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             "dir": "[asc,desc]",
             'page': currentPage,
             'per_page': pageSize,
         };
-        const response = await servicesServices.getAllServices(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setServices(data?.body) : setServices([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await servicesServices.getAllServices(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setServices(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setServices([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("لقد حدث خطأ أثناء جلب البيانات");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [pageSize, currentPage]);
 
 
