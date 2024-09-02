@@ -27,8 +27,8 @@ export function RecipeReviewCard() {
     const [openAddService, setOpenAddService] = React.useState(false);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const handleDeleteClick = (id) => async () => {
@@ -77,13 +77,10 @@ export function RecipeReviewCard() {
 
     useEffect(() => {
         fetchAndSetServices();
-    }, [fetchAndSetServices,pageSize, currentPage]);
+    }, [fetchAndSetServices]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
     function CustomPagination() {
         const handlePageSizeChange = (event) => {

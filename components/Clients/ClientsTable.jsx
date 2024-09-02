@@ -97,9 +97,9 @@ export function ClientsTable() {
     const [clients, setClients] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page);
-
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1);
+    const route = useRouter()
 
     const fetchAndSetClients = useCallback(async () => {
         setLoading(true);
@@ -118,22 +118,18 @@ export function ClientsTable() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [currentPage, pageSize, searchKey]);
+    }, [route, currentPage, pageSize, searchKey]);
 
-    const route = useRouter()
 
     useEffect(() => {
         fetchAndSetClients();
-    }, [fetchAndSetClients, route, pageSize, currentPage, searchKey]);
+    }, [fetchAndSetClients]);
 
     const reloadTable = async update => {
         fetchAndSetClients()
     };
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination]);
 
 

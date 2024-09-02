@@ -161,8 +161,9 @@ export function TechniciansTable() {
     const [technicians, setTechnicians] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
+    const route = useRouter()
 
     const fetchAndSetTechnicians = useCallback(async () => {
         setLoading(true);
@@ -183,12 +184,11 @@ export function TechniciansTable() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [currentPage, pageSize,searchKey]);
-    const route = useRouter()
+    }, [route, pageSize, currentPage, searchKey]);
 
     useEffect(() => {
         fetchAndSetTechnicians();
-    }, [fetchAndSetTechnicians, route, pageSize, currentPage,searchKey]);
+    }, [fetchAndSetTechnicians]);
 
 
     const reloadTable = async update => {
@@ -196,9 +196,6 @@ export function TechniciansTable() {
     };
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
 
     function CustomNoRowsOverlay() {

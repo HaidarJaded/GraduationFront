@@ -142,8 +142,8 @@ export function DeliveriesTable() {
     const [deliveries, setDeliveries] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page)
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
     const route = useRouter()
     const fetchAndSetUsers = useCallback(async () => {
         setLoading(true);
@@ -163,21 +163,18 @@ export function DeliveriesTable() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [pageSize, currentPage, searchKey]);
+    }, [route, pageSize, currentPage, searchKey]);
 
 
     useEffect(() => {
         fetchAndSetUsers();
-    }, [fetchAndSetUsers, route, pageSize, currentPage, searchKey]);
+    }, [fetchAndSetUsers]);
 
     const reloadTable = async update => {
         fetchAndSetUsers()
     };
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
 
     function CustomNoRowsOverlay() {

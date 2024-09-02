@@ -55,8 +55,8 @@ export function AccordionNotices() {
     const [expanded, setExpanded] = React.useState('panel1');
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total)
-    const [pageSize, setPageSize] = useState(pagination?.per_page)
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page);
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
     const [open, setOpen] = React.useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -88,13 +88,10 @@ export function AccordionNotices() {
 
     useEffect(() => {
         fetchAndSetNotifications();
-    }, [fetchAndSetNotifications, pageSize, currentPage]);
+    }, [fetchAndSetNotifications]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
-
     }, [pagination])
     const handleClose = () => {
         setOpen(false);

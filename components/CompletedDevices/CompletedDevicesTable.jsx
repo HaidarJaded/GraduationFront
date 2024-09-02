@@ -210,8 +210,8 @@ export function CompletedDevices() {
     const [completedDevices, setCompletedDevices] = useState([]);
     const [pagination, setPagination] = useState({});
     const [rowCount, setRowCount] = useState(pagination?.total);
-    const [pageSize, setPageSize] = useState(pagination?.per_page);
-    const [currentPage, setCurrentPage] = useState(pagination?.current_page);
+    const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20);
+    const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1);
 
     const route = useRouter();
 
@@ -236,7 +236,7 @@ export function CompletedDevices() {
             setError(data?.message);
         }
         setLoading(false);
-    }, [currentPage, pageSize, searchKey]);
+    }, [route, currentPage, pageSize, searchKey]);
 
     const reloadTable = async update => {
         fetchAndSetCompletedDevices()
@@ -244,12 +244,10 @@ export function CompletedDevices() {
 
     useEffect(() => {
         fetchAndSetCompletedDevices();
-    }, [fetchAndSetCompletedDevices, route, pageSize, currentPage, searchKey]);
+    }, [fetchAndSetCompletedDevices]);
 
     useEffect(() => {
         setRowCount(pagination?.total)
-        setPageSize(pagination?.per_page)
-        setCurrentPage(pagination?.current_page)
     }, [pagination])
 
 
