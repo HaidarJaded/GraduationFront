@@ -65,10 +65,19 @@ export function AccordionNotices() {
     };
 
     const [notifications, setNotifications] = useState([]);
+    const cacheRef = useRef({});
 
     const fetchAndSetNotifications = useCallback(async () => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}`;
+        if (!forceReload && cacheRef.current[cacheKey]) {
+            setProducts(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             'dir': 'desc',
             'orderBy': 'created_at',

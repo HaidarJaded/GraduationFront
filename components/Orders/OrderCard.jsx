@@ -43,7 +43,7 @@ export function OrderCard() {
         const cacheKey = `${currentPage}-${pageSize}`;
 
         if (!forceReload && cacheRef.current[cacheKey]) {
-            setProducts(cacheRef.current[cacheKey]);
+            setOrder(cacheRef.current[cacheKey]);
             setLoading(false);
             return;
         }
