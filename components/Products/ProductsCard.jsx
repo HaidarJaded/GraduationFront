@@ -60,11 +60,13 @@ export function ProductCard() {
 
     const [products, setProducts] = useState([]);
     const cacheRef = useRef({});
-    const cacheKey = `${currentPage}-${pageSize}`;
+
 
     const fetchAndSetProducts = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}`;
 
         if (!forceReload && cacheRef.current[cacheKey]) {
             setProducts(cacheRef.current[cacheKey]);

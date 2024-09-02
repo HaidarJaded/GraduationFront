@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -33,9 +33,20 @@ export function OrderCard() {
     const [deletingId, setDeletingId] = useState(null);
 
     const [error, setError] = useState(null);
-    const fetchAndSetOrders = useCallback(async () => {
+
+    const cacheRef = useRef({});
+
+    const fetchAndSetOrders = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}`;
+
+        if (!forceReload && cacheRef.current[cacheKey]) {
+            setProducts(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
         const params = {
             'with': 'devices,products,devices_orders,products_orders,user,client',
             'orderBy': 'date',
@@ -43,15 +54,25 @@ export function OrderCard() {
             'page': currentPage,
             'per_page': pageSize,
         };
-        const response = await ordersServices.getAllOrders(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setOrders(data?.body) : setOrders([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await ordersServices.getAllOrders(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setOrders(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setOrders([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("لقد حدث خطأ أثناء جلب البيانات");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [pageSize, currentPage]);
     useEffect(() => {
         fetchAndSetOrders();
@@ -83,7 +104,7 @@ export function OrderCard() {
         setRowId(null)
     };
     const reloadTable = async update => {
-        fetchAndSetOrders()
+        fetchAndSetOrders(true)
     };
     function CustomPagination() {
         const handlePageSizeChange = (event) => {
