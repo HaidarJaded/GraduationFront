@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {DataGrid, GridActionsCellItem,} from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
@@ -17,6 +17,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
 import ClearIcon from "@mui/icons-material/Clear";
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -42,26 +43,6 @@ const StyledGridOverlay = styled('div')(({theme}) => ({
     },
 }));
 
-// function EditToolbar(props) {
-//     const {setRows, setRowModesModel} = props;
-//
-//     const handleClick = () => {
-//         const id = randomId();
-//         setRows((oldRows) => [...oldRows, {id, name: '', age: '', isNew: true}]);
-//         setRowModesModel((oldModel) => ({
-//             ...oldModel,
-//             [id]: {mode: GridRowModes.Edit, fieldToFocus: 'name'},
-//         }));
-//     };
-//
-//     return (
-//         <GridToolbarContainer>
-//             <Button color="primary" startIcon={<AddIcon/>} onClick={handleClick}>
-//                 Add record
-//             </Button>
-//         </GridToolbarContainer>
-//     );
-// }
 
 export function Devices() {
     const [rows, setRows] = React.useState([]);
@@ -244,11 +225,19 @@ export function Devices() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page??1)
     const route = useRouter()
 
+    const cacheRef = useRef({});
+    const cacheKey = `${currentPage}-${pageSize}`;
 //fetch data and pagination process
 
     const fetchAndSetDevices = useCallback(async () => {
         setLoading(true);
         setError(null);
+
+        if (cacheRef.current[cacheKey]) {
+            setDevices(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
         const params = {
             'repaired_in_center': 1,
             'with': 'client,user',
@@ -260,15 +249,27 @@ export function Devices() {
             'search': searchKey
 
         };
-        const response = await deviceServices.getAll(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setDevices(data?.body) : setDevices([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await deviceServices.getAll(params);
+            const data = await response?.data;
+            const status = await response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setDevices(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setDevices([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("An error occurred while fetching data.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
+
+
     }, [route, pageSize, currentPage, searchKey]);
 
     useEffect(() => {
