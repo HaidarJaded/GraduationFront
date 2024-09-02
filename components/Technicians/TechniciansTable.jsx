@@ -16,7 +16,7 @@ import {AddUser} from "../Users";
 import LinearProgress from "@mui/material/LinearProgress";
 import {EditUser} from "../Users";
 import ClearIcon from "@mui/icons-material/Clear";
-import {completedDevicesServices} from "../../Routes/api/completedDevices";
+
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',

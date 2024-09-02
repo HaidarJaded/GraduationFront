@@ -17,7 +17,7 @@ import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
 import EditIcon from "@mui/icons-material/Edit";
 import {EditProduct2} from "./EditProduct2";
-import {completedDevicesServices} from "../../Routes/api/completedDevices";
+
 
 
 export function ProductCard() {

@@ -13,7 +13,7 @@ import {AddUser, EditUser} from "../Users";
 import AddIcon from "@mui/icons-material/Add";
 import LinearProgress from "@mui/material/LinearProgress";
 import ClearIcon from '@mui/icons-material/Clear';
-import {completedDevicesServices} from "../../Routes/api/completedDevices";
+
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',

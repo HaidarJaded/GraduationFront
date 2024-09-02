@@ -17,7 +17,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import {AddService} from "./AddService";
 import EditIcon from "@mui/icons-material/Edit";
-import {servicesProducts} from "../../Routes/api/products";
+
 
 
 export function RecipeReviewCard() {
