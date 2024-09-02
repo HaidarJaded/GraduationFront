@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import {usersServices} from "../../Routes";
 import {Box, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
@@ -163,7 +163,9 @@ export function TechniciansTable() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
-    const route = useRouter()
+    const route = useRouter();
+    const cacheRef = useRef({});
+    const cacheKey = `${currentPage}-${pageSize}`;
 
     const fetchAndSetTechnicians = useCallback(async () => {
         setLoading(true);

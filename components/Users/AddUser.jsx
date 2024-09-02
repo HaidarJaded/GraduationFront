@@ -51,14 +51,17 @@ export function AddUser({...props}) {
     const formOptions = getValidationObject("email", "password","password_confirmation","name","last_name");
     const {register, handleSubmit, formState} = useForm(formOptions);
     const {errors} = formState;
+    const [addState,setAddState]=useState(false);
 
     const onSubmit = async (user) => {
+        setAddState(true);
         const data = Object.assign(user, {rule_id: ruleId})
         const response =  await usersServices.addUser(data);
         if (response?.status === 200) {
             Notify("colored",
                 "تمت الإضافة بنجاح", "success");
         }
+        setAddState(false);
         props.onClose();
         update('update');
     };
@@ -189,7 +192,7 @@ export function AddUser({...props}) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={props?.onClose}>إلغاء</Button>
-                    <Button type='submit'>إضافة</Button>
+                    <Button type='submit' disabled={addState}>إضافة</Button>
                 </DialogActions>
             </Dialog>
         </>

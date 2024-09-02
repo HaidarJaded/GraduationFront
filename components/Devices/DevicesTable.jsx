@@ -17,7 +17,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
 import ClearIcon from "@mui/icons-material/Clear";
-import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',

@@ -15,7 +15,6 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import {PermissionsClient} from "./PermissionsClient";
 import LinearProgress from "@mui/material/LinearProgress";
 import ClearIcon from "@mui/icons-material/Clear";
-import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',

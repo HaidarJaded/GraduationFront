@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import {usersServices} from "../../Routes";
 import EditIcon from "@mui/icons-material/Edit";
@@ -13,6 +13,7 @@ import {AddUser, EditUser} from "../Users";
 import AddIcon from "@mui/icons-material/Add";
 import LinearProgress from "@mui/material/LinearProgress";
 import ClearIcon from '@mui/icons-material/Clear';
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -144,25 +145,46 @@ export function DeliveriesTable() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
+
     const route = useRouter()
+    const cacheRef = useRef({});
+    const cacheKey = `${currentPage}-${pageSize}`;
+
     const fetchAndSetUsers = useCallback(async () => {
         setLoading(true);
         setError(null);
+
+        if (cacheRef.current[cacheKey]) {
+            setDeliveries(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             'rule*name': 'عامل توصيل',
             'page': currentPage,
             'per_page': pageSize,
             'search': searchKey,
         };
-        const response = await usersServices.getAll(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setDeliveries(data?.body) : setDeliveries([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await usersServices.getAll(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setDeliveries(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setDeliveries([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("An error occurred while fetching data.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [route, pageSize, currentPage, searchKey]);
 
 
