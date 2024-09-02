@@ -17,6 +17,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import {clientsServices} from "../../Routes/api/clients";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -62,7 +63,6 @@ export function CompletedDevices() {
         return () => clearTimeout(timer);
     }, [bufferedSearchKey]);
 
-    const [openDialogInsure , setOpenDialogInsure]=useState(false);
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const handleEditClick = (id) => () => {
@@ -70,7 +70,6 @@ export function CompletedDevices() {
         setOpen(true)
         setRowId(id)
     };
-
     const handleDeleteClick = (id) => async () => {
         const confirmed = window.confirm("هل أنت متأكد من رغبتك في حذف هذا السجل؟\nلا يمكن التراجع عن هذه الخطوة.");
         if (!confirmed) {
@@ -87,42 +86,31 @@ export function CompletedDevices() {
         setDeletingId(null);
     };
 
-    // const handleSaveClick = (id) => () => {
-    //     setRowModesModel({...rowModesModel, [id]: {mode: GridRowModes.View}});
-    // };
-
-    // const handleCancelClick = (id) => () => {
-    //     setRowModesModel({
-    //         ...rowModesModel,
-    //         [id]: {mode: GridRowModes.View, ignoreModifications: true},
     const SwitchComponent = (params) => {
-        const deviceId = params.params.id;
-        const [checked, setChecked] = React.useState(params.params.row.payment_status === 1);
+        const [checked, setChecked] = useState(params.params.row.payment_status === 1);
+        const [openDialogInsure, setOpenDialogInsure] = useState(false);
+        const deviceID = params.params.id;
 
-        const handleConfirmPaymentStatus = async () => {
-            const newPaymentStatus = checked ? 0 : 1;
-            console.log(newPaymentStatus);
-            setChecked(!checked)
-
-            const updateData = async () => {
-                try {
-                    const response = await completedDevicesServices.updateCompletedDevice(deviceId, {payment_status: newPaymentStatus});
-                    Notify("light", response.message, "success");
-                } catch (error) {
-                    console.log(error)
-                }
-
-            };
-            await updateData();
-        };
-        const handleChange = async (event) => {
-
-            if (!checked)
-            {
+        const handleChange = (event) => {
+            if (!checked) {
                 setOpenDialogInsure(true);
-                handleConfirmPaymentStatus();
             }
+        };
+        const handleCloseDialogInsure = () => {
+            setOpenDialogInsure(false);
+        };
 
+        const handleConfirmPaymentState = async () => {
+            try {
+                const response = await completedDevicesServices.updateCompletedDevice(deviceID, { payment_status: 1 });
+                Notify("light", response.message, "success");
+                setChecked(true);
+
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setOpenDialogInsure(false);
+            }
         };
         return (
             <>
@@ -134,22 +122,25 @@ export function CompletedDevices() {
                     disabled={checked}
                 />
                 <span>{checked ? 'مقبوض' : 'بالدين'}</span>
+
+                <Dialog open={openDialogInsure} onClose={handleCloseDialogInsure} aria-labelledby="alert-dialog-title">
+                    <DialogTitle id="alert-dialog-title">{"تحديد حالة الدفع"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            هل انت متأكد من ان ثمن الجهاز مقبوض؟
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDialogInsure}>إلغاء</Button>
+                        <Button onClick={handleConfirmPaymentState}>تأكيد</Button>
+                    </DialogActions>
+                </Dialog>
             </>
     );
     }
-    //     });
-    //
-    //     const editedRow = rows.find((row) => row.id === id);
-    //     if (editedRow.isNew) {
-    //         setRows(rows.filter((row) => row.id !== id));
-    //     }
 
-    // };
     const handleClose = () => {
         setOpen(false);
-    };
-    const handleCloseDialogInsure = () => {
-        setOpenDialogInsure(false);
     };
 
 
@@ -523,21 +514,7 @@ export function CompletedDevices() {
                     update={reloadTable}
                 />
             )}
-            <Dialog open={openDialogInsure} onClose={handleCloseDialogInsure}
-                    aria-labelledby="alert-dialog-title">
-                <DialogTitle id="alert-dialog-title">{"تحديد حالة الدفع"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        هل انت متأكد من ان ثمن الجهاز مقبوض؟
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDialogInsure}>إلغاء</Button>
-                    <Button  autoFocus>
-                        تأكيد
-                    </Button>
-                </DialogActions>
-            </Dialog>
+
         </>
     );
 
