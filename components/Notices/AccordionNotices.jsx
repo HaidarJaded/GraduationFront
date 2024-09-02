@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {styled} from '@mui/material/styles';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import MuiAccordion from '@mui/material/Accordion';
@@ -67,13 +67,13 @@ export function AccordionNotices() {
     const [notifications, setNotifications] = useState([]);
     const cacheRef = useRef({});
 
-    const fetchAndSetNotifications = useCallback(async () => {
+    const fetchAndSetNotifications = useCallback(async (forceReload=false) => {
         setLoading(true);
         setError(null);
 
         const cacheKey = `${currentPage}-${pageSize}`;
         if (!forceReload && cacheRef.current[cacheKey]) {
-            setProducts(cacheRef.current[cacheKey]);
+            setNotifications(cacheRef.current[cacheKey]);
             setLoading(false);
             return;
         }
@@ -84,15 +84,25 @@ export function AccordionNotices() {
             'page': currentPage,
             'per_page': pageSize,
         };
-        const response = await notificationsServices.getAll(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setNotifications(data?.body) : setNotifications([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await notificationsServices.getAll(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setNotifications(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setNotifications([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("لقد حدث خطأ أثناء جلب البيانات");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [pageSize, currentPage]);
 
     useEffect(() => {
@@ -106,7 +116,7 @@ export function AccordionNotices() {
         setOpen(false);
     };
     const reloadTable = async update => {
-        fetchAndSetNotifications()
+        fetchAndSetNotifications(true)
     };
     function CustomPagination() {
         const handlePageSizeChange = (event) => {

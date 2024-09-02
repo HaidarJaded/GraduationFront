@@ -134,7 +134,7 @@ export function ClientsTable() {
                 setError(data?.message || 'No data available');
             }
         } catch (error) {
-            setError("An error occurred while fetching data.");
+            setError("لقد حدث خطأ أثناء جلب البيانات.");
         } finally {
             setLoading(false);
         }
