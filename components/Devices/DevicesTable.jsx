@@ -228,11 +228,11 @@ export function Devices() {
     const cacheKey = `${currentPage}-${pageSize}`;
 //fetch data and pagination process
 
-    const fetchAndSetDevices = useCallback(async () => {
+    const fetchAndSetDevices = useCallback(async (forceReload=false) => {
         setLoading(true);
         setError(null);
 
-        if (cacheRef.current[cacheKey]) {
+        if (!forceReload && cacheRef.current[cacheKey]) {
             setDevices(cacheRef.current[cacheKey]);
             setLoading(false);
             return;
@@ -277,7 +277,7 @@ export function Devices() {
 
 
     const reloadTable = async update => {
-        fetchAndSetDevices()
+        fetchAndSetDevices(true)
     };
     useEffect(() => {
         setRowCount(pagination?.total)

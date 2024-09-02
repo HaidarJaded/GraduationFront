@@ -206,11 +206,11 @@ export function CompletedDevices() {
     const cacheRef = useRef({});
     const cacheKey = `${currentPage}-${pageSize}`;
 
-    const fetchAndSetCompletedDevices = useCallback(async () => {
+    const fetchAndSetCompletedDevices = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
 
-        if (cacheRef.current[cacheKey]) {
+        if (!forceReload && cacheRef.current[cacheKey]) {
             setCompletedDevices(cacheRef.current[cacheKey]);
             setLoading(false);
             return;
@@ -247,7 +247,7 @@ export function CompletedDevices() {
     }, [route, currentPage, pageSize, searchKey]);
 
     const reloadTable = async update => {
-        fetchAndSetCompletedDevices()
+        fetchAndSetCompletedDevices(true)
     };
 
     useEffect(() => {

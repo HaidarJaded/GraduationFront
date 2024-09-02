@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -17,6 +17,7 @@ import AddIcon from "@mui/icons-material/Add";
 import {AddProduct} from "./AddProduct";
 import EditIcon from "@mui/icons-material/Edit";
 import {EditProduct2} from "./EditProduct2";
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 
 export function ProductCard() {
@@ -54,27 +55,47 @@ export function ProductCard() {
 
     };
     const reloadTable = async update => {
-        fetchAndSetProducts()
+        fetchAndSetProducts(true)
     };
 
     const [products, setProducts] = useState([]);
-    const fetchAndSetProducts = useCallback(async () => {
+    const cacheRef = useRef({});
+    const cacheKey = `${currentPage}-${pageSize}`;
+
+    const fetchAndSetProducts = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        if (!forceReload && cacheRef.current[cacheKey]) {
+            setProducts(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             "dir": "[asc,desc]",
             'page': currentPage,
             'per_page': pageSize,
         };
-        const response = await servicesProducts.getAllProducts(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setProducts(data?.body) : setProducts([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await servicesProducts.getAllProducts(params);
+            const data = response?.data;
+            const status = response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setProducts(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setProducts([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("لقد حدث خطأ أثناء جلب البيانات");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, [pageSize, currentPage]);
 
 

@@ -104,11 +104,11 @@ export function ClientsTable() {
     const cacheRef = useRef({});
     const cacheKey = `${currentPage}-${pageSize}`;
 
-    const fetchAndSetClients = useCallback(async () => {
+    const fetchAndSetClients = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
 
-        if (cacheRef.current[cacheKey]) {
+        if (!forceReload && cacheRef.current[cacheKey]){
             setClients(cacheRef.current[cacheKey]);
             setLoading(false);
             return;
@@ -147,7 +147,7 @@ export function ClientsTable() {
     }, [fetchAndSetClients]);
 
     const reloadTable = async update => {
-        fetchAndSetClients()
+        fetchAndSetClients(true)
     };
     useEffect(() => {
         setRowCount(pagination?.total)
