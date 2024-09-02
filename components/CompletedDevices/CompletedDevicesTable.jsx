@@ -66,7 +66,6 @@ export function CompletedDevices() {
     const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
     const handleEditClick = (id) => () => {
-        console.log("this copnleted device", id)
         setOpen(true)
         setRowId(id)
     };

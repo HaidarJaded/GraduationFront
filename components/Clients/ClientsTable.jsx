@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {DataGrid, GridActionsCellItem} from '@mui/x-data-grid';
 import {clientsServices} from '../../Routes/api/clients';
 import EditIcon from "@mui/icons-material/Edit";
@@ -15,6 +15,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import {PermissionsClient} from "./PermissionsClient";
 import LinearProgress from "@mui/material/LinearProgress";
 import ClearIcon from "@mui/icons-material/Clear";
+import {completedDevicesServices} from "../../Routes/api/completedDevices";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -99,25 +100,46 @@ export function ClientsTable() {
     const [rowCount, setRowCount] = useState(pagination?.total)
     const [pageSize, setPageSize] = useState(pagination?.per_page ?? 20)
     const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1);
+
     const route = useRouter()
+    const cacheRef = useRef({});
+    const cacheKey = `${currentPage}-${pageSize}`;
 
     const fetchAndSetClients = useCallback(async () => {
         setLoading(true);
         setError(null);
+
+        if (cacheRef.current[cacheKey]) {
+            setClients(cacheRef.current[cacheKey]);
+            setLoading(false);
+            return;
+        }
+
         const params = {
             'page': currentPage,
             'per_page': pageSize,
             'search': searchKey,
         };
-        const response = await clientsServices.getAll(params);
-        const data = await response?.data;
-        const status = await response?.status;
-        data ? setClients(data?.body) : setClients([]);
-        setPagination(data?.pagination);
-        if (status !== 200) {
-            setError(data?.message);
+        try {
+            const response = await clientsServices.getAll(params);
+            const data = await response?.data;
+            const status = await response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+
+                cacheRef.current[cacheKey] = data?.body;
+                setClients(data?.body);
+                setPagination(data?.pagination);
+            } else {
+                setClients([]);
+                setError(data?.message || 'No data available');
+            }
+        } catch (error) {
+            setError("An error occurred while fetching data.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
+
     }, [route, currentPage, pageSize, searchKey]);
 
 
