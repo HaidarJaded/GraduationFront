@@ -102,11 +102,10 @@ export function ClientsTable() {
 
     const route = useRouter()
     const cacheRef = useRef({});
-    const cacheKey = `${currentPage}-${pageSize}`;
-
     const fetchAndSetClients = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+        const cacheKey = `${currentPage}-${pageSize}-${searchKey}`;
 
         if (!forceReload && cacheRef.current[cacheKey]){
             setClients(cacheRef.current[cacheKey]);
@@ -142,9 +141,14 @@ export function ClientsTable() {
     }, [route, currentPage, pageSize, searchKey]);
 
 
+
     useEffect(() => {
-        fetchAndSetClients();
-    }, [fetchAndSetClients]);
+        fetchAndSetClients(searchKey !== '');
+    }, [searchKey, currentPage, pageSize]);
+
+    // useEffect(() => {
+    //     fetchAndSetClients();
+    // }, [fetchAndSetClients]);
 
     const reloadTable = async update => {
         fetchAndSetClients(true)

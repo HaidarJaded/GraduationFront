@@ -225,12 +225,13 @@ export function Devices() {
     const route = useRouter()
 
     const cacheRef = useRef({});
-    const cacheKey = `${currentPage}-${pageSize}`;
+
 //fetch data and pagination process
 
     const fetchAndSetDevices = useCallback(async (forceReload= false) => {
         setLoading(true);
         setError(null);
+        const cacheKey = `${currentPage}-${pageSize}-${searchKey}`;
 
         if (!forceReload && cacheRef.current[cacheKey]) {
             setDevices(cacheRef.current[cacheKey]);
@@ -271,10 +272,12 @@ export function Devices() {
 
     }, [route, pageSize, currentPage, searchKey]);
 
+    // useEffect(() => {
+    //     fetchAndSetDevices();
+    // }, [fetchAndSetDevices]);
     useEffect(() => {
-        fetchAndSetDevices();
-    }, [fetchAndSetDevices]);
-
+        fetchAndSetDevices(searchKey !== '');
+    }, [searchKey, currentPage, pageSize]);
 
     const reloadTable = async update => {
         fetchAndSetDevices(true)

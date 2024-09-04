@@ -148,11 +148,13 @@ export function DeliveriesTable() {
 
     const route = useRouter()
     const cacheRef = useRef({});
-    const cacheKey = `${currentPage}-${pageSize}`;
+
 
     const fetchAndSetUsers = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}-${searchKey}`;
 
         if (!forceReload && cacheRef.current[cacheKey]) {
             setDeliveries(cacheRef.current[cacheKey]);
@@ -188,10 +190,13 @@ export function DeliveriesTable() {
     }, [route, pageSize, currentPage, searchKey]);
 
 
-    useEffect(() => {
-        fetchAndSetUsers();
-    }, [fetchAndSetUsers]);
+    // useEffect(() => {
+    //     fetchAndSetUsers();
+    // }, [fetchAndSetUsers]);
 
+    useEffect(() => {
+        fetchAndSetUsers(searchKey !== '');
+    }, [searchKey, currentPage, pageSize]);
     const reloadTable = async update => {
         fetchAndSetUsers(true)
     };

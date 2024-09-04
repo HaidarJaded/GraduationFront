@@ -166,11 +166,13 @@ export function TechniciansTable() {
     const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1)
     const route = useRouter();
     const cacheRef = useRef({});
-    const cacheKey = `${currentPage}-${pageSize}`;
+
 
     const fetchAndSetTechnicians = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}-${searchKey}`;
 
         if (!forceReload && cacheRef.current[cacheKey]) {
             setTechnicians(cacheRef.current[cacheKey]);
@@ -208,10 +210,12 @@ export function TechniciansTable() {
 
     }, [route, pageSize, currentPage, searchKey]);
 
+    // useEffect(() => {
+    //     fetchAndSetTechnicians();
+    // }, [fetchAndSetTechnicians]);
     useEffect(() => {
-        fetchAndSetTechnicians();
-    }, [fetchAndSetTechnicians]);
-
+        fetchAndSetTechnicians(searchKey !== '');
+    }, [searchKey, currentPage, pageSize]);
 
     const reloadTable = async update => {
         fetchAndSetTechnicians(true);
