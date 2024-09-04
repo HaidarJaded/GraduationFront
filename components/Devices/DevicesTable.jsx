@@ -48,7 +48,10 @@ export function Devices() {
     const [deletingId, setDeletingId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchKey, setSearchKey] = React.useState('');
+
+
+    // for edit
+    const [open, setOpen] = React.useState(false);    const [searchKey, setSearchKey] = React.useState('');
     const [bufferedSearchKey, setBufferedSearchKey] = useState('');
 
     useEffect(() => {
@@ -58,9 +61,6 @@ export function Devices() {
 
         return () => clearTimeout(timer);
     }, [bufferedSearchKey]);
-
-    // for edit
-    const [open, setOpen] = React.useState(false);
     const [rowId, setRowId] = React.useState(null);
 
 
@@ -228,7 +228,7 @@ export function Devices() {
     const cacheKey = `${currentPage}-${pageSize}`;
 //fetch data and pagination process
 
-    const fetchAndSetDevices = useCallback(async (forceReload=false) => {
+    const fetchAndSetDevices = useCallback(async (forceReload= false) => {
         setLoading(true);
         setError(null);
 
@@ -260,7 +260,7 @@ export function Devices() {
                 setPagination(data?.pagination);
             } else {
                 setDevices([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد أجهزة مدخلة':"لقد حدث خطأ أثناء جلب البيانات");
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات.");

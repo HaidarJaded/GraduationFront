@@ -87,7 +87,8 @@ export function RecipeReviewCard() {
                 setPagination(data?.pagination);
             } else {
                 setServices([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد خدمات':"لقد حدث خطأ أثناء جلب البيانات");
+
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات");

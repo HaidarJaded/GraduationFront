@@ -91,7 +91,8 @@ export function ProductCard() {
                 setPagination(data?.pagination);
             } else {
                 setProducts([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد منتجات':"لقد حدث خطأ أثناء جلب البيانات");
+
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات");

@@ -96,7 +96,7 @@ export function AccordionNotices() {
                 setPagination(data?.pagination);
             } else {
                 setNotifications([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد إشعارات':"لقد حدث خطأ أثناء جلب البيانات");
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات");

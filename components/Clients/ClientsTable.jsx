@@ -131,7 +131,7 @@ export function ClientsTable() {
                 setPagination(data?.pagination);
             } else {
                 setClients([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد عملاء':"لقد حدث خطأ أثناء جلب البيانات");
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات.");

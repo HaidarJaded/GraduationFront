@@ -141,7 +141,6 @@ export function CompletedDevices() {
         setOpen(false);
     };
 
-
     const columns = [
 
         {field: 'rowNumber', headerName: '#', width: 60},
@@ -204,11 +203,13 @@ export function CompletedDevices() {
 
     const route = useRouter();
     const cacheRef = useRef({});
-    const cacheKey = `${currentPage}-${pageSize}`;
+
 
     const fetchAndSetCompletedDevices = useCallback(async (forceReload = false) => {
         setLoading(true);
         setError(null);
+
+        const cacheKey = `${currentPage}-${pageSize}-${searchKey}`;
 
         if (!forceReload && cacheRef.current[cacheKey]) {
             setCompletedDevices(cacheRef.current[cacheKey]);
@@ -237,7 +238,7 @@ export function CompletedDevices() {
                 setPagination(data?.pagination);
             } else {
                 setCompletedDevices([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد أجهزة مسلّمة':"لقد حدث خطأ أثناء جلب البيانات");
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات");
@@ -251,8 +252,12 @@ export function CompletedDevices() {
     };
 
     useEffect(() => {
-        fetchAndSetCompletedDevices();
-    }, [fetchAndSetCompletedDevices]);
+        fetchAndSetCompletedDevices(searchKey !== '');
+    }, [searchKey, currentPage, pageSize]);
+
+    // useEffect(() => {
+    //     fetchAndSetCompletedDevices();
+    // }, [fetchAndSetCompletedDevices]);
 
     useEffect(() => {
         setRowCount(pagination?.total)

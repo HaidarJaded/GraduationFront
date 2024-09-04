@@ -197,7 +197,8 @@ export function TechniciansTable() {
                 setPagination(data?.pagination);
             } else {
                 setTechnicians([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد فنيين':"لقد حدث خطأ أثناء جلب البيانات");
+
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات.");

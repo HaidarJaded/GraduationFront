@@ -178,7 +178,7 @@ export function DeliveriesTable() {
                 setPagination(data?.pagination);
             } else {
                 setDeliveries([]);
-                setError(data?.message || 'No data available');
+                setError(data?.message=== "Successful" ? 'لا يوجد عمال توصيل':"لقد حدث خطأ أثناء جلب البيانات");
             }
         } catch (error) {
             setError("لقد حدث خطأ أثناء جلب البيانات.");
