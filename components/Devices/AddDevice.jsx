@@ -222,8 +222,7 @@ export function AddDevice({...props}) {
                                             options={clientsOptions}
                                             getOptionLabel={(option) => `${option.name} ${option.last_name}`}
                                             onChange={(event, newValue) => {
-                                                setSelectedClientName(newValue);
-
+                                                setSelectedClientName(newValue?.id);
                                             }}
                                             renderInput={(params) => (
                                                 <TextField
