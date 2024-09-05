@@ -8,7 +8,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import {deviceServices} from "../../Routes";
 import {useRouter} from "next/router";
 import {EditDevice} from "./EditDevice";
-import {Box, DialogContentText, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
+import {Box, Chip, DialogContentText, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {styled} from "@mui/material/styles";
 import {Notify} from '../../utils';
 import LinearProgress from "@mui/material/LinearProgress";
@@ -17,6 +17,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
 import ClearIcon from "@mui/icons-material/Clear";
+import IconButton from "@mui/material/IconButton";
+import NotificationAddRoundedIcon from "@mui/icons-material/NotificationAddRounded";
+import {SendNotification} from "../Notices";
+import {AddDevice} from "./AddDevice";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -48,10 +52,12 @@ export function Devices() {
     const [deletingId, setDeletingId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [openAddDialog, setOpenAddDialog] = React.useState(false);
 
 
     // for edit
-    const [open, setOpen] = React.useState(false);    const [searchKey, setSearchKey] = React.useState('');
+    const [open, setOpen] = React.useState(false);
+    const [searchKey, setSearchKey] = React.useState('');
     const [bufferedSearchKey, setBufferedSearchKey] = useState('');
 
     useEffect(() => {
@@ -67,6 +73,10 @@ export function Devices() {
     const handleClose = () => {
         setOpen(false);
         setRowId(null)
+    };
+    const handleCloseAddDialog = () => {
+        setOpenAddDialog(false);
+
     };
     const handleEditClick = (id) => () => {
         setOpen(true)
@@ -485,6 +495,28 @@ export function Devices() {
                         }}
                     />
                 </Box>
+                <Box>
+
+                    <IconButton aria-label="delete" sx={{borderRadius:6}}
+                                onClick={() => {
+                                    setOpenAddDialog(true);
+                                }}>
+                        <Stack direction="row" spacing={2}>
+                            <Chip icon={<NotificationAddRoundedIcon/>} label="إضافة جهاز"
+                                  sx={{
+                                      fontSize: '18px',
+                                      padding:2.5,
+                                      backgroundColor: 'rgba(47,33,86,0.6)',
+                                      color: '#fff',
+                                      '& .MuiChip-icon': {
+                                          color: '#fff',
+                                          fontSize: '24px'
+                                      }
+                                  }} />
+                        </Stack>
+
+                    </IconButton>
+                </Box>
             </Box>
             {loading ? (
                 <Box sx={{
@@ -596,6 +628,12 @@ export function Devices() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <AddDevice
+                open={openAddDialog}
+                onClose={handleCloseAddDialog}
+                update={reloadTable}
+            />
         </>
 
     );
