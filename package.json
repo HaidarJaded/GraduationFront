@@ -20,6 +20,7 @@
     "@mui/x-data-grid-generator": "^6.19.6",
     "@mui/x-date-pickers": "^7.14.0",
     "@tailwindcss/forms": "^0.5.7",
+    "@zxing/browser": "^0.1.5",
     "ag-charts-react": "^9.0.2",
     "apexcharts": "^3.46.0",
     "axios": "^1.6.0",
