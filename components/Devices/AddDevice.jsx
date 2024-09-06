@@ -26,6 +26,8 @@ import {deviceServices, usersServices} from "../../Routes";
 import {clientsServices} from "../../Routes/api/clients";
 import IconButton from "@mui/material/IconButton";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
+import LinearProgress from "@mui/material/LinearProgress";
+import {reset} from "next/dist/lib/picocolors";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -48,15 +50,25 @@ export function AddDevice({...props}) {
     const [clientsOptions, setClientsOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
     const fetchAndSetClientsOptions = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+
         try {
-            setIsLoading(true);  // يبدأ التحميل
             const response = await clientsServices.getAll();
             const data = await response?.data;
-            setClientsOptions(data?.body);
+            const status = await response?.status;
+
+            if (status === 200 && data?.body?.length > 0) {
+                setClientsOptions(data?.body);
+
+            } else {
+                setClientsOptions([]);
+                setError(data?.message=== "Successful" ? 'لا يوجد عملاء':"لقد حدث خطأ أثناء جلب البيانات");
+            }
         } catch (error) {
-            console.error("Error fetching clients:", error);
-            setError("يوجد خطأ في الشبكة، أعد المحاولة.");
+            setError("لقد حدث خطأ أثناء جلب البيانات.");
         } finally {
             setIsLoading(false);
         }
@@ -65,6 +77,22 @@ export function AddDevice({...props}) {
     useEffect(() => {
         fetchAndSetClientsOptions();
     }, [fetchAndSetClientsOptions]);
+
+    useEffect(() => {
+        if (open) {
+
+            // reset({
+            //     model: '',
+            //     customer_complaint: '',
+            //     imei: '',
+            //     info: ''
+            // });
+
+            console.log("open Dialog true")
+            fetchAndSetClientsOptions();
+        }
+    }, [open]);
+
 
     const onSubmit = async (device) => {
         setAddState(true);
@@ -158,53 +186,19 @@ export function AddDevice({...props}) {
                                 {...register('info')}
                             />
                         </Box>
-                        {/*<Grid container maxWidth="lg" spacing={1}>*/}
-                        {/*    <Grid item xs={12} sx={{marginTop:1}}>*/}
-                        {/*        <FormControl fullWidth>*/}
-                        {/*            <InputLabel*/}
-                        {/*                id="client_id">*/}
-                        {/*                العميل*/}
-                        {/*            </InputLabel>*/}
 
-                        {/*            <Select*/}
-                        {/*                name={"client_id"}*/}
-                        {/*                labelId="client_id"*/}
-                        {/*                id="client_id"*/}
-                        {/*                value={selectedCLientName}*/}
-                        {/*                onChange={(event) => setSelectedClientName(event.target.value)}*/}
-                        {/*                label="العميل"*/}
-                        {/*            >*/}
-
-                        {/*                {isLoading ? (*/}
-                        {/*                    <MenuItem disabled>*/}
-                        {/*                        <CircularProgress size={24} />*/}
-                        {/*                    </MenuItem>*/}
-                        {/*                ) : clientsOptions?.length > 0 ? (*/}
-                        {/*                    clientsOptions.map((user) => (*/}
-                        {/*                        <MenuItem key={user.id} value={user.id}>*/}
-                        {/*                            {`${user.name} ${user.last_name}`}*/}
-                        {/*                        </MenuItem>*/}
-                        {/*                    ))*/}
-                        {/*                ) : clientsOptions?.length === 0 ? (*/}
-                        {/*                    <MenuItem disabled>*/}
-                        {/*                        لا توجد بيانات*/}
-                        {/*                    </MenuItem>*/}
-                        {/*                ) : (*/}
-                        {/*                    <MenuItem disabled>*/}
-                        {/*                        يوجد خطأ في الشبكة اعد المحاولة*/}
-                        {/*                    </MenuItem>*/}
-                        {/*                )}*/}
-                        {/*            </Select>*/}
-                        {/*        </FormControl>*/}
-                        {/*    </Grid>*/}
-                        {/*</Grid>*/}
                         <Grid container maxWidth="lg" spacing={1}>
                             <Grid item xs={12} sx={{ marginTop: 1 }}>
                                 <FormControl fullWidth>
 
                                     {isLoading ? (
                                         <Grid>
-                                            <CircularProgress size={24} />
+                                            <Typography variant="h5" sx={{marginBottom: 2, color: "#8f8aa8eb",fontSize: '17px'}}>
+                                              جاري تحميل العملاء
+                                            </Typography>
+                                            <Box sx={{width: '100%'}}>
+                                                <LinearProgress/>
+                                            </Box>
                                         </Grid>
 
                                     ) : error ? (
@@ -220,7 +214,7 @@ export function AddDevice({...props}) {
                                     ) : (
                                         <Autocomplete
                                             options={clientsOptions}
-                                            getOptionLabel={(option) => `${option.name} ${option.last_name}`}
+                                            getOptionLabel={(option) => `${option?.name} ${option?.last_name}`}
                                             onChange={(event, newValue) => {
                                                 setSelectedClientName(newValue?.id);
                                             }}

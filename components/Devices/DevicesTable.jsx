@@ -21,6 +21,7 @@ import IconButton from "@mui/material/IconButton";
 import NotificationAddRoundedIcon from "@mui/icons-material/NotificationAddRounded";
 import {SendNotification} from "../Notices";
 import {AddDevice} from "./AddDevice";
+import {reset} from "next/dist/lib/picocolors";
 
 const StyledGridOverlay = styled('div')(({theme}) => ({
     display: 'flex',
@@ -76,7 +77,7 @@ export function Devices() {
     };
     const handleCloseAddDialog = () => {
         setOpenAddDialog(false);
-
+        console.log("Close")
     };
     const handleEditClick = (id) => () => {
         setOpen(true)
