@@ -175,18 +175,18 @@ export function EditService({...props}) {
                                 />
 
                             </Box>
-                            {/*<Grid item xs={12} sm={6}>*/}
-                            {/*    <TextField*/}
-                            {/*        margin="normal"*/}
-                            {/*        onKeyUp={handleKeyUp}*/}
-                            {/*        name="device_model"*/}
-                            {/*        defaultValue={`${data?.device_model || ''}`}*/}
-                            {/*        fullWidth*/}
-                            {/*        id="device_model"*/}
-                            {/*        label="نوع الجهاز"*/}
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    margin="normal"
+                                    onKeyUp={handleKeyUp}
+                                    name="device_model"
+                                    defaultValue={`${data?.device_model || ''}`}
+                                    fullWidth
+                                    id="device_model"
+                                    label="نوع الجهاز"
 
-                            {/*    />*/}
-                            {/*</Grid>*/}
+                                />
+                            </Grid>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>
                                 <TextField
                                     margin="normal"

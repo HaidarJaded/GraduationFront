@@ -93,7 +93,13 @@ export function getValidationObject() {
                 break;
             case "imei":
                 result['imei'] = Yup.string()
-                    .length(15, 'يجب أن يكون 15 حرف.');
+                    .nullable()
+                    .notRequired()
+                    .test(
+                        'len',
+                        'يجب أن يحتوي على 15 رقم فقط و لا يمكن ادخال احرف',
+                        value => !value || (value && value.length === 15 && /^\d+$/.test(value))
+                    );
                 break;
 
         }
