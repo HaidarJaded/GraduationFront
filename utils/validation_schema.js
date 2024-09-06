@@ -83,7 +83,18 @@ export function getValidationObject() {
                 result['phone'] = Yup.string()
                     .max(10, 'Phone number must not be greater than 10 characters');
                 break;
-
+            case "model":
+                result['model'] = Yup.string()
+                    .required('نوع الجهاز مطلوب')
+                break;
+            case "customer_complaint":
+                result['customer_complaint'] = Yup.string()
+                    .required('حقل الشكوى مطلوب')
+                break;
+            case "imei":
+                result['imei'] = Yup.string()
+                    .length(15, 'يجب أن يكون 15 حرف.');
+                break;
 
         }
     }

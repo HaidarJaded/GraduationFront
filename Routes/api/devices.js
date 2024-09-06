@@ -61,12 +61,27 @@ const deleteDevice = async (id) => {
         responseErrorHandlers(error?.response);
     }
 }
-
+const addDevice = async (device) => {
+    try {
+        return await axiosInstance
+            .post(`${BASE_URL}${DEVICES_URL}`, device)
+            .then(async (response) => {
+                const result = await response?.data;
+                return {
+                    data: result,
+                    status: response?.status,
+                };
+            });
+    } catch (error) {
+        responseErrorHandlers(error?.response);
+    }
+};
 export const deviceServices = {
     getAll,
     updateDevice,
     getDevice,
-    deleteDevice
+    deleteDevice,
+    addDevice
     // CRUD
     // CREATE
     // READ
