@@ -143,20 +143,20 @@ export function CompletedDevices() {
 
     const columns = [
 
-        {field: 'rowNumber', headerName: '#', width: 60},
+        {field: 'rowNumber', headerName: '#', width: 1},
         {field: 'model', headerName: 'Model', width: 130},
         {field: 'imei', headerName: 'Imei', width: 150},
-        {field: 'code', headerName: 'Code', width: 130},
-        {field: 'client_name', headerName: 'اسم العميل', width: 170},
-        {field: 'user_name', headerName: 'اسم فني الصيانة', width: 160},
-        {field: 'status', headerName: 'حالة الجهاز', width: 160},
+        {field: 'code', headerName: 'Code', width: 80},
+        {field: 'client_name', headerName: 'اسم العميل', width: 130},
+        {field: 'user_name', headerName: 'اسم فني الصيانة', width: 130},
+        {field: 'status', headerName: 'حالة الجهاز', width: 130},
         {field: 'customer_complaint', headerName: 'الشكوى', width: 160},
         {field: 'problem', headerName: 'العطل', width: 160},
         {field: 'cost_to_client', headerName: 'الكلفة', width: 160},
         // {field: 'payment_status', headerName: 'حالة الدفع', width: 160},
-        {field: 'client_date_warranty', headerName: 'تاريخ انتهاء الكفالة', width: 160},
+        {field: 'client_date_warranty', headerName: 'تاريخ انتهاء الكفالة', width: 130},
         {field: 'date_receipt', headerName: 'تاريخ الاستلام', width: 160},
-        {field: 'date_delivery_client', headerName: 'تاريخ التسليم', width: 100},
+        {field: 'date_delivery_client', headerName: 'تاريخ التسليم', width: 130},
         {
             field: 'payment_status',
             headerName: 'حالة الدفع',

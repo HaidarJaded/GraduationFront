@@ -157,7 +157,7 @@ export function Devices() {
 //=============================================================
     const columns = [
 
-        {field: 'rowNumber', headerName: '#', width: 70},
+        {field: 'rowNumber', headerName: '#', width: 1},
         // {field: 'id', headerName: 'ID', width: 70},
         {field: 'model', headerName: 'Model', width: 130},
         {field: 'imei', headerName: 'Imei', width: 170},
@@ -352,8 +352,8 @@ export function Devices() {
             model: device?.model,
             imei: device?.imei,
             code: device?.code,
-            clientName: device?.client?.name,
-            userName: device?.user?.name,
+            clientName: device?.client?.name + ' ' + device?.client?.last_name,
+            userName: device?.user?.name + ' ' + device?.user?.last_name,
             userId: device?.user?.id,
             status: device?.status,
             cost_to_client:device?.cost_to_client,
