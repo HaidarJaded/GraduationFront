@@ -52,7 +52,7 @@ export function getValidationObject() {
                     result['cost_to_client'] = Yup.string().when(
                         [], // condition based on other fields could be added here
                         (cost_to_client, schema) => {
-                            if (cost_to_client !== null) {
+                            if (cost_to_client !== null && cost_to_client.length > 0) {
                                 return schema.matches(/^\d+(\.\d+)?$/, 'Cost must contain only numbers and can be a decimal');
                             } else {
                                 return schema.nullable().notRequired();
