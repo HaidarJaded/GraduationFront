@@ -12,12 +12,31 @@ import {deviceServices, usersServices} from "../../Routes";
 import {getValidationObject, Notify} from "../../utils";
 // import {ModelsEnum} from "../../enums";
 // import {getEnum, getEnumValueByEnumKey} from "../../utils/common/methodUtils";
+import Switch from '@mui/material/Switch';
+
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export function EditDevice({...props}) {
+    const SwitchComponent = () => {
+        const handleChange = async (event) => {
+            setIsCLientApproval(!isClientApproval);
+        };
+        return (
+            <div>
+                <Switch
+                    checked={isClientApproval}
+                    onChange={handleChange}
+                    inputProps={{'aria-label': 'controlled'}}
+                />
+            <label>التأكيد على موافقة العميل</label> 
+            </div>
+        );
+    
+    }
     const {open} = props;
     const [id, setId] = useState(props.id);
     const [data, setData] = useState();
@@ -47,20 +66,20 @@ export function EditDevice({...props}) {
 
 
     const onSubmit = async () => {
-        console.log("dddddddddddddddd");
         let dataDevice = {}
         if (selectedInfo && selectedInfo !== data?.info)
             Object.assign(dataDevice, {"info": selectedInfo})
-        console.log(selectedModel)
-        console.log(data?.model)
         if (selectedUserName && selectedUserName !== data?.user?.id)
             Object.assign(dataDevice, {"user_id": selectedUserName})
         if (selectedModel && selectedModel !== data?.model)
             Object.assign(dataDevice, {"model": selectedModel})
         if (selectedCostToClient && selectedCostToClient !== data?.cost_to_client)
             Object.assign(dataDevice, {"cost_to_client": selectedCostToClient})
-        console.log(Object.keys(dataDevice).length);
-        console.log(dataDevice);
+        if (isClientApproval){
+            Object.assign(dataDevice, { "client_approval": 1 })
+            Object.assign(dataDevice, { "status": "قيد العمل" })
+        }
+        
         if (Object.keys(dataDevice).length > 0) {
             try {
                 const response = await deviceServices.updateDevice(id, dataDevice);
@@ -78,6 +97,7 @@ export function EditDevice({...props}) {
     const [selectedCostToClient, setSelectedCostToClient] = useState(data?.cost_to_client);
     const [selectedUserName, setSelectedUserName] = useState(data?.user?.id);
     const [selectedModel, setSelectedModel] = useState(data?.model);
+    const [isClientApproval, setIsCLientApproval] = useState(false);
     const [modelOptions, setModelOptions] = useState([]);
 
     const fetchAndSetModelOptions = useCallback(async () => {
@@ -136,6 +156,10 @@ export function EditDevice({...props}) {
 
                     {data ? (
                         <Grid container maxWidth="lg" spacing={1}>
+                            {data.status == 'بانتظار استجابة العميل' &&
+                                (
+                                <SwitchComponent/>)
+                            }
                             <Grid item xs={12} sx={{maxWidth:1}}>
                                 <TextField
                                     margin="normal"
